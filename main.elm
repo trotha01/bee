@@ -7,6 +7,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 import Sprite exposing (..)
 import Map
+import AnimationFrame exposing (frame)
 
 
 -- MODEL
@@ -243,4 +244,4 @@ input =
 
 delta : Signal Time
 delta =
-  Signal.map (\t -> t / 20) (fps 25)
+  Signal.map (\t -> t / 20) (Signal.sampleOn (Time.every (Time.millisecond * 15)) frame)

@@ -10571,6 +10571,70 @@ Elm.Html.Attributes.make = function (_elm) {
                                         ,manifest: manifest
                                         ,property: property
                                         ,attribute: attribute};
+};Elm.Native.AnimationFrame = {};
+Elm.Native.AnimationFrame.make = function(localRuntime) {
+
+  localRuntime.Native = localRuntime.Native || {};
+  localRuntime.Native.AnimationFrame = localRuntime.Native.AnimationFrame || {};
+  if (localRuntime.Native.AnimationFrame.values) return localRuntime.Native.AnimationFrame.values;
+
+  var Signal = Elm.Signal.make(localRuntime);
+  var NS = Elm.Native.Signal.make(localRuntime);
+
+  // TODO Should be localRuntime.requestAnimationFrame, and should be shimmed if we care
+  // about IE9. Do we care about IE9?
+  var requestAnimationFrame = window.requestAnimationFrame || function () {};
+  var cancelAnimationFrame = window.cancelAnimationFrame || function () {};
+
+  function frameWhen(isOn) {
+    var prev = 0, wasOn = true;
+    var ticker = NS.input('elm-animation-frame', 0);
+    function tick(curr) {
+      var diff = (curr > prev) ? curr - prev : 0;
+      prev = curr;
+      localRuntime.notify(ticker.id, diff);
+    }
+    // When we transition from off to on, reset prev so that the first tick will be 0.
+    function zeroThenTick(curr) {
+      prev = curr;
+      tick(curr);
+    }
+    var rafID = 0;
+    function f(isOn, t) {
+      if (isOn) {
+        rafID = requestAnimationFrame(wasOn ? tick : zeroThenTick);
+      } else if (wasOn) {
+        cancelAnimationFrame(rafID);
+      }
+      wasOn = isOn;
+      return t;
+    }
+    return A3(Signal.map2, F2(f), NS.dropRepeats(isOn), ticker);
+  }
+
+  return localRuntime.Native.AnimationFrame.values = {
+    frameWhen : frameWhen
+  };
+
+};
+Elm.AnimationFrame = Elm.AnimationFrame || {};
+Elm.AnimationFrame.make = function (_elm) {
+   "use strict";
+   _elm.AnimationFrame = _elm.AnimationFrame || {};
+   if (_elm.AnimationFrame.values) return _elm.AnimationFrame.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$AnimationFrame = Elm.Native.AnimationFrame.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var _op = {};
+   var frameWhen = $Native$AnimationFrame.frameWhen;
+   var frame = frameWhen($Signal.constant(true));
+   return _elm.AnimationFrame.values = {_op: _op,frameWhen: frameWhen,frame: frame};
 };Elm.Sprite = Elm.Sprite || {};
 Elm.Sprite.make = function (_elm) {
    "use strict";
@@ -10796,6 +10860,7 @@ Elm.Main.make = function (_elm) {
    _elm.Main = _elm.Main || {};
    if (_elm.Main.values) return _elm.Main.values;
    var _U = Elm.Native.Utils.make(_elm),
+   $AnimationFrame = Elm.AnimationFrame.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
@@ -10810,7 +10875,7 @@ Elm.Main.make = function (_elm) {
    $Time = Elm.Time.make(_elm),
    $Window = Elm.Window.make(_elm);
    var _op = {};
-   var delta = A2($Signal.map,function (t) {    return t / 20;},$Time.fps(25));
+   var delta = A2($Signal.map,function (t) {    return t / 20;},A2($Signal.sampleOn,$Time.every($Time.millisecond * 15),$AnimationFrame.frame));
    var input = A2($Signal.sampleOn,
    delta,
    A4($Signal.map3,F3(function (v0,v1,v2) {    return {ctor: "_Tuple3",_0: v0,_1: v1,_2: v2};}),delta,$Keyboard.arrows,$Keyboard.shift));
