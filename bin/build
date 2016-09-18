@@ -1,0 +1,3 @@
+#!/bin/bash
+
+elm-make main.elm --warn --output bee.js

@@ -2,7 +2,6 @@ module Main exposing (..)
 
 import Keyboard.Extra as Keyboard
 import Time exposing (Time)
-import Window
 import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 import Html.App exposing (program)
@@ -20,15 +19,13 @@ import AnimationFrame
 type alias Model =
     { sprite : Sprite.Model
     , map : Map.Model
-    , windowWidth : Int
-    , windowHeight : Int
     , keyboard : Keyboard.Model
     }
 
 
 initialModel : Keyboard.Model -> Model
 initialModel keyboard =
-    Model Sprite.init Map.init 0 0 keyboard
+    Model Sprite.init Map.init keyboard
 
 
 

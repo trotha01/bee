@@ -1,9 +1,9 @@
-Trying out Game Programming with Elm-Lang
+Trying out Game Programming with [Elm-Lang](http://elm-lang.org/)
 
 # Try The Game
 http://trotha01.github.io/bee
 
-(All you can do right now is fly around a map, use Shift to go faster)
+(All you can do right now is fly around a map)
 
 # Discuss
 
