@@ -13,9 +13,6 @@ import AnimationFrame
 -- MODEL
 
 
-{-| Model contains the x,y coordinates of the sprite
-    as well as the velocity and direction.
--}
 type alias Model =
     { sprite : Sprite.Model
     , map : Map.Model
@@ -25,7 +22,10 @@ type alias Model =
 
 initialModel : Keyboard.Model -> Model
 initialModel keyboard =
-    Model Sprite.init Map.init keyboard
+    { sprite = Sprite.init
+    , map = Map.init
+    , keyboard = keyboard
+    }
 
 
 
@@ -35,6 +35,7 @@ initialModel keyboard =
 type Msg
     = Tick Time
     | KeyPress Keyboard.Msg
+    | KeyboardCmd Keyboard.Msg
     | Nothing
 
 
@@ -50,16 +51,23 @@ update msg model =
 
         KeyPress key ->
             let
-                ( keyboard, _ ) =
+                ( keyboard', cmd ) =
                     Keyboard.update key model.keyboard
 
                 direction =
-                    Keyboard.arrows keyboard
+                    Keyboard.arrows keyboard'
             in
-                ( { model | keyboard = keyboard }
+                ( { model | keyboard = keyboard' }
                     |> updateSprite (Sprite.Direction direction)
-                , Cmd.none
+                , Cmd.map KeyboardCmd cmd
                 )
+
+        KeyboardCmd msg ->
+            let
+                ( keyboard', cmd ) =
+                    Keyboard.update msg model.keyboard
+            in
+                ( { model | keyboard = keyboard' }, Cmd.map KeyboardCmd cmd )
 
         Nothing ->
             ( model, Cmd.none )
@@ -77,8 +85,8 @@ updateSprite msg model =
 updateMap : Time -> Model -> Model
 updateMap dt model =
     let
-        ( x, y, vx, vy, map ) =
-            ( model.sprite.x, model.sprite.y, model.sprite.vx, model.sprite.vy, model.map )
+        ( x, y, vx, vy ) =
+            ( model.sprite.x, model.sprite.y, model.sprite.vx, model.sprite.vy )
 
         ( bottomWall, leftWall, rightWall, topWall ) =
             ( 0, 0, Map.width, Map.height )
@@ -100,7 +108,7 @@ updateMap dt model =
                 Map.HorizontalScroll 0
     in
         { model
-            | map = Map.update action map
+            | map = Map.update action model.map
         }
 
 

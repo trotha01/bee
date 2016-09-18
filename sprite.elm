@@ -30,8 +30,16 @@ type Orientation
     | Away
 
 
+init : Model
 init =
-    Model Map.halfWidth Map.halfHeight 0 0 Left Toward 0
+    { x = Map.halfWidth
+    , y = Map.halfHeight
+    , vx = 0
+    , vy = 0
+    , dir = Left
+    , orientation = Toward
+    , frame = 0
+    }
 
 
 
@@ -160,28 +168,8 @@ view { x, y, vx, vy, dir, orientation, frame } =
             [ beeImage ]
 
 
-imgFromSpriteSheet : String -> ( Int, Int ) -> Html Msg
-imgFromSpriteSheet spriteSheet ( x, y ) =
-    img
-        [ src "empty.png"
-        , style
-            [ ( "width", "32px" )
-            , ( "height", "32px" )
-            , ( "background-image", "url(" ++ spriteSheet ++ ")" )
-            , ( "background-position"
-              , "-" ++ (toString x) ++ "px -" ++ (toString y) ++ "px"
-              )
-            ]
-        ]
-        []
-
-
 
 -- Bee Sprite
-
-
-beeFromSpriteSheet =
-    imgFromSpriteSheet "bee.png"
 
 
 northWestBee1 =
@@ -214,3 +202,23 @@ southEastBee1 =
 
 southEastBee2 =
     beeFromSpriteSheet ( 32, 64 )
+
+
+beeFromSpriteSheet =
+    imgFromSpriteSheet "bee.png"
+
+
+imgFromSpriteSheet : String -> ( Int, Int ) -> Html Msg
+imgFromSpriteSheet spriteSheet ( x, y ) =
+    img
+        [ src "empty.png"
+        , style
+            [ ( "width", "32px" )
+            , ( "height", "32px" )
+            , ( "background-image", "url(" ++ spriteSheet ++ ")" )
+            , ( "background-position"
+              , "-" ++ (toString x) ++ "px -" ++ (toString y) ++ "px"
+              )
+            ]
+        ]
+        []

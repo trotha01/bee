@@ -7,11 +7,6 @@ import Html.Attributes exposing (src, style)
 -- Path Sprite
 
 
-tileFromSpriteSheet : ( Int, Int ) -> Html msg
-tileFromSpriteSheet =
-    imgFromSpriteSheet "terrain.png"
-
-
 grass =
     tileFromSpriteSheet ( 0, 0 )
 
@@ -30,6 +25,11 @@ horzPath =
 
 tPath =
     tileFromSpriteSheet ( 32, 32 )
+
+
+tileFromSpriteSheet : ( Int, Int ) -> Html msg
+tileFromSpriteSheet =
+    imgFromSpriteSheet "terrain.png"
 
 
 imgFromSpriteSheet : String -> ( Int, Int ) -> Html msg

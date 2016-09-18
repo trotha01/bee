@@ -17,20 +17,6 @@ type alias Model =
     }
 
 
-( fullMapWidth, fullMapHeight ) =
-    ( 288, 288 )
-{-| This is the width and height of
-    the visible portion of the map
--}
-( width, height ) =
-    ( 224, 224 )
-( halfWidth, halfHeight ) =
-    ( width / 2, height / 2 )
-{-| overflow width and height are the
-    unseen dimensions of the map
--}
-( overflowWidth, overflowHeight ) =
-    ( fullMapWidth - width, fullMapHeight - height )
 {-| We initialize the map to start in approxamitely the center
 -}
 init : Model
@@ -40,10 +26,32 @@ init =
     }
 
 
+{-| Width and height of the whole map
+-}
+( fullMapWidth, fullMapHeight ) =
+    ( 288, 288 )
+{-| Width and height of the visible portion of the map
+-}
+( width, height ) =
+    ( 224, 224 )
+( halfWidth, halfHeight ) =
+    ( width / 2, height / 2 )
+{-| overflow width and height are the unseen dimensions of the map
+-}
+( overflowWidth, overflowHeight ) =
+    ( fullMapWidth - width, fullMapHeight - height )
+
+
 
 -- Update
 
 
+{-| Action:
+    VerticalScroll 3 = scroll up three pixels
+    VerticalScroll -3 = scroll down three pixels
+    HorizontalScroll 3 = scroll right three pixels
+    HorizontalScroll -3 = scroll left three pixels
+-}
 type Action
     = VerticalScroll Int
     | HorizontalScroll Int
