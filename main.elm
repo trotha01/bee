@@ -1,13 +1,13 @@
-module Main (..) where
+module Main exposing (..)
 
-import Keyboard
-import Time exposing (Time, fps)
-import Window
+import Keyboard.Extra as Keyboard
+import Time exposing (Time)
 import Html exposing (Html, div)
 import Html.Attributes exposing (style)
+import Html.App exposing (program)
 import Sprite exposing (..)
 import Map
-import AnimationFrame exposing (frame)
+import AnimationFrame
 
 
 -- MODEL
@@ -17,231 +17,167 @@ import AnimationFrame exposing (frame)
     as well as the velocity and direction.
 -}
 type alias Model =
-  { x : Float
-  , y : Float
-  , vx : Float
-  , vy : Float
-  , dir : Direction
-  , orientation : Orientation
-  , sprite : Int
-  , map : Map.Model
-  }
+    { sprite : Sprite.Model
+    , map : Map.Model
+    , keyboard : Keyboard.Model
+    }
 
 
-type Direction
-  = Left
-  | Right
-
-
-type Orientation
-  = Toward
-  | Away
-
-
-initialModel : Model
-initialModel =
-  Model Map.halfWidth Map.halfHeight 0 0 Left Toward 0 Map.init
+initialModel : Keyboard.Model -> Model
+initialModel keyboard =
+    Model Sprite.init Map.init keyboard
 
 
 
 -- UPDATE
 
 
-update : ( Time, { x : Int, y : Int }, Bool ) -> Model -> Model
-update ( timeDelta, direction, isRunning ) model =
-  model
-    |> newVelocity isRunning direction
-    |> setDirection direction
-    |> updatePosition timeDelta
-    |> updateMap timeDelta
-    |> updateSprite
+type Msg
+    = Tick Time
+    | KeyPress Keyboard.Msg
+    | Nothing
 
 
-updateSprite : Model -> Model
-updateSprite model =
-  { model
-    | sprite = (model.sprite + 1) % 2
-  }
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Tick timeDelta ->
+            ( model
+                |> updateMap timeDelta
+                |> updateSprite (Sprite.Tick timeDelta)
+            , Cmd.none
+            )
+
+        KeyPress key ->
+            let
+                ( keyboard, _ ) =
+                    Keyboard.update key model.keyboard
+
+                direction =
+                    Keyboard.arrows keyboard
+            in
+                ( { model | keyboard = keyboard }
+                    |> updateSprite (Sprite.Direction direction)
+                , Cmd.none
+                )
+
+        Nothing ->
+            ( model, Cmd.none )
 
 
-newVelocity : Bool -> { x : Int, y : Int } -> Model -> Model
-newVelocity isRunning { x, y } model =
-  let
-    scale =
-      if isRunning then
-        4
-      else
-        2
-
-    newVel n =
-      if x == 0 || y == 0 then
-        scale * toFloat n
-      else
-        scale * toFloat n / sqrt 2
-  in
-    { model
-      | vx = newVel x
-      , vy = newVel y
-    }
-
-
-setDirection : { x : Int, y : Int } -> Model -> Model
-setDirection { x, y } model =
-  { model
-    | orientation =
-        if y < 0 then
-          Toward
-        else if y > 0 then
-          Away
-        else
-          model.orientation
-    , dir =
-        if x > 0 then
-          Right
-        else if x < 0 then
-          Left
-        else
-          model.dir
-  }
-
-
-updatePosition : Time -> Model -> Model
-updatePosition dt ({ x, y, vx, vy } as model) =
-  { model
-    | x = clamp 0 (Map.width - 32) (x + dt * vx)
-    , y = clamp 32 Map.height (y + dt * vy)
-  }
+updateSprite : Sprite.Msg -> Model -> Model
+updateSprite msg model =
+    let
+        sprite' =
+            Sprite.update msg model.sprite
+    in
+        { model | sprite = sprite' }
 
 
 updateMap : Time -> Model -> Model
-updateMap dt ({ x, y, vx, vy, map } as model) =
-  let
-    ( bottom, left, right, top ) =
-      ( 0, 0, Map.width, Map.height )
+updateMap dt model =
+    let
+        ( x, y, vx, vy, map ) =
+            ( model.sprite.x, model.sprite.y, model.sprite.vx, model.sprite.vy, model.map )
 
-    ( movingUp, movingDown, movingRight, movingLeft ) =
-      ( vy > 0, vy < 0, vx > 0, vx < 0 )
+        ( bottomWall, leftWall, rightWall, topWall ) =
+            ( 0, 0, Map.width, Map.height )
 
-    action : Map.Action
-    action =
-      if x == left && movingLeft then
-        Map.HorizontalScroll (round (dt * vx))
-      else if (x + 32) == right && movingRight then
-        Map.HorizontalScroll (round (dt * vx))
-      else if y == top && movingUp then
-        Map.VerticalScroll (round (dt * vy))
-      else if (y - 32) == bottom && movingDown then
-        Map.VerticalScroll (round (dt * vy))
-      else
-        Map.HorizontalScroll 0
-  in
-    { model
-      | map = Map.update action map
-    }
+        ( movingUp, movingDown, movingRight, movingLeft ) =
+            ( vy > 0, vy < 0, vx > 0, vx < 0 )
+
+        action : Map.Action
+        action =
+            if x == leftWall && movingLeft then
+                Map.HorizontalScroll (round (dt * vx))
+            else if (x + 32) == rightWall && movingRight then
+                Map.HorizontalScroll (round (dt * vx))
+            else if y == topWall && movingUp then
+                Map.VerticalScroll (round (dt * vy))
+            else if (y - 32) == bottomWall && movingDown then
+                Map.VerticalScroll (round (dt * vy))
+            else
+                Map.HorizontalScroll 0
+    in
+        { model
+            | map = Map.update action map
+        }
 
 
 
 -- VIEW
 
 
-view : ( Int, Int ) -> Model -> Html
-view ( w, h ) ({ x, y, vx, vy, dir, sprite } as model) =
-  let
-    bee =
-      viewBee model
+view : Model -> Html Msg
+view model =
+    let
+        bee =
+            Html.App.map (\_ -> Nothing) (Sprite.view model.sprite)
 
-    -- outer, middle, inner is for vertical & horizontal centering
-    outer =
-      div
-        [ style
-            [ ( "display", "table" )
-            , ( "position", "absolute" )
-            , ( "height", "100%" )
-            , ( "width", "100%" )
-            ]
+        -- outer, middle, inner is for vertical & horizontal centering
+        outer =
+            div
+                [ style
+                    [ ( "display", "table" )
+                    , ( "position", "absolute" )
+                    , ( "height", "100%" )
+                    , ( "width", "100%" )
+                    ]
+                ]
+                [ middle ]
+
+        middle =
+            div
+                [ style
+                    [ ( "display", "table-cell" )
+                    , ( "vertical-align", "middle" )
+                    ]
+                ]
+                [ inner ]
+
+        inner =
+            div
+                [ style
+                    [ ( "margin-left", "auto" )
+                    , ( "margin-right", "auto" )
+                    , ( "width", (toString Map.width) ++ "px" )
+                    ]
+                ]
+                [ Html.App.map (\_ -> Nothing) (Map.view model.map)
+                , bee
+                ]
+    in
+        outer
+
+
+
+-- SUBSCRIPTIONS
+
+
+subs : Sub Msg
+subs =
+    Sub.batch
+        [ Sub.map KeyPress Keyboard.subscriptions
+        , AnimationFrame.diffs Tick
         ]
-        [ middle ]
-
-    middle =
-      div
-        [ style
-            [ ( "display", "table-cell" )
-            , ( "vertical-align", "middle" )
-            ]
-        ]
-        [ inner ]
-
-    inner =
-      div
-        [ style
-            [ ( "margin-left", "auto" )
-            , ( "margin-right", "auto" )
-            , ( "width", (toString Map.width) ++ "px" )
-            ]
-        ]
-        [ Map.view model.map, bee ]
-  in
-    outer
-
-
-viewBee : Model -> Html
-viewBee { x, y, vx, vy, dir, orientation, sprite } =
-  let
-    beeImage =
-      case ( dir, orientation, sprite ) of
-        ( Left, Toward, 0 ) ->
-          southWestBee1
-
-        ( Left, Toward, 1 ) ->
-          southWestBee2
-
-        ( Left, Away, 0 ) ->
-          northWestBee1
-
-        ( Left, Away, 1 ) ->
-          northWestBee2
-
-        ( Right, Toward, 0 ) ->
-          southEastBee1
-
-        ( Right, Toward, 1 ) ->
-          southEastBee2
-
-        ( Right, Away, 0 ) ->
-          northEastBee1
-
-        ( Right, Away, 1 ) ->
-          northEastBee2
-
-        ( _, _, _ ) ->
-          southWestBee1
-  in
-    div
-      [ style
-          [ ( "width", "32px" )
-          , ( "height", "32px" )
-          , ( "position", "relative" )
-          , ( "top", "-" ++ (toString y) ++ "px" )
-          , ( "left", (toString x) ++ "px" )
-          ]
-      ]
-      [ beeImage ]
 
 
 
--- SIGNALS
+-- MAIN
 
 
-main : Signal Html
+main : Program Never
 main =
-  Signal.map2 view Window.dimensions (Signal.foldp update initialModel input)
-
-
-input : Signal ( Time, { x : Int, y : Int }, Bool )
-input =
-  Signal.sampleOn delta (Signal.map3 (,,) delta Keyboard.arrows Keyboard.shift)
-
-
-delta : Signal Time
-delta =
-  Signal.map (\t -> t / 20) (Signal.sampleOn (Time.every (Time.millisecond * 15)) frame)
+    let
+        ( initialKeyboard, keyboardCmd ) =
+            Keyboard.init
+    in
+        program
+            { init =
+                ( (initialModel initialKeyboard)
+                , Cmd.map KeyPress keyboardCmd
+                )
+            , update = update
+            , subscriptions = always subs
+            , view = view
+            }
