@@ -48,7 +48,7 @@ init =
 
 type Msg
     = Tick Time
-    | Direction { x : Int, y : Int }
+    | Direction { x : Float, y : Float }
     | Nothing
 
 
@@ -69,7 +69,7 @@ update msg model =
                 |> updateFrame
 
 
-newVelocity : { x : Int, y : Int } -> Model -> Model
+newVelocity : { x : Float, y : Float } -> Model -> Model
 newVelocity { x, y } model =
     let
         scale =
@@ -77,9 +77,9 @@ newVelocity { x, y } model =
 
         newVel n =
             if x == 0 || y == 0 then
-                scale * toFloat n
+                scale * n
             else
-                scale * toFloat n / sqrt 2
+                scale * n / sqrt 2
     in
         { model
             | vx = newVel x
@@ -87,7 +87,7 @@ newVelocity { x, y } model =
         }
 
 
-setDirection : { x : Int, y : Int } -> Model -> Model
+setDirection : { x : Float, y : Float } -> Model -> Model
 setDirection { x, y } model =
     { model
         | orientation =
