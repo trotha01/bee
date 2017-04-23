@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Bee</title>
+    <meta charset='utf-8'/>
+  </head>
+
+  <body>
+    <div id="elm"></div>
+    <script type='text/javascript' src='elm.js'></script>
+    <script>
+      var app = Elm.Main.fullscreen();
+
+      app.ports.playAudio.subscribe(function(file) {
+        var audio = new Audio(file);
+        audio.play();
+      });
+    </script>
+  </body>
+</html>
+
