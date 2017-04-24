@@ -1,12 +1,15 @@
 port module Main exposing (..)
 
+import Animation exposing (..)
 import Html exposing (Html, div, img, button, text)
 import Html.Attributes exposing (src, height, width, style)
 import Html.Events exposing (onClick)
 import Mouse
+import Task
 import Time exposing (Time)
-import Animation exposing (..)
+import Window
 import Bee exposing (Bee)
+import Map
 
 
 -- MODEL
@@ -16,6 +19,7 @@ type alias Model =
     { user : Bee
     , mouse : MouseStatus
     , time : Time
+    , window : Window.Size
     , stop : Bool
     }
 
@@ -30,6 +34,7 @@ init =
     { user = Bee.player
     , mouse = Up
     , time = 0
+    , window = { width = 100, height = 100 }
     , stop = False
     }
 
@@ -40,6 +45,7 @@ init =
 
 type Msg
     = Move Mouse.Position
+    | WindowResize Window.Size
     | MouseDown Mouse.Position
     | MouseUp Mouse.Position
     | Tick Time
@@ -52,6 +58,9 @@ update msg model =
     case msg of
         Stop ->
             ( { model | stop = not model.stop }, Cmd.none )
+
+        WindowResize newSize ->
+            ( { model | window = newSize }, Cmd.none )
 
         PlayAudio file ->
             ( model, playAudio file )
@@ -101,7 +110,8 @@ view model =
             ]
         ]
         [ -- stopButton
-          Bee.view (Just PlayAudio) Bee.mama
+          Map.view model.window
+        , Bee.view (Just PlayAudio) Bee.mama
         , Bee.view (Just PlayAudio) Bee.papa
         , Bee.view Nothing model.user
         ]
@@ -125,6 +135,7 @@ subscriptions model =
                 Sub.batch
                     [ Mouse.downs MouseDown
                     , Time.every (Time.millisecond * 100) Tick
+                    , Window.resizes WindowResize
                     ]
 
             Down _ ->
@@ -132,6 +143,7 @@ subscriptions model =
                     [ Mouse.moves Move
                     , Mouse.ups MouseUp
                     , Time.every (Time.millisecond * 100) Tick
+                    , Window.resizes WindowResize
                     ]
 
 
@@ -148,7 +160,7 @@ port playAudio : String -> Cmd msg
 
 main =
     Html.program
-        { init = ( init, Cmd.none )
+        { init = ( init, Task.perform WindowResize Window.size )
         , view = view
         , update = update
         , subscriptions = subscriptions

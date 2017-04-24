@@ -31,12 +31,6 @@ view clickAction bee =
             [ src bee.src
             , height <| scaleBee beeHeight
             , width <| scaleBee beeWidth
-            , style
-                [ ( "position", "absolute" )
-                , ( "user-select", "none" )
-                , ( "left", (toString bee.x) ++ "px" )
-                , ( "top", (toString bee.y) ++ "px" )
-                ]
             ]
 
         attributesWithEvents =
@@ -46,8 +40,21 @@ view clickAction bee =
 
                 _ ->
                     attributes
+
+        wrapper =
+            div
+                [ style
+                    [ -- ( "box-shadow", "3px 3px 1px #ccc" )
+                      ( "position", "absolute" )
+                    , ( "user-select", "none" )
+                    , ( "left", (toString bee.x) ++ "px" )
+                    , ( "top", (toString bee.y) ++ "px" )
+                    ]
+                ]
     in
-        img attributesWithEvents []
+        wrapper
+            [ img attributesWithEvents []
+            ]
 
 
 

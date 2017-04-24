@@ -9045,6 +9045,128 @@ var _elm_lang$mouse$Mouse$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Mouse'] = {pkg: 'elm-lang/mouse', init: _elm_lang$mouse$Mouse$init, onEffects: _elm_lang$mouse$Mouse$onEffects, onSelfMsg: _elm_lang$mouse$Mouse$onSelfMsg, tag: 'sub', subMap: _elm_lang$mouse$Mouse$subMap};
 
+var _elm_lang$window$Native_Window = function()
+{
+
+var size = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)	{
+	callback(_elm_lang$core$Native_Scheduler.succeed({
+		width: window.innerWidth,
+		height: window.innerHeight
+	}));
+});
+
+return {
+	size: size
+};
+
+}();
+var _elm_lang$window$Window_ops = _elm_lang$window$Window_ops || {};
+_elm_lang$window$Window_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$window$Window$onSelfMsg = F3(
+	function (router, dimensions, state) {
+		var _p1 = state;
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var send = function (_p2) {
+				var _p3 = _p2;
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p3._0(dimensions));
+			};
+			return A2(
+				_elm_lang$window$Window_ops['&>'],
+				_elm_lang$core$Task$sequence(
+					A2(_elm_lang$core$List$map, send, _p1._0.subs)),
+				_elm_lang$core$Task$succeed(state));
+		}
+	});
+var _elm_lang$window$Window$init = _elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing);
+var _elm_lang$window$Window$size = _elm_lang$window$Native_Window.size;
+var _elm_lang$window$Window$width = A2(
+	_elm_lang$core$Task$map,
+	function (_) {
+		return _.width;
+	},
+	_elm_lang$window$Window$size);
+var _elm_lang$window$Window$height = A2(
+	_elm_lang$core$Task$map,
+	function (_) {
+		return _.height;
+	},
+	_elm_lang$window$Window$size);
+var _elm_lang$window$Window$onEffects = F3(
+	function (router, newSubs, oldState) {
+		var _p4 = {ctor: '_Tuple2', _0: oldState, _1: newSubs};
+		if (_p4._0.ctor === 'Nothing') {
+			if (_p4._1.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing);
+			} else {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (pid) {
+						return _elm_lang$core$Task$succeed(
+							_elm_lang$core$Maybe$Just(
+								{subs: newSubs, pid: pid}));
+					},
+					_elm_lang$core$Process$spawn(
+						A3(
+							_elm_lang$dom$Dom_LowLevel$onWindow,
+							'resize',
+							_elm_lang$core$Json_Decode$succeed(
+								{ctor: '_Tuple0'}),
+							function (_p5) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									_elm_lang$core$Platform$sendToSelf(router),
+									_elm_lang$window$Window$size);
+							})));
+			}
+		} else {
+			if (_p4._1.ctor === '[]') {
+				return A2(
+					_elm_lang$window$Window_ops['&>'],
+					_elm_lang$core$Process$kill(_p4._0._0.pid),
+					_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
+			} else {
+				return _elm_lang$core$Task$succeed(
+					_elm_lang$core$Maybe$Just(
+						{subs: newSubs, pid: _p4._0._0.pid}));
+			}
+		}
+	});
+var _elm_lang$window$Window$subscription = _elm_lang$core$Native_Platform.leaf('Window');
+var _elm_lang$window$Window$Size = F2(
+	function (a, b) {
+		return {width: a, height: b};
+	});
+var _elm_lang$window$Window$MySub = function (a) {
+	return {ctor: 'MySub', _0: a};
+};
+var _elm_lang$window$Window$resizes = function (tagger) {
+	return _elm_lang$window$Window$subscription(
+		_elm_lang$window$Window$MySub(tagger));
+};
+var _elm_lang$window$Window$subMap = F2(
+	function (func, _p6) {
+		var _p7 = _p6;
+		return _elm_lang$window$Window$MySub(
+			function (_p8) {
+				return func(
+					_p7._0(_p8));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Window'] = {pkg: 'elm-lang/window', init: _elm_lang$window$Window$init, onEffects: _elm_lang$window$Window$onEffects, onSelfMsg: _elm_lang$window$Window$onSelfMsg, tag: 'sub', subMap: _elm_lang$window$Window$subMap};
+
 var _mgold$elm_animation$Animation$isStatic = function (_p0) {
 	var _p1 = _p0;
 	return _elm_lang$core$Native_Utils.eq(_p1._0.from, _p1._0.to);
@@ -9421,6 +9543,43 @@ var _user$project$Bee$player = {
 };
 var _user$project$Bee$view = F2(
 	function (clickAction, bee) {
+		var wrapper = _elm_lang$html$Html$div(
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'user-select', _1: 'none'},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'left',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(bee.x),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'top',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(bee.y),
+											'px')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
 		var attributes = {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$src(bee.src),
@@ -9432,42 +9591,7 @@ var _user$project$Bee$view = F2(
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$width(
 						_user$project$Bee$scaleBee(_user$project$Bee$beeWidth)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'user-select', _1: 'none'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(bee.x),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(bee.y),
-													'px')
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			}
 		};
@@ -9484,10 +9608,15 @@ var _user$project$Bee$view = F2(
 				return attributes;
 			}
 		}();
-		return A2(
-			_elm_lang$html$Html$img,
-			attributesWithEvents,
-			{ctor: '[]'});
+		return wrapper(
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					attributesWithEvents,
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			});
 	});
 var _user$project$Bee$Bee = F6(
 	function (a, b, c, d, e, f) {
@@ -9498,17 +9627,105 @@ var _user$project$Bee$Position = F2(
 		return {x: a, y: b};
 	});
 
+var _user$project$Map$tile = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src('imgs/map-tileset.png'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'clip', _1: 'rect(32px 64px 64px 32px)'},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'left',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p1._0 - 32),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'top',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p1._1 - 32),
+											'px')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Map$row = F2(
+	function (width, y) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (i) {
+				return _user$project$Map$tile(
+					{ctor: '_Tuple2', _0: i * 32, _1: y});
+			},
+			A2(_elm_lang$core$List$range, 0, width));
+	});
+var _user$project$Map$tileCountFromPixels = function (pixels) {
+	return _elm_lang$core$Basics$round(
+		_elm_lang$core$Basics$toFloat(pixels) / 32);
+};
+var _user$project$Map$ground = function (mapSize) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		_elm_lang$core$List$concat(
+			A2(
+				_elm_lang$core$List$map,
+				function (y) {
+					return A2(
+						_user$project$Map$row,
+						_user$project$Map$tileCountFromPixels(mapSize.width),
+						y * 32);
+				},
+				A2(
+					_elm_lang$core$List$range,
+					0,
+					_user$project$Map$tileCountFromPixels(mapSize.height)))));
+};
+var _user$project$Map$view = function (mapSize) {
+	return _user$project$Map$ground(mapSize);
+};
+
 var _user$project$Main$playAudio = _elm_lang$core$Native_Platform.outgoingPort(
 	'playAudio',
 	function (v) {
 		return v;
 	});
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {user: a, mouse: b, time: c, stop: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {user: a, mouse: b, time: c, window: d, stop: e};
 	});
 var _user$project$Main$Up = {ctor: 'Up'};
-var _user$project$Main$init = {user: _user$project$Bee$player, mouse: _user$project$Main$Up, time: 0, stop: false};
+var _user$project$Main$init = {
+	user: _user$project$Bee$player,
+	mouse: _user$project$Main$Up,
+	time: 0,
+	window: {width: 100, height: 100},
+	stop: false
+};
 var _user$project$Main$Down = function (a) {
 	return {ctor: 'Down', _0: a};
 };
@@ -9522,6 +9739,14 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{stop: !model.stop}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'WindowResize':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{window: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'PlayAudio':
@@ -9612,20 +9837,24 @@ var _user$project$Main$view = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: A2(
-				_user$project$Bee$view,
-				_elm_lang$core$Maybe$Just(_user$project$Main$PlayAudio),
-				_user$project$Bee$mama),
+			_0: _user$project$Map$view(model.window),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_user$project$Bee$view,
 					_elm_lang$core$Maybe$Just(_user$project$Main$PlayAudio),
-					_user$project$Bee$papa),
+					_user$project$Bee$mama),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Bee$view, _elm_lang$core$Maybe$Nothing, model.user),
-					_1: {ctor: '[]'}
+					_0: A2(
+						_user$project$Bee$view,
+						_elm_lang$core$Maybe$Just(_user$project$Main$PlayAudio),
+						_user$project$Bee$papa),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Bee$view, _elm_lang$core$Maybe$Nothing, model.user),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -9638,6 +9867,9 @@ var _user$project$Main$MouseUp = function (a) {
 };
 var _user$project$Main$MouseDown = function (a) {
 	return {ctor: 'MouseDown', _0: a};
+};
+var _user$project$Main$WindowResize = function (a) {
+	return {ctor: 'WindowResize', _0: a};
 };
 var _user$project$Main$Move = function (a) {
 	return {ctor: 'Move', _0: a};
@@ -9655,7 +9887,11 @@ var _user$project$Main$subscriptions = function (model) {
 					_1: {
 						ctor: '::',
 						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 100, _user$project$Main$Tick),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$window$Window$resizes(_user$project$Main$WindowResize),
+							_1: {ctor: '[]'}
+						}
 					}
 				});
 		} else {
@@ -9669,7 +9905,11 @@ var _user$project$Main$subscriptions = function (model) {
 						_1: {
 							ctor: '::',
 							_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 100, _user$project$Main$Tick),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$window$Window$resizes(_user$project$Main$WindowResize),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				});
@@ -9678,7 +9918,11 @@ var _user$project$Main$subscriptions = function (model) {
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		init: {ctor: '_Tuple2', _0: _user$project$Main$init, _1: _elm_lang$core$Platform_Cmd$none},
+		init: {
+			ctor: '_Tuple2',
+			_0: _user$project$Main$init,
+			_1: A2(_elm_lang$core$Task$perform, _user$project$Main$WindowResize, _elm_lang$window$Window$size)
+		},
 		view: _user$project$Main$view,
 		update: _user$project$Main$update,
 		subscriptions: _user$project$Main$subscriptions
