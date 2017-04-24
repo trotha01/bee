@@ -9335,59 +9335,134 @@ var _mgold$elm_animation$Animation$to = F2(
 				{to: x, ramp: _elm_lang$core$Maybe$Nothing}));
 	});
 
-var _user$project$Main$scaleBee = function (dimension) {
+var _user$project$Bee$scaleBee = function (dimension) {
 	return _elm_lang$core$Basics$round(dimension / 8);
 };
-var _user$project$Main$_p0 = {ctor: '_Tuple2', _0: 'imgs/mama-bee.png', _1: 'imgs/papa-bee.png'};
-var _user$project$Main$mamaBee = _user$project$Main$_p0._0;
-var _user$project$Main$papaBee = _user$project$Main$_p0._1;
-var _user$project$Main$_p1 = {ctor: '_Tuple3', _0: 'imgs/bee-left.png', _1: 456, _2: 640};
-var _user$project$Main$beeLeft = _user$project$Main$_p1._0;
-var _user$project$Main$beeHeight = _user$project$Main$_p1._1;
-var _user$project$Main$beeWidth = _user$project$Main$_p1._2;
-var _user$project$Main$papaPosition = {x: 500, y: 100};
-var _user$project$Main$mamaPosition = {x: 100, y: 100};
-var _user$project$Main$viewPlayerBee = function (model) {
-	return A2(
-		_elm_lang$html$Html$img,
-		{
+var _user$project$Bee$_p0 = {ctor: '_Tuple2', _0: 456, _1: 640};
+var _user$project$Bee$beeHeight = _user$project$Bee$_p0._0;
+var _user$project$Bee$beeWidth = _user$project$Bee$_p0._1;
+var _user$project$Bee$retarget = F3(
+	function (time, toPosition, bee) {
+		var animY = A3(
+			_mgold$elm_animation$Animation$retarget,
+			time,
+			_elm_lang$core$Basics$toFloat(toPosition.y),
+			bee.animY);
+		var animX = A3(
+			_mgold$elm_animation$Animation$retarget,
+			time,
+			_elm_lang$core$Basics$toFloat(toPosition.x),
+			bee.animX);
+		return _elm_lang$core$Native_Utils.update(
+			bee,
+			{animX: animX, animY: animY});
+	});
+var _user$project$Bee$animate = F2(
+	function (time, bee) {
+		var newY = A2(_mgold$elm_animation$Animation$animate, time, bee.animY);
+		var newX = A2(_mgold$elm_animation$Animation$animate, time, bee.animX);
+		return _elm_lang$core$Native_Utils.update(
+			bee,
+			{
+				x: _elm_lang$core$Basics$round(newX),
+				y: _elm_lang$core$Basics$round(newY)
+			});
+	});
+var _user$project$Bee$beeVelocity = 0.5;
+var _user$project$Bee$animateStart = F3(
+	function (startTime, toPosition, bee) {
+		var animY = A2(
+			_mgold$elm_animation$Animation$speed,
+			_user$project$Bee$beeVelocity,
+			A2(
+				_mgold$elm_animation$Animation$to,
+				_elm_lang$core$Basics$toFloat(toPosition.y),
+				A2(
+					_mgold$elm_animation$Animation$from,
+					_elm_lang$core$Basics$toFloat(bee.y),
+					_mgold$elm_animation$Animation$animation(startTime))));
+		var animX = A2(
+			_mgold$elm_animation$Animation$speed,
+			_user$project$Bee$beeVelocity,
+			A2(
+				_mgold$elm_animation$Animation$to,
+				_elm_lang$core$Basics$toFloat(toPosition.x),
+				A2(
+					_mgold$elm_animation$Animation$from,
+					_elm_lang$core$Basics$toFloat(bee.x),
+					_mgold$elm_animation$Animation$animation(startTime))));
+		return _elm_lang$core$Native_Utils.update(
+			bee,
+			{animX: animX, animY: animY});
+	});
+var _user$project$Bee$papa = {
+	x: 600,
+	y: 100,
+	animX: _mgold$elm_animation$Animation$animation(0),
+	animY: _mgold$elm_animation$Animation$animation(0),
+	src: 'imgs/papa-bee.png',
+	audio: _elm_lang$core$Maybe$Just('audio/padre.m4a')
+};
+var _user$project$Bee$mama = {
+	x: 100,
+	y: 100,
+	animX: _mgold$elm_animation$Animation$animation(0),
+	animY: _mgold$elm_animation$Animation$animation(0),
+	src: 'imgs/mama-bee.png',
+	audio: _elm_lang$core$Maybe$Just('audio/madre.mov')
+};
+var _user$project$Bee$player = {
+	x: 0,
+	y: 0,
+	animX: _mgold$elm_animation$Animation$animation(0),
+	animY: _mgold$elm_animation$Animation$animation(0),
+	src: 'imgs/bee-left.png',
+	audio: _elm_lang$core$Maybe$Nothing
+};
+var _user$project$Bee$view = F2(
+	function (clickAction, bee) {
+		var attributes = {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$src(_user$project$Main$beeLeft),
+			_0: _elm_lang$html$Html_Attributes$src(bee.src),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html_Attributes$height(
-					_user$project$Main$scaleBee(_user$project$Main$beeHeight)),
+					_user$project$Bee$scaleBee(_user$project$Bee$beeHeight)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$width(
-						_user$project$Main$scaleBee(_user$project$Main$beeWidth)),
+						_user$project$Bee$scaleBee(_user$project$Bee$beeWidth)),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$style(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
+								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
 								_1: {
 									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'left',
-										_1: A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(model.x),
-											'px')
-									},
+									_0: {ctor: '_Tuple2', _0: 'user-select', _1: 'none'},
 									_1: {
 										ctor: '::',
 										_0: {
 											ctor: '_Tuple2',
-											_0: 'top',
+											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(model.y),
+												_elm_lang$core$Basics$toString(bee.x),
 												'px')
 										},
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'top',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(bee.y),
+													'px')
+											},
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}),
@@ -9395,40 +9470,65 @@ var _user$project$Main$viewPlayerBee = function (model) {
 					}
 				}
 			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Main$beeVelocity = 0.5;
+		};
+		var attributesWithEvents = function () {
+			var _p1 = {ctor: '_Tuple2', _0: clickAction, _1: bee.audio};
+			if (((_p1.ctor === '_Tuple2') && (_p1._0.ctor === 'Just')) && (_p1._1.ctor === 'Just')) {
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_p1._0._0(_p1._1._0)),
+					_1: attributes
+				};
+			} else {
+				return attributes;
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$img,
+			attributesWithEvents,
+			{ctor: '[]'});
+	});
+var _user$project$Bee$Bee = F6(
+	function (a, b, c, d, e, f) {
+		return {x: a, y: b, animX: c, animY: d, src: e, audio: f};
+	});
+var _user$project$Bee$Position = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+
 var _user$project$Main$playAudio = _elm_lang$core$Native_Platform.outgoingPort(
 	'playAudio',
 	function (v) {
 		return v;
 	});
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {x: a, y: b, animX: c, animY: d, mouse: e, time: f};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {user: a, mouse: b, time: c, stop: d};
 	});
 var _user$project$Main$Up = {ctor: 'Up'};
-var _user$project$Main$init = {
-	x: 0,
-	y: 0,
-	animX: _mgold$elm_animation$Animation$animation(0),
-	animY: _mgold$elm_animation$Animation$animation(0),
-	mouse: _user$project$Main$Up,
-	time: 0
-};
+var _user$project$Main$init = {user: _user$project$Bee$player, mouse: _user$project$Main$Up, time: 0, stop: false};
 var _user$project$Main$Down = function (a) {
 	return {ctor: 'Down', _0: a};
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'Stop':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{stop: !model.stop}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'PlayAudio':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Main$playAudio(_p2._0)
+					_1: _user$project$Main$playAudio(_p0._0)
 				};
 			case 'MouseUp':
 				return {
@@ -9439,226 +9539,64 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'MouseDown':
-				var _p3 = _p2._0;
-				var animY = A2(
-					_mgold$elm_animation$Animation$speed,
-					_user$project$Main$beeVelocity,
-					A2(
-						_mgold$elm_animation$Animation$to,
-						_elm_lang$core$Basics$toFloat(_p3.y),
-						A2(
-							_mgold$elm_animation$Animation$from,
-							_elm_lang$core$Basics$toFloat(model.y),
-							_mgold$elm_animation$Animation$animation(model.time))));
-				var animX = A2(
-					_mgold$elm_animation$Animation$speed,
-					_user$project$Main$beeVelocity,
-					A2(
-						_mgold$elm_animation$Animation$to,
-						_elm_lang$core$Basics$toFloat(_p3.x),
-						A2(
-							_mgold$elm_animation$Animation$from,
-							_elm_lang$core$Basics$toFloat(model.x),
-							_mgold$elm_animation$Animation$animation(model.time))));
+				var _p1 = _p0._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							mouse: _user$project$Main$Down(_p3),
-							animX: animX,
-							animY: animY
+							mouse: _user$project$Main$Down(_p1),
+							user: A3(_user$project$Bee$animateStart, model.time, _p1, model.user)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Move':
-				var _p5 = _p2._0;
-				var _p4 = model.mouse;
-				if (_p4.ctor === 'Up') {
+				var _p3 = _p0._0;
+				var _p2 = model.mouse;
+				if (_p2.ctor === 'Up') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var animY = A3(
-						_mgold$elm_animation$Animation$retarget,
-						model.time,
-						_elm_lang$core$Basics$toFloat(_p5.y),
-						model.animY);
-					var animX = A3(
-						_mgold$elm_animation$Animation$retarget,
-						model.time,
-						_elm_lang$core$Basics$toFloat(_p5.x),
-						model.animX);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								mouse: _user$project$Main$Down(_p5),
-								animX: animX,
-								animY: animY
+								mouse: _user$project$Main$Down(_p3),
+								user: A3(_user$project$Bee$retarget, model.time, _p3, model.user)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			default:
-				var _p6 = _p2._0;
-				var newY = A2(_mgold$elm_animation$Animation$animate, _p6, model.animY);
-				var newX = A2(_mgold$elm_animation$Animation$animate, _p6, model.animX);
+				var _p4 = _p0._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							x: _elm_lang$core$Basics$round(newX),
-							y: _elm_lang$core$Basics$round(newY),
-							time: _p6
+							user: A2(_user$project$Bee$animate, _p4, model.user),
+							time: _p4
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
+var _user$project$Main$Stop = {ctor: 'Stop'};
+var _user$project$Main$stopButton = A2(
+	_elm_lang$html$Html$button,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Stop),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('stop'),
+		_1: {ctor: '[]'}
+	});
 var _user$project$Main$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
-var _user$project$Main$viewMamaBee = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$style(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'user-select', _1: 'none'},
-				_1: {ctor: '[]'}
-			}),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$PlayAudio('audio/madre.mov')),
-			_1: {ctor: '[]'}
-		}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$img,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$src(_user$project$Main$mamaBee),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$height(
-						_user$project$Main$scaleBee(_user$project$Main$beeHeight)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$width(
-							_user$project$Main$scaleBee(_user$project$Main$beeWidth)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_user$project$Main$mamaPosition.x),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_user$project$Main$mamaPosition.y),
-													'px')
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			},
-			{ctor: '[]'}),
-		_1: {ctor: '[]'}
-	});
-var _user$project$Main$viewPapaBee = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$style(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'user-select', _1: 'none'},
-				_1: {ctor: '[]'}
-			}),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$PlayAudio('audio/padre.m4a')),
-			_1: {ctor: '[]'}
-		}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$img,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$src(_user$project$Main$papaBee),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$height(
-						_user$project$Main$scaleBee(_user$project$Main$beeHeight)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$width(
-							_user$project$Main$scaleBee(_user$project$Main$beeWidth)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_user$project$Main$papaPosition.x),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_user$project$Main$papaPosition.y),
-													'px')
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			},
-			{ctor: '[]'}),
-		_1: {ctor: '[]'}
-	});
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9674,13 +9612,19 @@ var _user$project$Main$view = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: _user$project$Main$viewMamaBee,
+			_0: A2(
+				_user$project$Bee$view,
+				_elm_lang$core$Maybe$Just(_user$project$Main$PlayAudio),
+				_user$project$Bee$mama),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$viewPapaBee,
+				_0: A2(
+					_user$project$Bee$view,
+					_elm_lang$core$Maybe$Just(_user$project$Main$PlayAudio),
+					_user$project$Bee$papa),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$viewPlayerBee(model),
+					_0: A2(_user$project$Bee$view, _elm_lang$core$Maybe$Nothing, model.user),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -9699,33 +9643,37 @@ var _user$project$Main$Move = function (a) {
 	return {ctor: 'Move', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	var _p7 = model.mouse;
-	if (_p7.ctor === 'Up') {
-		return _elm_lang$core$Platform_Sub$batch(
-			{
-				ctor: '::',
-				_0: _elm_lang$mouse$Mouse$downs(_user$project$Main$MouseDown),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 1, _user$project$Main$Tick),
-					_1: {ctor: '[]'}
-				}
-			});
+	if (model.stop) {
+		return _elm_lang$core$Platform_Sub$none;
 	} else {
-		return _elm_lang$core$Platform_Sub$batch(
-			{
-				ctor: '::',
-				_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$Move),
-				_1: {
+		var _p5 = model.mouse;
+		if (_p5.ctor === 'Up') {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
 					ctor: '::',
-					_0: _elm_lang$mouse$Mouse$ups(_user$project$Main$MouseUp),
+					_0: _elm_lang$mouse$Mouse$downs(_user$project$Main$MouseDown),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 1, _user$project$Main$Tick),
+						_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 100, _user$project$Main$Tick),
 						_1: {ctor: '[]'}
 					}
-				}
-			});
+				});
+		} else {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$Move),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$mouse$Mouse$ups(_user$project$Main$MouseUp),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 100, _user$project$Main$Tick),
+							_1: {ctor: '[]'}
+						}
+					}
+				});
+		}
 	}
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
