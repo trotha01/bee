@@ -1,6 +1,6 @@
 module Map exposing (..)
 
-import Html exposing (Html, img, div)
+import Html exposing (Html, img, div, text, button)
 import Html.Attributes exposing (src, style)
 import Html.Events exposing (onClick)
 import Window
@@ -10,7 +10,7 @@ import Bee exposing (Bee)
 type Level
     = Home
     | HomeTown
-    | Store
+    | GroceryStore
     | ArtStore
 
 
@@ -31,7 +31,7 @@ view newLevelMsg playAudioMsg mapSize level =
         HomeTown ->
             hometown newLevelMsg playAudioMsg mapSize
 
-        Store ->
+        GroceryStore ->
             groceryStore newLevelMsg playAudioMsg mapSize
 
         ArtStore ->
@@ -84,7 +84,7 @@ storeBuilding : ( Int, Int ) -> NewLevel msg -> Html msg
 storeBuilding ( x, y ) newLevelMsg =
     img
         [ src "imgs/store.png"
-        , onClick (newLevelMsg Store)
+        , onClick (newLevelMsg GroceryStore)
         , style
             [ ( "position", "absolute" )
             , ( "height", "128px" )
@@ -120,7 +120,36 @@ groceryStore : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
 groceryStore newLevelMsg playAudioMsg mapSize =
     div []
         [ exit newLevelMsg HomeTown
+        , (playButton ( 192, 10 ) newLevelMsg GroceryStore)
+        , groceryItem playAudioMsg ( 64, 96 ) "imgs/banana.png" "audio/el_platano.mp3"
+        , groceryItem playAudioMsg ( 192, 96 ) "imgs/milk.png" "audio/leche.mp3"
         ]
+
+
+groceryItem : PlayAudio msg -> ( Int, Int ) -> String -> String -> Html msg
+groceryItem playAudioMsg ( x, y ) image audio =
+    let
+        clickEvent =
+            case playAudioMsg of
+                Nothing ->
+                    []
+
+                Just click ->
+                    [ onClick (click audio) ]
+    in
+        img
+            ([ src image
+             , style
+                [ ( "width", "64px" )
+                , ( "height", "64px" )
+                , ( "position", "absolute" )
+                , ( "left", (toString x) ++ "px" )
+                , ( "top", (toString y) ++ "px" )
+                ]
+             ]
+                ++ clickEvent
+            )
+            []
 
 
 
@@ -135,6 +164,7 @@ artStore newLevelMsg playAudioMsg mapSize =
     in
         div [] <|
             (exit newLevelMsg HomeTown)
+                :: (playButton ( 192, 10 ) newLevelMsg ArtStore)
                 :: List.indexedMap showCircle
                     [ ( "black", "audio/negro.m4a" )
                     , ( "white", "audio/blanco.m4a" )
@@ -174,6 +204,21 @@ colorCircle playAudioMsg ( x, y ) color audio =
 
 
 -- COMMON
+
+
+playButton : ( Int, Int ) -> NewLevel msg -> Level -> Html msg
+playButton ( x, y ) newLevelMsg level =
+    button
+        [ style
+            [ ( "border", "1px solid black" )
+            , ( "position", "absolute" )
+            , ( "left", (toString x) ++ "px" )
+            , ( "top", (toString y) ++ "px" )
+            , ( "width", "128px" )
+            , ( "height", "64px" )
+            ]
+        ]
+        [ text "Play!" ]
 
 
 exit : NewLevel msg -> Level -> Html msg

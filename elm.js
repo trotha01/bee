@@ -9719,18 +9719,73 @@ var _user$project$Map$exit = F2(
 				}
 			});
 	});
-var _user$project$Map$colorCircle = F4(
-	function (playAudioMsg, _p2, color, audio) {
+var _user$project$Map$playButton = F3(
+	function (_p2, newLevelMsg, level) {
 		var _p3 = _p2;
+		return A2(
+			_elm_lang$html$Html$button,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'left',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p3._0),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'top',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p3._1),
+											'px')
+									},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Play!'),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Map$colorCircle = F4(
+	function (playAudioMsg, _p4, color, audio) {
+		var _p5 = _p4;
 		var clickEvent = function () {
-			var _p4 = playAudioMsg;
-			if (_p4.ctor === 'Nothing') {
+			var _p6 = playAudioMsg;
+			if (_p6.ctor === 'Nothing') {
 				return {ctor: '[]'};
 			} else {
 				return {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						_p4._0(audio)),
+						_p6._0(audio)),
 					_1: {ctor: '[]'}
 				};
 			}
@@ -9761,7 +9816,7 @@ var _user$project$Map$colorCircle = F4(
 												_0: 'left',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p3._0),
+													_elm_lang$core$Basics$toString(_p5._0),
 													'px')
 											},
 											_1: {
@@ -9771,7 +9826,7 @@ var _user$project$Map$colorCircle = F4(
 													_0: 'top',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p3._1),
+														_elm_lang$core$Basics$toString(_p5._1),
 														'px')
 												},
 												_1: {
@@ -9794,10 +9849,77 @@ var _user$project$Map$colorCircle = F4(
 				clickEvent),
 			{ctor: '[]'});
 	});
+var _user$project$Map$groceryItem = F4(
+	function (playAudioMsg, _p7, image, audio) {
+		var _p8 = _p7;
+		var clickEvent = function () {
+			var _p9 = playAudioMsg;
+			if (_p9.ctor === 'Nothing') {
+				return {ctor: '[]'};
+			} else {
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_p9._0(audio)),
+					_1: {ctor: '[]'}
+				};
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$img,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src(image),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'width', _1: '64px'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'left',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(_p8._0),
+													'px')
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'top',
+													_1: A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(_p8._1),
+														'px')
+												},
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				},
+				clickEvent),
+			{ctor: '[]'});
+	});
 var _user$project$Map$ArtStore = {ctor: 'ArtStore'};
 var _user$project$Map$artStoreBuilding = F2(
-	function (_p5, newLevelMsg) {
-		var _p6 = _p5;
+	function (_p10, newLevelMsg) {
+		var _p11 = _p10;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -9826,7 +9948,7 @@ var _user$project$Map$artStoreBuilding = F2(
 												_0: 'left',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p6._0),
+													_elm_lang$core$Basics$toString(_p11._0),
 													'px')
 											},
 											_1: {
@@ -9836,7 +9958,7 @@ var _user$project$Map$artStoreBuilding = F2(
 													_0: 'top',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p6._1),
+														_elm_lang$core$Basics$toString(_p11._1),
 														'px')
 												},
 												_1: {ctor: '[]'}
@@ -9851,10 +9973,10 @@ var _user$project$Map$artStoreBuilding = F2(
 			},
 			{ctor: '[]'});
 	});
-var _user$project$Map$Store = {ctor: 'Store'};
+var _user$project$Map$GroceryStore = {ctor: 'GroceryStore'};
 var _user$project$Map$storeBuilding = F2(
-	function (_p7, newLevelMsg) {
-		var _p8 = _p7;
+	function (_p12, newLevelMsg) {
+		var _p13 = _p12;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -9863,7 +9985,7 @@ var _user$project$Map$storeBuilding = F2(
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						newLevelMsg(_user$project$Map$Store)),
+						newLevelMsg(_user$project$Map$GroceryStore)),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$style(
@@ -9883,7 +10005,7 @@ var _user$project$Map$storeBuilding = F2(
 												_0: 'left',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p8._0),
+													_elm_lang$core$Basics$toString(_p13._0),
 													'px')
 											},
 											_1: {
@@ -9893,7 +10015,7 @@ var _user$project$Map$storeBuilding = F2(
 													_0: 'top',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p8._1),
+														_elm_lang$core$Basics$toString(_p13._1),
 														'px')
 												},
 												_1: {ctor: '[]'}
@@ -9936,20 +10058,46 @@ var _user$project$Map$groceryStore = F3(
 			{
 				ctor: '::',
 				_0: A2(_user$project$Map$exit, newLevelMsg, _user$project$Map$HomeTown),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Map$playButton,
+						{ctor: '_Tuple2', _0: 192, _1: 10},
+						newLevelMsg,
+						_user$project$Map$GroceryStore),
+					_1: {
+						ctor: '::',
+						_0: A4(
+							_user$project$Map$groceryItem,
+							playAudioMsg,
+							{ctor: '_Tuple2', _0: 64, _1: 96},
+							'imgs/banana.png',
+							'audio/el_platano.mp3'),
+						_1: {
+							ctor: '::',
+							_0: A4(
+								_user$project$Map$groceryItem,
+								playAudioMsg,
+								{ctor: '_Tuple2', _0: 192, _1: 96},
+								'imgs/milk.png',
+								'audio/leche.mp3'),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
 			});
 	});
 var _user$project$Map$artStore = F3(
 	function (newLevelMsg, playAudioMsg, mapSize) {
 		var showCircle = F2(
-			function (n, _p9) {
-				var _p10 = _p9;
+			function (n, _p14) {
+				var _p15 = _p14;
 				return A4(
 					_user$project$Map$colorCircle,
 					playAudioMsg,
 					{ctor: '_Tuple2', _0: 96 * n, _1: 96},
-					_p10._0,
-					_p10._1);
+					_p15._0,
+					_p15._1);
 			});
 		return A2(
 			_elm_lang$html$Html$div,
@@ -9957,36 +10105,44 @@ var _user$project$Map$artStore = F3(
 			{
 				ctor: '::',
 				_0: A2(_user$project$Map$exit, newLevelMsg, _user$project$Map$HomeTown),
-				_1: A2(
-					_elm_lang$core$List$indexedMap,
-					showCircle,
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'black', _1: 'audio/negro.m4a'},
-						_1: {
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Map$playButton,
+						{ctor: '_Tuple2', _0: 192, _1: 10},
+						newLevelMsg,
+						_user$project$Map$ArtStore),
+					_1: A2(
+						_elm_lang$core$List$indexedMap,
+						showCircle,
+						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'white', _1: 'audio/blanco.m4a'},
+							_0: {ctor: '_Tuple2', _0: 'black', _1: 'audio/negro.m4a'},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'red', _1: 'audio/rojo.m4a'},
+								_0: {ctor: '_Tuple2', _0: 'white', _1: 'audio/blanco.m4a'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'blue', _1: 'audio/azul.m4a'},
+									_0: {ctor: '_Tuple2', _0: 'red', _1: 'audio/rojo.m4a'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'yellow', _1: 'audio/amarillo.m4a'},
-										_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'blue', _1: 'audio/azul.m4a'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'yellow', _1: 'audio/amarillo.m4a'},
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
-						}
-					})
+						})
+				}
 			});
 	});
 var _user$project$Map$Home = {ctor: 'Home'};
 var _user$project$Map$house = F2(
-	function (_p11, newLevelMsg) {
-		var _p12 = _p11;
+	function (_p16, newLevelMsg) {
+		var _p17 = _p16;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -10015,7 +10171,7 @@ var _user$project$Map$house = F2(
 												_0: 'left',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p12._0),
+													_elm_lang$core$Basics$toString(_p17._0),
 													'px')
 											},
 											_1: {
@@ -10025,7 +10181,7 @@ var _user$project$Map$house = F2(
 													_0: 'top',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p12._1),
+														_elm_lang$core$Basics$toString(_p17._1),
 														'px')
 												},
 												_1: {ctor: '[]'}
@@ -10070,13 +10226,13 @@ var _user$project$Map$hometown = F3(
 	});
 var _user$project$Map$view = F4(
 	function (newLevelMsg, playAudioMsg, mapSize, level) {
-		var _p13 = level;
-		switch (_p13.ctor) {
+		var _p18 = level;
+		switch (_p18.ctor) {
 			case 'Home':
 				return A3(_user$project$Map$home, newLevelMsg, playAudioMsg, mapSize);
 			case 'HomeTown':
 				return A3(_user$project$Map$hometown, newLevelMsg, playAudioMsg, mapSize);
-			case 'Store':
+			case 'GroceryStore':
 				return A3(_user$project$Map$groceryStore, newLevelMsg, playAudioMsg, mapSize);
 			default:
 				return A3(_user$project$Map$artStore, newLevelMsg, playAudioMsg, mapSize);
