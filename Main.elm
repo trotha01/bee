@@ -20,6 +20,7 @@ type alias Model =
     , mouse : MouseStatus
     , time : Time
     , window : Window.Size
+    , level : Map.Level
     , stop : Bool
     }
 
@@ -36,6 +37,7 @@ init =
     , time = 0
     , window = { width = 100, height = 100 }
     , stop = False
+    , level = Map.Home
     }
 
 
@@ -48,6 +50,7 @@ type Msg
     | WindowResize Window.Size
     | MouseDown Mouse.Position
     | MouseUp Mouse.Position
+    | NewLevel Map.Level
     | Tick Time
     | PlayAudio String
     | Stop
@@ -63,7 +66,11 @@ update msg model =
             ( { model | window = newSize }, Cmd.none )
 
         PlayAudio file ->
-            ( model, playAudio file )
+            let
+                _ =
+                    Debug.log "play audio" file
+            in
+                ( model, playAudio file )
 
         MouseUp _ ->
             ( { model | mouse = Up }, Cmd.none )
@@ -97,6 +104,9 @@ update msg model =
             , Cmd.none
             )
 
+        NewLevel newLevel ->
+            ( { model | level = newLevel }, Cmd.none )
+
 
 
 -- VIEW
@@ -110,9 +120,7 @@ view model =
             ]
         ]
         [ -- stopButton
-          Map.view model.window
-        , Bee.view (Just PlayAudio) Bee.mama
-        , Bee.view (Just PlayAudio) Bee.papa
+          Map.view NewLevel (Just PlayAudio) model.window model.level
         , Bee.view Nothing model.user
         ]
 
