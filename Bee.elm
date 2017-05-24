@@ -1,9 +1,9 @@
 module Bee exposing (..)
 
+import Animation exposing (Animation, animation, from, speed, to)
 import Html exposing (Html, div, img)
-import Html.Attributes exposing (src, height, width, style)
+import Html.Attributes exposing (height, src, style, width)
 import Html.Events exposing (onClick)
-import Animation exposing (Animation, animation, from, to, speed)
 import Time exposing (Time)
 
 
@@ -36,7 +36,7 @@ view clickAction bee =
         attributesWithEvents =
             case ( clickAction, bee.audio ) of
                 ( Just click, Just audio ) ->
-                    (onClick (click audio)) :: attributes
+                    onClick (click audio) :: attributes
 
                 _ ->
                     attributes
@@ -47,14 +47,14 @@ view clickAction bee =
                     [ -- ( "box-shadow", "3px 3px 1px #ccc" )
                       ( "position", "absolute" )
                     , ( "user-select", "none" )
-                    , ( "left", (toString bee.x) ++ "px" )
-                    , ( "top", (toString bee.y) ++ "px" )
+                    , ( "left", toString bee.x ++ "px" )
+                    , ( "top", toString bee.y ++ "px" )
                     ]
                 ]
     in
-        wrapper
-            [ img attributesWithEvents []
-            ]
+    wrapper
+        [ img attributesWithEvents []
+        ]
 
 
 
@@ -96,7 +96,7 @@ papa =
 
 
 beeVelocity =
-    (0.5)
+    0.5
 
 
 type alias Position =
@@ -114,7 +114,7 @@ animate time bee =
         newY =
             Animation.animate time bee.animY
     in
-        { bee | x = round newX, y = round newY }
+    { bee | x = round newX, y = round newY }
 
 
 animateStart : Time -> Position -> Bee -> Bee
@@ -132,10 +132,10 @@ animateStart startTime toPosition bee =
                 |> to (toFloat toPosition.y)
                 |> speed beeVelocity
     in
-        { bee
-            | animX = animX
-            , animY = animY
-        }
+    { bee
+        | animX = animX
+        , animY = animY
+    }
 
 
 retarget : Time -> Position -> Bee -> Bee
@@ -147,10 +147,10 @@ retarget time toPosition bee =
         animY =
             bee.animY |> Animation.retarget time (toFloat toPosition.y)
     in
-        { bee
-            | animX = animX
-            , animY = animY
-        }
+    { bee
+        | animX = animX
+        , animY = animY
+    }
 
 
 

@@ -1,17 +1,54 @@
 module Map exposing (..)
 
-import Html exposing (Html, img, div, text, button)
+import Bee exposing (Bee)
+import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (src, style)
 import Html.Events exposing (onClick)
+import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
+import Time exposing (Time)
 import Window
-import Bee exposing (Bee)
+
+
+-- MODEL
+
+
+type alias Map =
+    { level : Level
+    , artGame : ArtGame
+    , window : Window.Size
+    }
+
+
+init : Window.Size -> Level -> Map
+init window level =
+    { level = level
+    , artGame = { balls = [] }
+    , window = window
+    }
 
 
 type Level
     = Home
     | HomeTown
     | GroceryStore
-    | ArtStore
+    | ArtStore PlayGame
+
+
+type alias PlayGame =
+    Bool
+
+
+type alias ArtGame =
+    { balls : List MovingBall }
+
+
+type alias MovingBall =
+    { color : String
+    , pos : Vec2
+    , radius : Float
+    , xVelocity : Float
+    , yVelocity : Float
+    }
 
 
 type alias NewLevel msg =
@@ -19,12 +56,222 @@ type alias NewLevel msg =
 
 
 type alias PlayAudio msg =
-    Maybe (String -> msg)
+    String -> msg
 
 
-view : NewLevel msg -> PlayAudio msg -> Window.Size -> Level -> Html msg
-view newLevelMsg playAudioMsg mapSize level =
+newLevel : Level -> Map -> Map
+newLevel level map =
     case level of
+        ArtStore True ->
+            { map | artGame = initArtGame, level = level }
+
+        _ ->
+            { map | level = level }
+
+
+initArtGame : ArtGame
+initArtGame =
+    { balls =
+        [ initMovingBall ( 0, 0 ) "blue"
+        , initMovingBall ( 100, 100 ) "green"
+        ]
+    }
+
+
+initMovingBall : ( Float, Float ) -> String -> MovingBall
+initMovingBall ( x, y ) color =
+    { color = color
+    , radius = 64
+    , pos = vec2 x y
+    , xVelocity = 1
+    , yVelocity = 1
+    }
+
+
+
+-- UPDATE
+
+
+resize : Window.Size -> Map -> Map
+resize window map =
+    { map | window = window }
+
+
+tick : Time -> Map -> Map
+tick timeDelta map =
+    { map
+        | artGame = animateArtGame timeDelta map.window map.artGame
+    }
+
+
+animateArtGame : Time -> Window.Size -> ArtGame -> ArtGame
+animateArtGame timeDiff window artGame =
+    { artGame
+        | balls =
+            artGame.balls
+                -- |> List.map (animateBall timeDiff window)
+                |> collisions
+    }
+
+
+collisions : List MovingBall -> List MovingBall
+collisions balls =
+    balls
+
+
+
+{-
+   initLeftWall windowHeight =
+       { pos = vec2 0 windowHeight / 2
+       , halfHeight = windowHeight / 2
+       , halfWidth = 1
+       }
+
+
+   initRightWall windowWidth windowHeight =
+       { pos = vec2 windowWidth (windowHeight / 2)
+       , halfHeight = windowHeight / 2
+       , halfWidth = 1
+       }
+
+
+   initTopWall windowWidth =
+       { pos = vec2 (windowWidth / 2) 0
+       , halfHeight = 1
+       , halfWidth = windowWidth / 2
+       }
+
+
+   initBottomWall windowWidth windowHeight =
+       { pos = vec2 (windowWidth / 2) windowHeight
+       , halfHeight = 1
+       , halfWidth = windowWidth / 2
+       }
+-}
+{-
+   animateBall : Time -> Window.Size -> MovingBall -> MovingBall
+   animateBall timeDiff window ball =
+       let
+           ( leftWall, rightWall, topWall, bottomWall ) =
+               ( initLeftWall window.height
+               , initRightWall window.width window.height
+               , initTopWall window.width
+               , initBottomWall window.width window.height
+               )
+
+           leftCol =
+               collisionBoxBubble
+                   ( leftWall.pos, vec2 leftWall.halfWidth leftWall.halfHeight )
+                   ( ball.pos, ball.radius )
+
+           x =
+               getX ball.pos
+
+           y =
+               getY ball.pos
+
+           newX =
+               (x + ball.xVelocity * timeDiff)
+                   |> clamp leftWall rightWall
+
+           newY =
+               (y + ball.yVelocity * timeDiff)
+                   |> clamp topWall bottomWall
+
+           newXVelocity =
+               if newX == leftWall || newX == rightWall then
+                   -ball.xVelocity
+               else
+                   ball.xVelocity
+
+           newYVelocity =
+               if newY == topWall || newY == bottomWall then
+                   -ball.yVelocity
+               else
+                   ball.xVelocity
+       in
+           { ball
+               | pos = vec2 newX newY
+               , xVelocity = newXVelocity
+               , yVelocity = newYVelocity
+           }
+-}
+
+
+type alias CollisionResult =
+    { normal : Vec2, penetration : Float }
+
+
+{-| collide a box with a bubble
+
+  - takes position and half-length of box, position and radius of bubble
+
+-}
+collisionBoxBubble : ( Vec2, Vec2 ) -> ( Vec2, Float ) -> CollisionResult
+collisionBoxBubble ( posBox, boxExtents ) ( posBubble, bubbleRadius ) =
+    let
+        dist =
+            Vec2.sub posBubble posBox
+
+        ( dx, dy ) =
+            ( Vec2.getX dist, Vec2.getY dist )
+
+        ( boxX, boxY ) =
+            ( Vec2.getX boxExtents, Vec2.getY boxExtents )
+
+        c =
+            vec2 (clamp -boxX boxX dx) (clamp -boxY boxY dy)
+
+        -- closest point on box to center of bubble
+        ( cx, cy ) =
+            ( Vec2.getX c, Vec2.getY c )
+
+        ( closest, inside ) =
+            if
+                --circle is outside
+                dist /= c
+            then
+                ( c, False )
+            else if
+                -- circle is inside
+                abs dx > abs dy
+            then
+                -- clamp center to closest edge
+                if cx > 0 then
+                    ( vec2 boxX cy, True )
+                else
+                    ( vec2 -boxX cy, True )
+            else if cy > 0 then
+                ( vec2 cx boxY, True )
+            else
+                ( vec2 cx -boxY, True )
+
+        normal =
+            Vec2.sub dist closest
+
+        normalLenSq =
+            Vec2.lengthSquared normal
+    in
+    if normalLenSq > bubbleRadius * bubbleRadius && not inside then
+        CollisionResult (vec2 1 0) 0
+    else
+        let
+            penetration =
+                bubbleRadius + sqrt normalLenSq
+        in
+        if inside then
+            CollisionResult (Vec2.scale -1 (Vec2.normalize normal)) penetration
+        else
+            CollisionResult (Vec2.normalize normal) penetration
+
+
+
+-- VIEW
+
+
+view : NewLevel msg -> PlayAudio msg -> Window.Size -> Map -> Html msg
+view newLevelMsg playAudioMsg mapSize map =
+    case map.level of
         Home ->
             home newLevelMsg playAudioMsg mapSize
 
@@ -34,8 +281,8 @@ view newLevelMsg playAudioMsg mapSize level =
         GroceryStore ->
             groceryStore newLevelMsg playAudioMsg mapSize
 
-        ArtStore ->
-            artStore newLevelMsg playAudioMsg mapSize
+        ArtStore play ->
+            artStore play newLevelMsg playAudioMsg map
 
 
 
@@ -46,8 +293,8 @@ home : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
 home newLevelMsg playAudioMsg mapSize =
     div []
         [ exit newLevelMsg HomeTown
-        , Bee.view playAudioMsg Bee.mama
-        , Bee.view playAudioMsg Bee.papa
+        , Bee.view (Just playAudioMsg) Bee.mama
+        , Bee.view (Just playAudioMsg) Bee.papa
         ]
 
 
@@ -73,8 +320,8 @@ house ( x, y ) newLevelMsg =
             [ ( "position", "absolute" )
             , ( "height", "128px" )
             , ( "width", "128px" )
-            , ( "left", (toString x) ++ "px" )
-            , ( "top", (toString y) ++ "px" )
+            , ( "left", toString x ++ "px" )
+            , ( "top", toString y ++ "px" )
             ]
         ]
         []
@@ -82,34 +329,64 @@ house ( x, y ) newLevelMsg =
 
 storeBuilding : ( Int, Int ) -> NewLevel msg -> Html msg
 storeBuilding ( x, y ) newLevelMsg =
-    img
-        [ src "imgs/store.png"
-        , onClick (newLevelMsg GroceryStore)
-        , style
-            [ ( "position", "absolute" )
-            , ( "height", "128px" )
-            , ( "width", "128px" )
-            , ( "left", (toString x) ++ "px" )
-            , ( "top", (toString y) ++ "px" )
+    div []
+        [ img
+            [ src "imgs/store.png"
+            , onClick (newLevelMsg GroceryStore)
+            , style
+                [ ( "position", "absolute" )
+                , ( "height", "128px" )
+                , ( "width", "128px" )
+                , ( "left", toString x ++ "px" )
+                , ( "top", toString y ++ "px" )
+                ]
             ]
+            []
+        , div
+            [ style
+                [ ( "position", "absolute" )
+                , ( "height", "27px" )
+                , ( "width", "112px" )
+                , ( "text-align", "center" )
+                , ( "border", "1px solid black" )
+                , ( "background-color", "white" )
+                , ( "left", toString (x + 7) ++ "px" )
+                , ( "top", toString (y + 10) ++ "px" )
+                ]
+            ]
+            [ text "Los Comestibles" ]
         ]
-        []
 
 
 artStoreBuilding : ( Int, Int ) -> NewLevel msg -> Html msg
 artStoreBuilding ( x, y ) newLevelMsg =
-    img
-        [ src "imgs/store.png"
-        , onClick (newLevelMsg ArtStore)
-        , style
-            [ ( "position", "absolute" )
-            , ( "height", "128px" )
-            , ( "width", "128px" )
-            , ( "left", (toString x) ++ "px" )
-            , ( "top", (toString y) ++ "px" )
+    div []
+        [ img
+            [ src "imgs/store.png"
+            , onClick (newLevelMsg (ArtStore False))
+            , style
+                [ ( "position", "absolute" )
+                , ( "height", "128px" )
+                , ( "width", "128px" )
+                , ( "left", toString x ++ "px" )
+                , ( "top", toString y ++ "px" )
+                ]
             ]
+            []
+        , div
+            [ style
+                [ ( "position", "absolute" )
+                , ( "height", "27px" )
+                , ( "width", "112px" )
+                , ( "text-align", "center" )
+                , ( "border", "1px solid black" )
+                , ( "background-color", "white" )
+                , ( "left", toString (x + 7) ++ "px" )
+                , ( "top", toString (y + 10) ++ "px" )
+                ]
+            ]
+            [ text "El Arte" ]
         ]
-        []
 
 
 
@@ -120,7 +397,7 @@ groceryStore : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
 groceryStore newLevelMsg playAudioMsg mapSize =
     div []
         [ exit newLevelMsg HomeTown
-        , (playButton ( 192, 10 ) newLevelMsg GroceryStore)
+        , playButton ( 192, 10 ) newLevelMsg GroceryStore
         , groceryItem playAudioMsg ( 64, 96 ) "imgs/banana.png" "audio/el_platano.mp3"
         , groceryItem playAudioMsg ( 192, 96 ) "imgs/milk.png" "audio/leche.mp3"
         ]
@@ -128,78 +405,90 @@ groceryStore newLevelMsg playAudioMsg mapSize =
 
 groceryItem : PlayAudio msg -> ( Int, Int ) -> String -> String -> Html msg
 groceryItem playAudioMsg ( x, y ) image audio =
-    let
-        clickEvent =
-            case playAudioMsg of
-                Nothing ->
-                    []
-
-                Just click ->
-                    [ onClick (click audio) ]
-    in
-        img
-            ([ src image
-             , style
-                [ ( "width", "64px" )
-                , ( "height", "64px" )
-                , ( "position", "absolute" )
-                , ( "left", (toString x) ++ "px" )
-                , ( "top", (toString y) ++ "px" )
-                ]
-             ]
-                ++ clickEvent
-            )
-            []
+    img
+        [ src image
+        , style
+            [ ( "width", "64px" )
+            , ( "height", "64px" )
+            , ( "position", "absolute" )
+            , ( "left", toString x ++ "px" )
+            , ( "top", toString y ++ "px" )
+            ]
+        , onClick (playAudioMsg audio)
+        ]
+        []
 
 
 
 -- ART STORE
 
 
-artStore : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
-artStore newLevelMsg playAudioMsg mapSize =
-    let
-        showCircle n ( color, audio ) =
-            colorCircle playAudioMsg ( 96 * n, 96 ) color audio
-    in
-        div [] <|
-            (exit newLevelMsg HomeTown)
-                :: (playButton ( 192, 10 ) newLevelMsg ArtStore)
-                :: List.indexedMap showCircle
-                    [ ( "black", "audio/negro.m4a" )
-                    , ( "white", "audio/blanco.m4a" )
-                    , ( "red", "audio/rojo.m4a" )
-                    , ( "blue", "audio/azul.m4a" )
-                    , ( "yellow", "audio/amarillo.m4a" )
-                    ]
+artStore : PlayGame -> NewLevel msg -> PlayAudio msg -> Map -> Html msg
+artStore play newLevelMsg playAudioMsg map =
+    case play of
+        True ->
+            colorGame newLevelMsg playAudioMsg map.artGame
+
+        False ->
+            let
+                showCircle n ( color, audio ) =
+                    colorCircle playAudioMsg ( 96 * n, 96 ) color audio
+            in
+            div [] <|
+                exit newLevelMsg HomeTown
+                    :: playButton ( 192, 10 ) newLevelMsg (ArtStore True)
+                    :: List.indexedMap showCircle
+                        [ ( "black", "audio/negro.m4a" )
+                        , ( "white", "audio/blanco.m4a" )
+                        , ( "red", "audio/rojo.m4a" )
+                        , ( "blue", "audio/azul.m4a" )
+                        , ( "yellow", "audio/amarillo.m4a" )
+                        ]
 
 
 colorCircle : PlayAudio msg -> ( Int, Int ) -> String -> String -> Html msg
 colorCircle playAudioMsg ( x, y ) color audio =
-    let
-        clickEvent =
-            case playAudioMsg of
-                Nothing ->
-                    []
+    div
+        [ style
+            [ ( "border-radius", "50%" )
+            , ( "background-color", color )
+            , ( "border", "1px solid black" )
+            , ( "position", "absolute" )
+            , ( "left", toString x ++ "px" )
+            , ( "top", toString y ++ "px" )
+            , ( "width", "64px" )
+            , ( "height", "64px" )
+            ]
+        , onClick (playAudioMsg audio)
+        ]
+        []
 
-                Just click ->
-                    [ onClick (click audio) ]
-    in
-        div
-            ([ style
-                [ ( "border-radius", "50%" )
-                , ( "background-color", color )
-                , ( "border", "1px solid black" )
-                , ( "position", "absolute" )
-                , ( "left", (toString x) ++ "px" )
-                , ( "top", (toString y) ++ "px" )
-                , ( "width", "64px" )
-                , ( "height", "64px" )
-                ]
-             ]
-                ++ clickEvent
-            )
-            []
+
+colorGame : NewLevel msg -> PlayAudio msg -> ArtGame -> Html msg
+colorGame newLevelMsg playAudioMsg artGame =
+    div []
+        ([ backButton ( 0, 0 ) newLevelMsg (ArtStore False)
+         , text "Color Game"
+         ]
+            ++ List.map colorBall artGame.balls
+        )
+
+
+colorBall : MovingBall -> Html msg
+colorBall ball =
+    div
+        [ style
+            [ ( "border-radius", "50%" )
+            , ( "background-color", ball.color )
+            , ( "border", "1px solid black" )
+            , ( "position", "absolute" )
+            , ( "left", (toString <| getX ball.pos) ++ "px" )
+            , ( "top", (toString <| getY ball.pos) ++ "px" )
+            , ( "width", toString ball.radius ++ "px" )
+            , ( "height", toString ball.radius ++ "px" )
+            ]
+        ]
+        []
 
 
 
@@ -212,13 +501,30 @@ playButton ( x, y ) newLevelMsg level =
         [ style
             [ ( "border", "1px solid black" )
             , ( "position", "absolute" )
-            , ( "left", (toString x) ++ "px" )
-            , ( "top", (toString y) ++ "px" )
+            , ( "left", toString x ++ "px" )
+            , ( "top", toString y ++ "px" )
             , ( "width", "128px" )
             , ( "height", "64px" )
             ]
+        , onClick (newLevelMsg level)
         ]
         [ text "Play!" ]
+
+
+backButton : ( Int, Int ) -> NewLevel msg -> Level -> Html msg
+backButton ( x, y ) newLevelMsg level =
+    button
+        [ style
+            [ ( "border", "1px solid black" )
+            , ( "position", "absolute" )
+            , ( "left", toString x ++ "px" )
+            , ( "top", toString y ++ "px" )
+            , ( "width", "128px" )
+            , ( "height", "64px" )
+            ]
+        , onClick (newLevelMsg level)
+        ]
+        [ text "Back" ]
 
 
 exit : NewLevel msg -> Level -> Html msg
@@ -233,7 +539,7 @@ exit newLevelMsg level =
 
 tileCountFromPixels : Int -> Int
 tileCountFromPixels pixels =
-    (round <| (toFloat pixels) / 32)
+    round <| toFloat pixels / 32
 
 
 row : Int -> Int -> List (Html msg)
@@ -248,8 +554,8 @@ tile ( x, y ) =
         , style
             [ ( "position", "absolute" )
             , ( "clip", "rect(32px 64px 64px 32px)" )
-            , ( "left", (toString (x - 32)) ++ "px" )
-            , ( "top", (toString (y - 32)) ++ "px" )
+            , ( "left", toString (x - 32) ++ "px" )
+            , ( "top", toString (y - 32) ++ "px" )
             ]
         ]
         []

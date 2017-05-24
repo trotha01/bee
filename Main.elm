@@ -1,15 +1,16 @@
 port module Main exposing (..)
 
 import Animation exposing (..)
-import Html exposing (Html, div, img, button, text)
-import Html.Attributes exposing (src, height, width, style)
+import AnimationFrame
+import Bee exposing (Bee)
+import Html exposing (Html, button, div, img, text)
+import Html.Attributes exposing (height, src, style, width)
 import Html.Events exposing (onClick)
+import Map exposing (Map)
 import Mouse
 import Task
 import Time exposing (Time)
 import Window
-import Bee exposing (Bee)
-import Map
 
 
 -- MODEL
@@ -20,7 +21,7 @@ type alias Model =
     , mouse : MouseStatus
     , time : Time
     , window : Window.Size
-    , level : Map.Level
+    , map : Map
     , stop : Bool
     }
 
@@ -37,7 +38,7 @@ init =
     , time = 0
     , window = { width = 100, height = 100 }
     , stop = False
-    , level = Map.Home
+    , map = Map.init { width = 100, height = 100 } Map.Home
     }
 
 
@@ -63,14 +64,15 @@ update msg model =
             ( { model | stop = not model.stop }, Cmd.none )
 
         WindowResize newSize ->
-            ( { model | window = newSize }, Cmd.none )
+            ( { model
+                | window = newSize
+                , map = Map.resize newSize model.map
+              }
+            , Cmd.none
+            )
 
         PlayAudio file ->
-            let
-                _ =
-                    Debug.log "play audio" file
-            in
-                ( model, playAudio file )
+            ( model, playAudio file )
 
         MouseUp _ ->
             ( { model | mouse = Up }, Cmd.none )
@@ -96,16 +98,17 @@ update msg model =
                     , Cmd.none
                     )
 
-        Tick time ->
+        Tick timeDelta ->
             ( { model
-                | user = model.user |> Bee.animate time
-                , time = time
+                | user = model.user |> Bee.animate model.time
+                , map = Map.tick timeDelta model.map
+                , time = model.time + timeDelta
               }
             , Cmd.none
             )
 
         NewLevel newLevel ->
-            ( { model | level = newLevel }, Cmd.none )
+            ( { model | map = Map.newLevel newLevel model.map }, Cmd.none )
 
 
 
@@ -120,9 +123,14 @@ view model =
             ]
         ]
         [ -- stopButton
-          Map.view NewLevel (Just PlayAudio) model.window model.level
+          mapView model.window model.map
         , Bee.view Nothing model.user
         ]
+
+
+mapView : Window.Size -> Map -> Html Msg
+mapView =
+    Map.view NewLevel PlayAudio
 
 
 stopButton =
@@ -142,7 +150,9 @@ subscriptions model =
             Up ->
                 Sub.batch
                     [ Mouse.downs MouseDown
-                    , Time.every (Time.millisecond * 100) Tick
+
+                    -- , Time.every (Time.millisecond * 100) Tick
+                    , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
 
@@ -150,7 +160,9 @@ subscriptions model =
                 Sub.batch
                     [ Mouse.moves Move
                     , Mouse.ups MouseUp
-                    , Time.every (Time.millisecond * 100) Tick
+
+                    -- , Time.every (Time.millisecond * 100) Tick
+                    , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
 
