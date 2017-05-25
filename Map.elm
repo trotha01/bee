@@ -46,8 +46,12 @@ type alias MovingBall =
     { color : String
     , pos : Vec2
     , radius : Float
-    , xVelocity : Float
-    , yVelocity : Float
+    , velocity : Vec2
+
+    {-
+       , xVelocity : Float
+       , yVelocity : Float
+    -}
     }
 
 
@@ -83,10 +87,9 @@ initArtGame =
 initMovingBall : ( Float, Float ) -> ( Float, Float ) -> String -> MovingBall
 initMovingBall ( x, y ) ( vx, vy ) color =
     { color = color
-    , radius = 64
+    , radius = 32
     , pos = vec2 x y
-    , xVelocity = vx
-    , yVelocity = vy
+    , velocity = vec2 vx vy
     }
 
 
@@ -118,7 +121,107 @@ animateArtGame timeDiff window artGame =
 
 collisions : List MovingBall -> List MovingBall
 collisions balls =
-    balls
+    collide [] balls
+
+
+collide : List MovingBall -> List MovingBall -> List MovingBall
+collide acc bodies =
+    case bodies of
+        [] ->
+            acc
+
+        h :: t ->
+            case collideWith h t [] of
+                [] ->
+                    []
+
+                h1 :: t1 ->
+                    collide (h1 :: acc) t1
+
+
+collideWith : MovingBall -> List MovingBall -> List MovingBall -> List MovingBall
+collideWith a0 bodies acc =
+    case bodies of
+        [] ->
+            a0 :: acc
+
+        b0 :: bs ->
+            let
+                collisionResult =
+                    collision a0 b0
+
+                ( a1, b1 ) =
+                    resolveCollision collisionResult a0 b0
+            in
+            collideWith a1 bs (b1 :: acc)
+
+
+
+-- figure out what collision resolution to use
+
+
+collision : MovingBall -> MovingBall -> CollisionResult
+collision body0 body1 =
+    let
+        b0b1 =
+            Vec2.sub body1.pos body0.pos
+    in
+    collisionBubbleBubble b0b1 body0.radius body1.radius
+
+
+
+-- calculate collision normal, penetration depth of a collision among bubbles
+-- takes distance vector b0b1 and the bubble radii as argument
+
+
+collisionBubbleBubble : Vec2 -> Float -> Float -> CollisionResult
+collisionBubbleBubble b0b1 radius0 radius1 =
+    let
+        radiusb0b1 =
+            radius0 + radius1
+
+        distanceSq =
+            Vec2.lengthSquared b0b1
+
+        -- simple optimization: doesn't compute sqrt unless necessary
+    in
+    if distanceSq == 0 then
+        CollisionResult (vec2 1 0) radius0
+        -- same position, arbitrary normal
+    else if distanceSq >= radiusb0b1 * radiusb0b1 then
+        CollisionResult (vec2 1 0) 0
+        -- no intersection, arbitrary normal
+    else
+        let
+            d =
+                sqrt distanceSq
+        in
+        CollisionResult (Vec2.scale (1 / d) b0b1) (radiusb0b1 - d)
+
+
+resolveCollision : CollisionResult -> MovingBall -> MovingBall -> ( MovingBall, MovingBall )
+resolveCollision { normal, penetration } b0 b1 =
+    let
+        relativeVelocity =
+            Vec2.sub b1.velocity b0.velocity
+
+        velocityAlongNormal =
+            Vec2.dot relativeVelocity normal
+    in
+    if penetration == 0 || velocityAlongNormal > 0 then
+        ( b0, b1 )
+        -- no collision or velocities separating
+    else
+        let
+            -- impulse scalar
+            impulse =
+                normal
+
+            -- impulse vector
+        in
+        ( { b0 | velocity = Vec2.sub b0.velocity impulse }
+        , { b1 | velocity = Vec2.add b1.velocity impulse }
+        )
 
 
 initLeftWall windowHeight =
@@ -174,29 +277,28 @@ animateBall timeDiff window ball =
             getY ball.pos
 
         newX =
-            (x + ball.xVelocity * timeDiff)
+            (x + getX ball.velocity * timeDiff)
                 |> clamp (getX leftWall.pos) (getX rightWall.pos)
 
         newY =
-            (y + ball.yVelocity * timeDiff)
+            (y + getY ball.velocity * timeDiff)
                 |> clamp (getY topWall.pos) (getY bottomWall.pos)
 
         newXVelocity =
             if newX == getX leftWall.pos || newX == getX rightWall.pos then
-                -ball.xVelocity
+                -(getX ball.velocity)
             else
-                ball.xVelocity
+                getX ball.velocity
 
         newYVelocity =
             if newY == getY topWall.pos || newY == getY bottomWall.pos then
-                -ball.yVelocity
+                -(getY ball.velocity)
             else
-                ball.yVelocity
+                getY ball.velocity
     in
     { ball
         | pos = vec2 newX newY
-        , xVelocity = newXVelocity
-        , yVelocity = newYVelocity
+        , velocity = vec2 newXVelocity newYVelocity
     }
 
 
@@ -486,8 +588,8 @@ colorBall ball =
             , ( "position", "absolute" )
             , ( "left", (toString <| getX ball.pos) ++ "px" )
             , ( "top", (toString <| getY ball.pos) ++ "px" )
-            , ( "width", toString ball.radius ++ "px" )
-            , ( "height", toString ball.radius ++ "px" )
+            , ( "width", toString (ball.radius * 2) ++ "px" )
+            , ( "height", toString (ball.radius * 2) ++ "px" )
             ]
         ]
         []

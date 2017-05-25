@@ -10042,8 +10042,8 @@ var _user$project$Map$exit = F2(
 				}
 			});
 	});
-var _user$project$Map$pauseButton = F2(
-	function (_p2, pauseMsg) {
+var _user$project$Map$backButton = F3(
+	function (_p2, newLevelMsg, level) {
 		var _p3 = _p2;
 		return A2(
 			_elm_lang$html$Html$button,
@@ -10089,15 +10089,20 @@ var _user$project$Map$pauseButton = F2(
 							}
 						}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						newLevelMsg(level)),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Pause'),
+				_0: _elm_lang$html$Html$text('Back'),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Map$backButton = F3(
+var _user$project$Map$playButton = F3(
 	function (_p4, newLevelMsg, level) {
 		var _p5 = _p4;
 		return A2(
@@ -10129,66 +10134,6 @@ var _user$project$Map$backButton = F3(
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
 											_elm_lang$core$Basics$toString(_p5._1),
-											'px')
-									},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						newLevelMsg(level)),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Back'),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Map$playButton = F3(
-	function (_p6, newLevelMsg, level) {
-		var _p7 = _p6;
-		return A2(
-			_elm_lang$html$Html$button,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'left',
-									_1: A2(
-										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p7._0),
-										'px')
-								},
-								_1: {
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'top',
-										_1: A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p7._1),
 											'px')
 									},
 									_1: {
@@ -10264,7 +10209,7 @@ var _user$project$Map$colorBall = function (ball) {
 												_0: 'width',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(ball.radius),
+													_elm_lang$core$Basics$toString(ball.radius * 2),
 													'px')
 											},
 											_1: {
@@ -10274,7 +10219,7 @@ var _user$project$Map$colorBall = function (ball) {
 													_0: 'height',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(ball.radius),
+														_elm_lang$core$Basics$toString(ball.radius * 2),
 														'px')
 												},
 												_1: {ctor: '[]'}
@@ -10291,8 +10236,8 @@ var _user$project$Map$colorBall = function (ball) {
 		{ctor: '[]'});
 };
 var _user$project$Map$colorCircle = F4(
-	function (playAudioMsg, _p8, color, audio) {
-		var _p9 = _p8;
+	function (playAudioMsg, _p6, color, audio) {
+		var _p7 = _p6;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10317,7 +10262,7 @@ var _user$project$Map$colorCircle = F4(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p9._0),
+												_elm_lang$core$Basics$toString(_p7._0),
 												'px')
 										},
 										_1: {
@@ -10327,7 +10272,7 @@ var _user$project$Map$colorCircle = F4(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p9._1),
+													_elm_lang$core$Basics$toString(_p7._1),
 													'px')
 											},
 											_1: {
@@ -10355,8 +10300,8 @@ var _user$project$Map$colorCircle = F4(
 			{ctor: '[]'});
 	});
 var _user$project$Map$groceryItem = F4(
-	function (playAudioMsg, _p10, image, audio) {
-		var _p11 = _p10;
+	function (playAudioMsg, _p8, image, audio) {
+		var _p9 = _p8;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -10381,7 +10326,7 @@ var _user$project$Map$groceryItem = F4(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p11._0),
+												_elm_lang$core$Basics$toString(_p9._0),
 												'px')
 										},
 										_1: {
@@ -10391,7 +10336,7 @@ var _user$project$Map$groceryItem = F4(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p11._1),
+													_elm_lang$core$Basics$toString(_p9._1),
 													'px')
 											},
 											_1: {ctor: '[]'}
@@ -10440,47 +10385,87 @@ var _user$project$Map$initLeftWall = function (windowHeight) {
 		halfWidth: 1
 	};
 };
-var _user$project$Map$collisions = function (balls) {
-	return balls;
-};
+var _user$project$Map$resolveCollision = F3(
+	function (_p10, b0, b1) {
+		var _p11 = _p10;
+		var _p12 = _p11.normal;
+		var relativeVelocity = A2(_elm_community$linear_algebra$Math_Vector2$sub, b1.velocity, b0.velocity);
+		var velocityAlongNormal = A2(_elm_community$linear_algebra$Math_Vector2$dot, relativeVelocity, _p12);
+		if (_elm_lang$core$Native_Utils.eq(_p11.penetration, 0) || (_elm_lang$core$Native_Utils.cmp(velocityAlongNormal, 0) > 0)) {
+			return {ctor: '_Tuple2', _0: b0, _1: b1};
+		} else {
+			var impulse = _p12;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					b0,
+					{
+						velocity: A2(_elm_community$linear_algebra$Math_Vector2$sub, b0.velocity, impulse)
+					}),
+				_1: _elm_lang$core$Native_Utils.update(
+					b1,
+					{
+						velocity: A2(_elm_community$linear_algebra$Math_Vector2$add, b1.velocity, impulse)
+					})
+			};
+		}
+	});
 var _user$project$Map$resize = F2(
 	function (window, map) {
 		return _elm_lang$core$Native_Utils.update(
 			map,
 			{window: window});
 	});
-var _user$project$Map$initMovingBall = F2(
-	function (_p12, color) {
-		var _p13 = _p12;
+var _user$project$Map$initMovingBall = F3(
+	function (_p14, _p13, color) {
+		var _p15 = _p14;
+		var _p16 = _p13;
 		return {
 			color: color,
-			radius: 64,
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p13._0, _p13._1),
-			xVelocity: 1,
-			yVelocity: 1
+			radius: 32,
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p15._0, _p15._1),
+			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p16._0, _p16._1)
 		};
 	});
 var _user$project$Map$initArtGame = {
 	balls: {
 		ctor: '::',
-		_0: A2(
+		_0: A3(
 			_user$project$Map$initMovingBall,
 			{ctor: '_Tuple2', _0: 0, _1: 0},
+			{ctor: '_Tuple2', _0: 1, _1: 1},
 			'blue'),
 		_1: {
 			ctor: '::',
-			_0: A2(
+			_0: A3(
 				_user$project$Map$initMovingBall,
-				{ctor: '_Tuple2', _0: 100, _1: 100},
+				{ctor: '_Tuple2', _0: 100, _1: 70},
+				{ctor: '_Tuple2', _0: -1, _1: 1},
 				'green'),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A3(
+					_user$project$Map$initMovingBall,
+					{ctor: '_Tuple2', _0: 70, _1: 170},
+					{ctor: '_Tuple2', _0: -1, _1: -1},
+					'yellow'),
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Map$initMovingBall,
+						{ctor: '_Tuple2', _0: 200, _1: 170},
+						{ctor: '_Tuple2', _0: 1, _1: -1},
+						'red'),
+					_1: {ctor: '[]'}
+				}
+			}
 		}
 	}
 };
 var _user$project$Map$newLevel = F2(
 	function (level, map) {
-		var _p14 = level;
-		if ((_p14.ctor === 'ArtStore') && (_p14._0 === true)) {
+		var _p17 = level;
+		if ((_p17.ctor === 'ArtStore') && (_p17._0 === true)) {
 			return _elm_lang$core$Native_Utils.update(
 				map,
 				{artGame: _user$project$Map$initArtGame, level: level});
@@ -10507,47 +10492,130 @@ var _user$project$Map$Map = F3(
 var _user$project$Map$ArtGame = function (a) {
 	return {balls: a};
 };
-var _user$project$Map$MovingBall = F5(
-	function (a, b, c, d, e) {
-		return {color: a, pos: b, radius: c, xVelocity: d, yVelocity: e};
+var _user$project$Map$MovingBall = F4(
+	function (a, b, c, d) {
+		return {color: a, pos: b, radius: c, velocity: d};
 	});
 var _user$project$Map$CollisionResult = F2(
 	function (a, b) {
 		return {normal: a, penetration: b};
 	});
+var _user$project$Map$collisionBubbleBubble = F3(
+	function (b0b1, radius0, radius1) {
+		var distanceSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(b0b1);
+		var radiusb0b1 = radius0 + radius1;
+		if (_elm_lang$core$Native_Utils.eq(distanceSq, 0)) {
+			return A2(
+				_user$project$Map$CollisionResult,
+				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
+				radius0);
+		} else {
+			if (_elm_lang$core$Native_Utils.cmp(distanceSq, radiusb0b1 * radiusb0b1) > -1) {
+				return A2(
+					_user$project$Map$CollisionResult,
+					A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
+					0);
+			} else {
+				var d = _elm_lang$core$Basics$sqrt(distanceSq);
+				return A2(
+					_user$project$Map$CollisionResult,
+					A2(_elm_community$linear_algebra$Math_Vector2$scale, 1 / d, b0b1),
+					radiusb0b1 - d);
+			}
+		}
+	});
+var _user$project$Map$collision = F2(
+	function (body0, body1) {
+		var b0b1 = A2(_elm_community$linear_algebra$Math_Vector2$sub, body1.pos, body0.pos);
+		return A3(_user$project$Map$collisionBubbleBubble, b0b1, body0.radius, body1.radius);
+	});
+var _user$project$Map$collideWith = F3(
+	function (a0, bodies, acc) {
+		collideWith:
+		while (true) {
+			var _p18 = bodies;
+			if (_p18.ctor === '[]') {
+				return {ctor: '::', _0: a0, _1: acc};
+			} else {
+				var _p20 = _p18._0;
+				var collisionResult = A2(_user$project$Map$collision, a0, _p20);
+				var _p19 = A3(_user$project$Map$resolveCollision, collisionResult, a0, _p20);
+				var a1 = _p19._0;
+				var b1 = _p19._1;
+				var _v10 = a1,
+					_v11 = _p18._1,
+					_v12 = {ctor: '::', _0: b1, _1: acc};
+				a0 = _v10;
+				bodies = _v11;
+				acc = _v12;
+				continue collideWith;
+			}
+		}
+	});
+var _user$project$Map$collide = F2(
+	function (acc, bodies) {
+		collide:
+		while (true) {
+			var _p21 = bodies;
+			if (_p21.ctor === '[]') {
+				return acc;
+			} else {
+				var _p22 = A3(
+					_user$project$Map$collideWith,
+					_p21._0,
+					_p21._1,
+					{ctor: '[]'});
+				if (_p22.ctor === '[]') {
+					return {ctor: '[]'};
+				} else {
+					var _v15 = {ctor: '::', _0: _p22._0, _1: acc},
+						_v16 = _p22._1;
+					acc = _v15;
+					bodies = _v16;
+					continue collide;
+				}
+			}
+		}
+	});
+var _user$project$Map$collisions = function (balls) {
+	return A2(
+		_user$project$Map$collide,
+		{ctor: '[]'},
+		balls);
+};
 var _user$project$Map$collisionBoxBubble = F2(
-	function (_p16, _p15) {
-		var _p17 = _p16;
-		var _p24 = _p17._1;
-		var _p18 = _p15;
-		var _p23 = _p18._1;
-		var _p19 = {
+	function (_p24, _p23) {
+		var _p25 = _p24;
+		var _p32 = _p25._1;
+		var _p26 = _p23;
+		var _p31 = _p26._1;
+		var _p27 = {
 			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p24),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p24)
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p32),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p32)
 		};
-		var boxX = _p19._0;
-		var boxY = _p19._1;
-		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p18._0, _p17._0);
-		var _p20 = {
+		var boxX = _p27._0;
+		var boxY = _p27._1;
+		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p26._0, _p25._0);
+		var _p28 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(dist),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(dist)
 		};
-		var dx = _p20._0;
-		var dy = _p20._1;
+		var dx = _p28._0;
+		var dy = _p28._1;
 		var c = A2(
 			_elm_community$linear_algebra$Math_Vector2$vec2,
 			A3(_elm_lang$core$Basics$clamp, 0 - boxX, boxX, dx),
 			A3(_elm_lang$core$Basics$clamp, 0 - boxY, boxY, dy));
-		var _p21 = {
+		var _p29 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(c),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(c)
 		};
-		var cx = _p21._0;
-		var cy = _p21._1;
-		var _p22 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
+		var cx = _p29._0;
+		var cy = _p29._1;
+		var _p30 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
 			_elm_lang$core$Basics$abs(dx),
 			_elm_lang$core$Basics$abs(dy)) > 0) ? ((_elm_lang$core$Native_Utils.cmp(cx, 0) > 0) ? {
 			ctor: '_Tuple2',
@@ -10566,17 +10634,17 @@ var _user$project$Map$collisionBoxBubble = F2(
 			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, 0 - boxY),
 			_1: true
 		}));
-		var closest = _p22._0;
-		var inside = _p22._1;
+		var closest = _p30._0;
+		var inside = _p30._1;
 		var normal = A2(_elm_community$linear_algebra$Math_Vector2$sub, dist, closest);
 		var normalLenSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(normal);
-		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p23 * _p23) > 0) && (!inside)) {
+		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p31 * _p31) > 0) && (!inside)) {
 			return A2(
 				_user$project$Map$CollisionResult,
 				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
 				0);
 		} else {
-			var penetration = _p23 + _elm_lang$core$Basics$sqrt(normalLenSq);
+			var penetration = _p31 + _elm_lang$core$Basics$sqrt(normalLenSq);
 			return inside ? A2(
 				_user$project$Map$CollisionResult,
 				A2(
@@ -10593,24 +10661,24 @@ var _user$project$Map$animateBall = F3(
 	function (timeDiff, window, ball) {
 		var y = _elm_community$linear_algebra$Math_Vector2$getY(ball.pos);
 		var x = _elm_community$linear_algebra$Math_Vector2$getX(ball.pos);
-		var _p25 = {
+		var _p33 = {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Basics$toFloat(window.width),
 			_1: _elm_lang$core$Basics$toFloat(window.height)
 		};
-		var width = _p25._0;
-		var height = _p25._1;
-		var _p26 = {
+		var width = _p33._0;
+		var height = _p33._1;
+		var _p34 = {
 			ctor: '_Tuple4',
 			_0: _user$project$Map$initLeftWall(height),
 			_1: A2(_user$project$Map$initRightWall, width, height),
 			_2: _user$project$Map$initTopWall(width),
 			_3: A2(_user$project$Map$initBottomWall, width, height)
 		};
-		var leftWall = _p26._0;
-		var rightWall = _p26._1;
-		var topWall = _p26._2;
-		var bottomWall = _p26._3;
+		var leftWall = _p34._0;
+		var rightWall = _p34._1;
+		var topWall = _p34._2;
+		var bottomWall = _p34._3;
 		var leftCol = A2(
 			_user$project$Map$collisionBoxBubble,
 			{
@@ -10623,46 +10691,27 @@ var _user$project$Map$animateBall = F3(
 			_elm_lang$core$Basics$clamp,
 			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos),
 			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos),
-			x + (ball.xVelocity * timeDiff));
+			x + (_elm_community$linear_algebra$Math_Vector2$getX(ball.velocity) * timeDiff));
 		var newY = A3(
 			_elm_lang$core$Basics$clamp,
 			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos),
 			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos),
-			y + (ball.yVelocity * timeDiff));
+			y + (_elm_community$linear_algebra$Math_Vector2$getY(ball.velocity) * timeDiff));
 		var newXVelocity = (_elm_lang$core$Native_Utils.eq(
 			newX,
 			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos)) || _elm_lang$core$Native_Utils.eq(
 			newX,
-			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos))) ? (0 - ball.xVelocity) : ball.xVelocity;
-		var newYVelocity = function () {
-			if (_elm_lang$core$Native_Utils.eq(
-				newY,
-				_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos))) {
-				var _p27 = A2(
-					_elm_lang$core$Debug$log,
-					'top collistion',
-					_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos));
-				return 0 - ball.yVelocity;
-			} else {
-				if (_elm_lang$core$Native_Utils.eq(
-					newY,
-					_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos))) {
-					var _p28 = A2(
-						_elm_lang$core$Debug$log,
-						'bottom collistion',
-						_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos));
-					return 0 - ball.yVelocity;
-				} else {
-					return ball.xVelocity;
-				}
-			}
-		}();
+			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity);
+		var newYVelocity = (_elm_lang$core$Native_Utils.eq(
+			newY,
+			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos)) || _elm_lang$core$Native_Utils.eq(
+			newY,
+			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity);
 		return _elm_lang$core$Native_Utils.update(
 			ball,
 			{
 				pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newX, newY),
-				xVelocity: newXVelocity,
-				yVelocity: newYVelocity
+				velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newXVelocity, newYVelocity)
 			});
 	});
 var _user$project$Map$animateArtGame = F3(
@@ -10689,10 +10738,10 @@ var _user$project$Map$ArtStore = function (a) {
 	return {ctor: 'ArtStore', _0: a};
 };
 var _user$project$Map$artStoreBuilding = F2(
-	function (_p29, newLevelMsg) {
-		var _p30 = _p29;
-		var _p32 = _p30._1;
-		var _p31 = _p30._0;
+	function (_p35, newLevelMsg) {
+		var _p36 = _p35;
+		var _p38 = _p36._1;
+		var _p37 = _p36._0;
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -10727,7 +10776,7 @@ var _user$project$Map$artStoreBuilding = F2(
 														_0: 'left',
 														_1: A2(
 															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p31),
+															_elm_lang$core$Basics$toString(_p37),
 															'px')
 													},
 													_1: {
@@ -10737,7 +10786,7 @@ var _user$project$Map$artStoreBuilding = F2(
 															_0: 'top',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p32),
+																_elm_lang$core$Basics$toString(_p38),
 																'px')
 														},
 														_1: {ctor: '[]'}
@@ -10783,7 +10832,7 @@ var _user$project$Map$artStoreBuilding = F2(
 																_0: 'left',
 																_1: A2(
 																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p31 + 7),
+																	_elm_lang$core$Basics$toString(_p37 + 7),
 																	'px')
 															},
 															_1: {
@@ -10793,7 +10842,7 @@ var _user$project$Map$artStoreBuilding = F2(
 																	_0: 'top',
 																	_1: A2(
 																		_elm_lang$core$Basics_ops['++'],
-																		_elm_lang$core$Basics$toString(_p32 + 10),
+																		_elm_lang$core$Basics$toString(_p38 + 10),
 																		'px')
 																},
 																_1: {ctor: '[]'}
@@ -10816,8 +10865,8 @@ var _user$project$Map$artStoreBuilding = F2(
 				}
 			});
 	});
-var _user$project$Map$colorGame = F4(
-	function (newLevelMsg, playAudioMsg, pauseMsg, artGame) {
+var _user$project$Map$colorGame = F3(
+	function (newLevelMsg, playAudioMsg, artGame) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -10827,30 +10876,23 @@ var _user$project$Map$colorGame = F4(
 					ctor: '::',
 					_0: A3(
 						_user$project$Map$backButton,
-						{ctor: '_Tuple2', _0: 0, _1: 0},
+						{ctor: '_Tuple2', _0: 130, _1: 0},
 						newLevelMsg,
 						_user$project$Map$ArtStore(false)),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Map$pauseButton,
-							{ctor: '_Tuple2', _0: 130, _1: 0},
-							pauseMsg),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Color Game'),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html$text('Color Game'),
+						_1: {ctor: '[]'}
 					}
 				},
 				A2(_elm_lang$core$List$map, _user$project$Map$colorBall, artGame.balls)));
 	});
 var _user$project$Map$GroceryStore = {ctor: 'GroceryStore'};
 var _user$project$Map$storeBuilding = F2(
-	function (_p33, newLevelMsg) {
-		var _p34 = _p33;
-		var _p36 = _p34._1;
-		var _p35 = _p34._0;
+	function (_p39, newLevelMsg) {
+		var _p40 = _p39;
+		var _p42 = _p40._1;
+		var _p41 = _p40._0;
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -10884,7 +10926,7 @@ var _user$project$Map$storeBuilding = F2(
 														_0: 'left',
 														_1: A2(
 															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p35),
+															_elm_lang$core$Basics$toString(_p41),
 															'px')
 													},
 													_1: {
@@ -10894,7 +10936,7 @@ var _user$project$Map$storeBuilding = F2(
 															_0: 'top',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p36),
+																_elm_lang$core$Basics$toString(_p42),
 																'px')
 														},
 														_1: {ctor: '[]'}
@@ -10940,7 +10982,7 @@ var _user$project$Map$storeBuilding = F2(
 																_0: 'left',
 																_1: A2(
 																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p35 + 7),
+																	_elm_lang$core$Basics$toString(_p41 + 7),
 																	'px')
 															},
 															_1: {
@@ -10950,7 +10992,7 @@ var _user$project$Map$storeBuilding = F2(
 																	_0: 'top',
 																	_1: A2(
 																		_elm_lang$core$Basics_ops['++'],
-																		_elm_lang$core$Basics$toString(_p36 + 10),
+																		_elm_lang$core$Basics$toString(_p42 + 10),
 																		'px')
 																},
 																_1: {ctor: '[]'}
@@ -11036,21 +11078,21 @@ var _user$project$Map$groceryStore = F3(
 				}
 			});
 	});
-var _user$project$Map$artStore = F5(
-	function (play, newLevelMsg, playAudioMsg, pauseMsg, map) {
-		var _p37 = play;
-		if (_p37 === true) {
-			return A4(_user$project$Map$colorGame, newLevelMsg, playAudioMsg, pauseMsg, map.artGame);
+var _user$project$Map$artStore = F4(
+	function (play, newLevelMsg, playAudioMsg, map) {
+		var _p43 = play;
+		if (_p43 === true) {
+			return A3(_user$project$Map$colorGame, newLevelMsg, playAudioMsg, map.artGame);
 		} else {
 			var showCircle = F2(
-				function (n, _p38) {
-					var _p39 = _p38;
+				function (n, _p44) {
+					var _p45 = _p44;
 					return A4(
 						_user$project$Map$colorCircle,
 						playAudioMsg,
 						{ctor: '_Tuple2', _0: 96 * n, _1: 96},
-						_p39._0,
-						_p39._1);
+						_p45._0,
+						_p45._1);
 				});
 			return A2(
 				_elm_lang$html$Html$div,
@@ -11095,8 +11137,8 @@ var _user$project$Map$artStore = F5(
 	});
 var _user$project$Map$Home = {ctor: 'Home'};
 var _user$project$Map$house = F2(
-	function (_p40, newLevelMsg) {
-		var _p41 = _p40;
+	function (_p46, newLevelMsg) {
+		var _p47 = _p46;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -11125,7 +11167,7 @@ var _user$project$Map$house = F2(
 												_0: 'left',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p41._0),
+													_elm_lang$core$Basics$toString(_p47._0),
 													'px')
 											},
 											_1: {
@@ -11135,7 +11177,7 @@ var _user$project$Map$house = F2(
 													_0: 'top',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p41._1),
+														_elm_lang$core$Basics$toString(_p47._1),
 														'px')
 												},
 												_1: {ctor: '[]'}
@@ -11178,10 +11220,10 @@ var _user$project$Map$hometown = F3(
 				}
 			});
 	});
-var _user$project$Map$view = F5(
-	function (newLevelMsg, playAudioMsg, pauseMsg, mapSize, map) {
-		var _p42 = map.level;
-		switch (_p42.ctor) {
+var _user$project$Map$view = F4(
+	function (newLevelMsg, playAudioMsg, mapSize, map) {
+		var _p48 = map.level;
+		switch (_p48.ctor) {
 			case 'Home':
 				return A3(_user$project$Map$home, newLevelMsg, playAudioMsg, mapSize);
 			case 'HomeTown':
@@ -11189,7 +11231,7 @@ var _user$project$Map$view = F5(
 			case 'GroceryStore':
 				return A3(_user$project$Map$groceryStore, newLevelMsg, playAudioMsg, mapSize);
 			default:
-				return A5(_user$project$Map$artStore, _p42._0, newLevelMsg, playAudioMsg, pauseMsg, map);
+				return A4(_user$project$Map$artStore, _p48._0, newLevelMsg, playAudioMsg, map);
 		}
 	});
 var _user$project$Main$playAudio = _elm_lang$core$Native_Platform.outgoingPort(
@@ -11199,7 +11241,7 @@ var _user$project$Main$playAudio = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Main$Model = F6(
 	function (a, b, c, d, e, f) {
-		return {user: a, mouse: b, time: c, window: d, map: e, stop: f};
+		return {user: a, mouse: b, time: c, window: d, map: e, pause: f};
 	});
 var _user$project$Main$Up = {ctor: 'Up'};
 var _user$project$Main$init = {
@@ -11207,7 +11249,7 @@ var _user$project$Main$init = {
 	mouse: _user$project$Main$Up,
 	time: 0,
 	window: {width: 100, height: 100},
-	stop: false,
+	pause: false,
 	map: A2(
 		_user$project$Map$init,
 		{width: 100, height: 100},
@@ -11220,12 +11262,12 @@ var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
-			case 'Stop':
+			case 'Pause':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{stop: !model.stop}),
+						{pause: !model.pause}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'WindowResize':
@@ -11308,17 +11350,17 @@ var _user$project$Main$update = F2(
 				};
 		}
 	});
-var _user$project$Main$Stop = {ctor: 'Stop'};
-var _user$project$Main$stopButton = A2(
+var _user$project$Main$Pause = {ctor: 'Pause'};
+var _user$project$Main$pauseButton = A2(
 	_elm_lang$html$Html$button,
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Stop),
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Pause),
 		_1: {ctor: '[]'}
 	},
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html$text('stop'),
+		_0: _elm_lang$html$Html$text('pause'),
 		_1: {ctor: '[]'}
 	});
 var _user$project$Main$PlayAudio = function (a) {
@@ -11330,7 +11372,7 @@ var _user$project$Main$Tick = function (a) {
 var _user$project$Main$NewLevel = function (a) {
 	return {ctor: 'NewLevel', _0: a};
 };
-var _user$project$Main$mapView = A3(_user$project$Map$view, _user$project$Main$NewLevel, _user$project$Main$PlayAudio, _user$project$Main$Stop);
+var _user$project$Main$mapView = A2(_user$project$Map$view, _user$project$Main$NewLevel, _user$project$Main$PlayAudio);
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11346,11 +11388,15 @@ var _user$project$Main$view = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: A2(_user$project$Main$mapView, model.window, model.map),
+			_0: _user$project$Main$pauseButton,
 			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Bee$view, _elm_lang$core$Maybe$Nothing, model.user),
-				_1: {ctor: '[]'}
+				_0: A2(_user$project$Main$mapView, model.window, model.map),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Bee$view, _elm_lang$core$Maybe$Nothing, model.user),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -11367,7 +11413,7 @@ var _user$project$Main$Move = function (a) {
 	return {ctor: 'Move', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	if (model.stop) {
+	if (model.pause) {
 		return _elm_lang$core$Platform_Sub$none;
 	} else {
 		var _p6 = model.mouse;
