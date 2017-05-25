@@ -124,7 +124,8 @@ view model =
         ]
         [ pauseButton
         , mapView model.window model.map
-        , Bee.view Nothing model.user
+
+        -- , Bee.view Nothing model.user
         ]
 
 

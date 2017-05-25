@@ -3,7 +3,7 @@ module Map exposing (..)
 import Audio
 import Bee exposing (Bee)
 import Html exposing (Html, button, div, img, text)
-import Html.Attributes exposing (src, style)
+import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick)
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Time exposing (Time)
@@ -57,19 +57,12 @@ type alias ArtGame =
 
 
 type alias MovingBall =
-    { color : Color
+    { id : Int
+    , color : Color
     , pos : Vec2
     , radius : Float
     , velocity : Vec2
     }
-
-
-type alias NewLevel msg =
-    Level -> msg
-
-
-type alias PlayAudio msg =
-    String -> msg
 
 
 newLevel : Level -> Map -> Map
@@ -86,20 +79,21 @@ initArtGame : ArtGame
 initArtGame =
     { color = Yellow
     , balls =
-        [ initMovingBall ( 0, 0 ) ( 1, 1 ) Red
-        , initMovingBall ( 100, 70 ) ( -1, 1 ) Yellow
-        , initMovingBall ( 70, 170 ) ( -1, -1 ) Green
-        , initMovingBall ( 200, 170 ) ( 1, -1 ) Blue
+        [ initMovingBall 1 ( 0, 0 ) ( 1, 1 ) Red
+        , initMovingBall 2 ( 100, 70 ) ( -1, 1 ) Yellow
+        , initMovingBall 3 ( 70, 170 ) ( -1, -1 ) Green
+        , initMovingBall 4 ( 200, 170 ) ( 1, -1 ) Blue
         ]
     }
 
 
-initMovingBall : ( Float, Float ) -> ( Float, Float ) -> Color -> MovingBall
-initMovingBall ( x, y ) ( vx, vy ) color =
-    { color = color
+initMovingBall : Int -> ( Float, Float ) -> ( Float, Float ) -> Color -> MovingBall
+initMovingBall id ( x, y ) ( vx, vy ) color =
+    { id = id
+    , color = color
     , radius = 32
     , pos = vec2 x y
-    , velocity = vec2 vx vy
+    , velocity = vec2 (vx / 10) (vy / 10)
     }
 
 
@@ -108,22 +102,42 @@ initMovingBall ( x, y ) ( vx, vy ) color =
 
 
 type Msg
-    = Points
-    | NewLevel Level
+    = NewLevel Level
     | PlayAudio String
+    | ColorClicked Int Color Color
 
 
 update : Msg -> Map -> ( Map, Cmd Msg )
 update msg map =
     case msg of
-        Points ->
-            ( { map | points = map.points + 10 }, Cmd.none )
-
         NewLevel level ->
             ( { map | level = level }, Cmd.none )
 
         PlayAudio file ->
             ( map, Audio.play file )
+
+        ColorClicked id gameColor color ->
+            if gameColor == Debug.log "color clicked" color then
+                let
+                    artGame =
+                        map.artGame
+
+                    newArtGame =
+                        { artGame | balls = artGame.balls |> removeBall id }
+                in
+                ( { map
+                    | points = map.points + 10
+                    , artGame = newArtGame
+                  }
+                , Cmd.none
+                )
+            else
+                ( map, Cmd.none )
+
+
+removeBall : Int -> List MovingBall -> List MovingBall
+removeBall id balls =
+    List.filter (\ball -> ball.id /= id) balls
 
 
 resize : Window.Size -> Map -> Map
@@ -560,7 +574,7 @@ artStore : PlayGame -> Map -> Html Msg
 artStore play map =
     case play of
         True ->
-            colorGame map.artGame
+            colorGame map.points map.artGame
 
         False ->
             let
@@ -570,6 +584,7 @@ artStore play map =
             div [] <|
                 exit HomeTown
                     :: playButton ( 192, 10 ) (ArtStore True)
+                    :: points map.points
                     :: List.indexedMap showCircle
                         [ ( "black", "audio/negro.m4a" )
                         , ( "white", "audio/blanco.m4a" )
@@ -577,6 +592,11 @@ artStore play map =
                         , ( "blue", "audio/azul.m4a" )
                         , ( "yellow", "audio/amarillo.m4a" )
                         ]
+
+
+points : Int -> Html msg
+points count =
+    Html.div [ class "points" ] [ text (toString count) ]
 
 
 colorCircle : ( Int, Int ) -> String -> String -> Html Msg
@@ -597,18 +617,19 @@ colorCircle ( x, y ) color audio =
         []
 
 
-colorGame : ArtGame -> Html Msg
-colorGame artGame =
+colorGame : Int -> ArtGame -> Html Msg
+colorGame pointCount artGame =
     div []
         ([ backButton ( 130, 0 ) (ArtStore False)
          , text ("Color: " ++ toString artGame.color)
+         , points pointCount
          ]
-            ++ List.map colorBall artGame.balls
+            ++ List.map (colorBall artGame.color) artGame.balls
         )
 
 
-colorBall : MovingBall -> Html msg
-colorBall ball =
+colorBall : Color -> MovingBall -> Html Msg
+colorBall gameColor ball =
     div
         [ style
             [ ( "border-radius", "50%" )
@@ -620,6 +641,7 @@ colorBall ball =
             , ( "width", toString (ball.radius * 2) ++ "px" )
             , ( "height", toString (ball.radius * 2) ++ "px" )
             ]
+        , onClick (ColorClicked ball.id gameColor ball.color)
         ]
         []
 
