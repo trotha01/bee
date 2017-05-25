@@ -10173,7 +10173,11 @@ var _user$project$Map$colorBall = function (ball) {
 					_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
 					_1: {
 						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'background-color', _1: ball.color},
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'background-color',
+							_1: _elm_lang$core$Basics$toString(ball.color)
+						},
 						_1: {
 							ctor: '::',
 							_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
@@ -10416,82 +10420,32 @@ var _user$project$Map$resize = F2(
 			map,
 			{window: window});
 	});
+var _user$project$Map$update = F2(
+	function (msg, map) {
+		var _p13 = msg;
+		return _elm_lang$core$Native_Utils.update(
+			map,
+			{points: map.points + 10});
+	});
 var _user$project$Map$initMovingBall = F3(
-	function (_p14, _p13, color) {
-		var _p15 = _p14;
-		var _p16 = _p13;
+	function (_p15, _p14, color) {
+		var _p16 = _p15;
+		var _p17 = _p14;
 		return {
 			color: color,
 			radius: 32,
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p15._0, _p15._1),
-			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p16._0, _p16._1)
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p16._0, _p16._1),
+			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p17._0, _p17._1)
 		};
 	});
-var _user$project$Map$initArtGame = {
-	balls: {
-		ctor: '::',
-		_0: A3(
-			_user$project$Map$initMovingBall,
-			{ctor: '_Tuple2', _0: 0, _1: 0},
-			{ctor: '_Tuple2', _0: 1, _1: 1},
-			'blue'),
-		_1: {
-			ctor: '::',
-			_0: A3(
-				_user$project$Map$initMovingBall,
-				{ctor: '_Tuple2', _0: 100, _1: 70},
-				{ctor: '_Tuple2', _0: -1, _1: 1},
-				'green'),
-			_1: {
-				ctor: '::',
-				_0: A3(
-					_user$project$Map$initMovingBall,
-					{ctor: '_Tuple2', _0: 70, _1: 170},
-					{ctor: '_Tuple2', _0: -1, _1: -1},
-					'yellow'),
-				_1: {
-					ctor: '::',
-					_0: A3(
-						_user$project$Map$initMovingBall,
-						{ctor: '_Tuple2', _0: 200, _1: 170},
-						{ctor: '_Tuple2', _0: 1, _1: -1},
-						'red'),
-					_1: {ctor: '[]'}
-				}
-			}
-		}
-	}
-};
-var _user$project$Map$newLevel = F2(
-	function (level, map) {
-		var _p17 = level;
-		if ((_p17.ctor === 'ArtStore') && (_p17._0 === true)) {
-			return _elm_lang$core$Native_Utils.update(
-				map,
-				{artGame: _user$project$Map$initArtGame, level: level});
-		} else {
-			return _elm_lang$core$Native_Utils.update(
-				map,
-				{level: level});
-		}
+var _user$project$Map$Map = F4(
+	function (a, b, c, d) {
+		return {level: a, artGame: b, window: c, points: d};
 	});
-var _user$project$Map$init = F2(
-	function (window, level) {
-		return {
-			level: level,
-			artGame: {
-				balls: {ctor: '[]'}
-			},
-			window: window
-		};
+var _user$project$Map$ArtGame = F2(
+	function (a, b) {
+		return {color: a, balls: b};
 	});
-var _user$project$Map$Map = F3(
-	function (a, b, c) {
-		return {level: a, artGame: b, window: c};
-	});
-var _user$project$Map$ArtGame = function (a) {
-	return {balls: a};
-};
 var _user$project$Map$MovingBall = F4(
 	function (a, b, c, d) {
 		return {color: a, pos: b, radius: c, velocity: d};
@@ -10881,7 +10835,11 @@ var _user$project$Map$colorGame = F3(
 						_user$project$Map$ArtStore(false)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Color Game'),
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Color: ',
+								_elm_lang$core$Basics$toString(artGame.color))),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -11234,6 +11192,66 @@ var _user$project$Map$view = F4(
 				return A4(_user$project$Map$artStore, _p48._0, newLevelMsg, playAudioMsg, map);
 		}
 	});
+var _user$project$Map$Purple = {ctor: 'Purple'};
+var _user$project$Map$Blue = {ctor: 'Blue'};
+var _user$project$Map$Green = {ctor: 'Green'};
+var _user$project$Map$Yellow = {ctor: 'Yellow'};
+var _user$project$Map$Orange = {ctor: 'Orange'};
+var _user$project$Map$Red = {ctor: 'Red'};
+var _user$project$Map$initArtGame = {
+	color: _user$project$Map$Yellow,
+	balls: {
+		ctor: '::',
+		_0: A3(
+			_user$project$Map$initMovingBall,
+			{ctor: '_Tuple2', _0: 0, _1: 0},
+			{ctor: '_Tuple2', _0: 1, _1: 1},
+			_user$project$Map$Red),
+		_1: {
+			ctor: '::',
+			_0: A3(
+				_user$project$Map$initMovingBall,
+				{ctor: '_Tuple2', _0: 100, _1: 70},
+				{ctor: '_Tuple2', _0: -1, _1: 1},
+				_user$project$Map$Yellow),
+			_1: {
+				ctor: '::',
+				_0: A3(
+					_user$project$Map$initMovingBall,
+					{ctor: '_Tuple2', _0: 70, _1: 170},
+					{ctor: '_Tuple2', _0: -1, _1: -1},
+					_user$project$Map$Green),
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Map$initMovingBall,
+						{ctor: '_Tuple2', _0: 200, _1: 170},
+						{ctor: '_Tuple2', _0: 1, _1: -1},
+						_user$project$Map$Blue),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	}
+};
+var _user$project$Map$init = F2(
+	function (window, level) {
+		return {level: level, artGame: _user$project$Map$initArtGame, window: window, points: 0};
+	});
+var _user$project$Map$newLevel = F2(
+	function (level, map) {
+		var _p49 = level;
+		if ((_p49.ctor === 'ArtStore') && (_p49._0 === true)) {
+			return _elm_lang$core$Native_Utils.update(
+				map,
+				{artGame: _user$project$Map$initArtGame, level: level});
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				map,
+				{level: level});
+		}
+	});
+var _user$project$Map$Points = {ctor: 'Points'};
 var _user$project$Main$playAudio = _elm_lang$core$Native_Platform.outgoingPort(
 	'playAudio',
 	function (v) {
@@ -11338,13 +11356,23 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'NewLevel':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							map: A2(_user$project$Map$newLevel, _p0._0, model.map)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							map: A2(_user$project$Map$update, _p0._0, model.map)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11368,6 +11396,9 @@ var _user$project$Main$PlayAudio = function (a) {
 };
 var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Main$MapMsg = function (a) {
+	return {ctor: 'MapMsg', _0: a};
 };
 var _user$project$Main$NewLevel = function (a) {
 	return {ctor: 'NewLevel', _0: a};

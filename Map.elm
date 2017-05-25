@@ -16,14 +16,16 @@ type alias Map =
     { level : Level
     , artGame : ArtGame
     , window : Window.Size
+    , points : Int
     }
 
 
 init : Window.Size -> Level -> Map
 init window level =
     { level = level
-    , artGame = { balls = [] }
+    , artGame = initArtGame
     , window = window
+    , points = 0
     }
 
 
@@ -38,20 +40,26 @@ type alias PlayGame =
     Bool
 
 
+type Color
+    = Red
+    | Orange
+    | Yellow
+    | Green
+    | Blue
+    | Purple
+
+
 type alias ArtGame =
-    { balls : List MovingBall }
+    { color : Color
+    , balls : List MovingBall
+    }
 
 
 type alias MovingBall =
-    { color : String
+    { color : Color
     , pos : Vec2
     , radius : Float
     , velocity : Vec2
-
-    {-
-       , xVelocity : Float
-       , yVelocity : Float
-    -}
     }
 
 
@@ -75,16 +83,17 @@ newLevel level map =
 
 initArtGame : ArtGame
 initArtGame =
-    { balls =
-        [ initMovingBall ( 0, 0 ) ( 1, 1 ) "blue"
-        , initMovingBall ( 100, 70 ) ( -1, 1 ) "green"
-        , initMovingBall ( 70, 170 ) ( -1, -1 ) "yellow"
-        , initMovingBall ( 200, 170 ) ( 1, -1 ) "red"
+    { color = Yellow
+    , balls =
+        [ initMovingBall ( 0, 0 ) ( 1, 1 ) Red
+        , initMovingBall ( 100, 70 ) ( -1, 1 ) Yellow
+        , initMovingBall ( 70, 170 ) ( -1, -1 ) Green
+        , initMovingBall ( 200, 170 ) ( 1, -1 ) Blue
         ]
     }
 
 
-initMovingBall : ( Float, Float ) -> ( Float, Float ) -> String -> MovingBall
+initMovingBall : ( Float, Float ) -> ( Float, Float ) -> Color -> MovingBall
 initMovingBall ( x, y ) ( vx, vy ) color =
     { color = color
     , radius = 32
@@ -95,6 +104,17 @@ initMovingBall ( x, y ) ( vx, vy ) color =
 
 
 -- UPDATE
+
+
+type Msg
+    = Points
+
+
+update : Msg -> Map -> Map
+update msg map =
+    case msg of
+        Points ->
+            { map | points = map.points + 10 }
 
 
 resize : Window.Size -> Map -> Map
@@ -572,7 +592,7 @@ colorGame : NewLevel msg -> PlayAudio msg -> ArtGame -> Html msg
 colorGame newLevelMsg playAudioMsg artGame =
     div []
         ([ backButton ( 130, 0 ) newLevelMsg (ArtStore False)
-         , text "Color Game"
+         , text ("Color: " ++ toString artGame.color)
          ]
             ++ List.map colorBall artGame.balls
         )
@@ -583,7 +603,7 @@ colorBall ball =
     div
         [ style
             [ ( "border-radius", "50%" )
-            , ( "background-color", ball.color )
+            , ( "background-color", toString ball.color )
             , ( "border", "1px solid black" )
             , ( "position", "absolute" )
             , ( "left", (toString <| getX ball.pos) ++ "px" )

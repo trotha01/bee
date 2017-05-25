@@ -52,6 +52,7 @@ type Msg
     | MouseDown Mouse.Position
     | MouseUp Mouse.Position
     | NewLevel Map.Level
+    | MapMsg Map.Msg
     | Tick Time
     | PlayAudio String
     | Pause
@@ -110,6 +111,9 @@ update msg model =
         NewLevel newLevel ->
             ( { model | map = Map.newLevel newLevel model.map }, Cmd.none )
 
+        MapMsg msg ->
+            ( { model | map = Map.update msg model.map }, Cmd.none )
+
 
 
 -- VIEW
@@ -150,8 +154,6 @@ subscriptions model =
             Up ->
                 Sub.batch
                     [ Mouse.downs MouseDown
-
-                    -- , Time.every (Time.millisecond * 100) Tick
                     , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
@@ -160,8 +162,6 @@ subscriptions model =
                 Sub.batch
                     [ Mouse.moves Move
                     , Mouse.ups MouseUp
-
-                    -- , Time.every (Time.millisecond * 100) Tick
                     , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
