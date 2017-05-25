@@ -51,10 +51,8 @@ type Msg
     | WindowResize Window.Size
     | MouseDown Mouse.Position
     | MouseUp Mouse.Position
-    | NewLevel Map.Level
     | MapMsg Map.Msg
     | Tick Time
-    | PlayAudio String
     | Pause
 
 
@@ -71,9 +69,6 @@ update msg model =
               }
             , Cmd.none
             )
-
-        PlayAudio file ->
-            ( model, playAudio file )
 
         MouseUp _ ->
             ( { model | mouse = Up }, Cmd.none )
@@ -108,11 +103,12 @@ update msg model =
             , Cmd.none
             )
 
-        NewLevel newLevel ->
-            ( { model | map = Map.newLevel newLevel model.map }, Cmd.none )
-
         MapMsg msg ->
-            ( { model | map = Map.update msg model.map }, Cmd.none )
+            let
+                ( newMap, cmd ) =
+                    Map.update msg model.map
+            in
+            ( { model | map = newMap }, Cmd.map MapMsg cmd )
 
 
 
@@ -133,8 +129,9 @@ view model =
 
 
 mapView : Window.Size -> Map -> Html Msg
-mapView =
-    Map.view NewLevel PlayAudio
+mapView window map =
+    Map.view window map
+        |> Html.map MapMsg
 
 
 pauseButton =
@@ -165,13 +162,6 @@ subscriptions model =
                     , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
-
-
-
--- PORTS
-
-
-port playAudio : String -> Cmd msg
 
 
 

@@ -1,5 +1,6 @@
 module Map exposing (..)
 
+import Audio
 import Bee exposing (Bee)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (src, style)
@@ -108,13 +109,21 @@ initMovingBall ( x, y ) ( vx, vy ) color =
 
 type Msg
     = Points
+    | NewLevel Level
+    | PlayAudio String
 
 
-update : Msg -> Map -> Map
+update : Msg -> Map -> ( Map, Cmd Msg )
 update msg map =
     case msg of
         Points ->
-            { map | points = map.points + 10 }
+            ( { map | points = map.points + 10 }, Cmd.none )
+
+        NewLevel level ->
+            ( { map | level = level }, Cmd.none )
+
+        PlayAudio file ->
+            ( map, Audio.play file )
 
 
 resize : Window.Size -> Map -> Map
@@ -393,32 +402,32 @@ collisionBoxBubble ( posBox, boxExtents ) ( posBubble, bubbleRadius ) =
 -- VIEW
 
 
-view : NewLevel msg -> PlayAudio msg -> Window.Size -> Map -> Html msg
-view newLevelMsg playAudioMsg mapSize map =
+view : Window.Size -> Map -> Html Msg
+view mapSize map =
     case map.level of
         Home ->
-            home newLevelMsg playAudioMsg mapSize
+            home mapSize
 
         HomeTown ->
-            hometown newLevelMsg playAudioMsg mapSize
+            hometown mapSize
 
         GroceryStore ->
-            groceryStore newLevelMsg playAudioMsg mapSize
+            groceryStore mapSize
 
         ArtStore play ->
-            artStore play newLevelMsg playAudioMsg map
+            artStore play map
 
 
 
 -- HOME
 
 
-home : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
-home newLevelMsg playAudioMsg mapSize =
+home : Window.Size -> Html Msg
+home mapSize =
     div []
-        [ exit newLevelMsg HomeTown
-        , Bee.view (Just playAudioMsg) Bee.mama
-        , Bee.view (Just playAudioMsg) Bee.papa
+        [ exit HomeTown
+        , Bee.view (Just PlayAudio) Bee.mama
+        , Bee.view (Just PlayAudio) Bee.papa
         ]
 
 
@@ -426,20 +435,20 @@ home newLevelMsg playAudioMsg mapSize =
 -- TOWN
 
 
-hometown : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
-hometown newLevelMsg playAudioMsg mapSize =
+hometown : Window.Size -> Html Msg
+hometown mapSize =
     div []
-        [ house ( 0, 0 ) newLevelMsg
-        , storeBuilding ( 160, 0 ) newLevelMsg
-        , artStoreBuilding ( 320, 0 ) newLevelMsg
+        [ house ( 0, 0 )
+        , storeBuilding ( 160, 0 )
+        , artStoreBuilding ( 320, 0 )
         ]
 
 
-house : ( Int, Int ) -> NewLevel msg -> Html msg
-house ( x, y ) newLevelMsg =
+house : ( Int, Int ) -> Html Msg
+house ( x, y ) =
     img
         [ src "imgs/home.png"
-        , onClick (newLevelMsg Home)
+        , onClick (NewLevel Home)
         , style
             [ ( "position", "absolute" )
             , ( "height", "128px" )
@@ -451,12 +460,12 @@ house ( x, y ) newLevelMsg =
         []
 
 
-storeBuilding : ( Int, Int ) -> NewLevel msg -> Html msg
-storeBuilding ( x, y ) newLevelMsg =
+storeBuilding : ( Int, Int ) -> Html Msg
+storeBuilding ( x, y ) =
     div []
         [ img
             [ src "imgs/store.png"
-            , onClick (newLevelMsg GroceryStore)
+            , onClick (NewLevel GroceryStore)
             , style
                 [ ( "position", "absolute" )
                 , ( "height", "128px" )
@@ -482,12 +491,12 @@ storeBuilding ( x, y ) newLevelMsg =
         ]
 
 
-artStoreBuilding : ( Int, Int ) -> NewLevel msg -> Html msg
-artStoreBuilding ( x, y ) newLevelMsg =
+artStoreBuilding : ( Int, Int ) -> Html Msg
+artStoreBuilding ( x, y ) =
     div []
         [ img
             [ src "imgs/store.png"
-            , onClick (newLevelMsg (ArtStore False))
+            , onClick (NewLevel (ArtStore False))
             , style
                 [ ( "position", "absolute" )
                 , ( "height", "128px" )
@@ -517,18 +526,18 @@ artStoreBuilding ( x, y ) newLevelMsg =
 -- GROCERY STORE
 
 
-groceryStore : NewLevel msg -> PlayAudio msg -> Window.Size -> Html msg
-groceryStore newLevelMsg playAudioMsg mapSize =
+groceryStore : Window.Size -> Html Msg
+groceryStore mapSize =
     div []
-        [ exit newLevelMsg HomeTown
-        , playButton ( 192, 10 ) newLevelMsg GroceryStore
-        , groceryItem playAudioMsg ( 64, 96 ) "imgs/banana.png" "audio/el_platano.mp3"
-        , groceryItem playAudioMsg ( 192, 96 ) "imgs/milk.png" "audio/leche.mp3"
+        [ exit HomeTown
+        , playButton ( 192, 10 ) GroceryStore
+        , groceryItem ( 64, 96 ) "imgs/banana.png" "audio/el_platano.mp3"
+        , groceryItem ( 192, 96 ) "imgs/milk.png" "audio/leche.mp3"
         ]
 
 
-groceryItem : PlayAudio msg -> ( Int, Int ) -> String -> String -> Html msg
-groceryItem playAudioMsg ( x, y ) image audio =
+groceryItem : ( Int, Int ) -> String -> String -> Html Msg
+groceryItem ( x, y ) image audio =
     img
         [ src image
         , style
@@ -538,7 +547,7 @@ groceryItem playAudioMsg ( x, y ) image audio =
             , ( "left", toString x ++ "px" )
             , ( "top", toString y ++ "px" )
             ]
-        , onClick (playAudioMsg audio)
+        , onClick (PlayAudio audio)
         ]
         []
 
@@ -547,20 +556,20 @@ groceryItem playAudioMsg ( x, y ) image audio =
 -- ART STORE
 
 
-artStore : PlayGame -> NewLevel msg -> PlayAudio msg -> Map -> Html msg
-artStore play newLevelMsg playAudioMsg map =
+artStore : PlayGame -> Map -> Html Msg
+artStore play map =
     case play of
         True ->
-            colorGame newLevelMsg playAudioMsg map.artGame
+            colorGame map.artGame
 
         False ->
             let
                 showCircle n ( color, audio ) =
-                    colorCircle playAudioMsg ( 96 * n, 96 ) color audio
+                    colorCircle ( 96 * n, 96 ) color audio
             in
             div [] <|
-                exit newLevelMsg HomeTown
-                    :: playButton ( 192, 10 ) newLevelMsg (ArtStore True)
+                exit HomeTown
+                    :: playButton ( 192, 10 ) (ArtStore True)
                     :: List.indexedMap showCircle
                         [ ( "black", "audio/negro.m4a" )
                         , ( "white", "audio/blanco.m4a" )
@@ -570,8 +579,8 @@ artStore play newLevelMsg playAudioMsg map =
                         ]
 
 
-colorCircle : PlayAudio msg -> ( Int, Int ) -> String -> String -> Html msg
-colorCircle playAudioMsg ( x, y ) color audio =
+colorCircle : ( Int, Int ) -> String -> String -> Html Msg
+colorCircle ( x, y ) color audio =
     div
         [ style
             [ ( "border-radius", "50%" )
@@ -583,15 +592,15 @@ colorCircle playAudioMsg ( x, y ) color audio =
             , ( "width", "64px" )
             , ( "height", "64px" )
             ]
-        , onClick (playAudioMsg audio)
+        , onClick (PlayAudio audio)
         ]
         []
 
 
-colorGame : NewLevel msg -> PlayAudio msg -> ArtGame -> Html msg
-colorGame newLevelMsg playAudioMsg artGame =
+colorGame : ArtGame -> Html Msg
+colorGame artGame =
     div []
-        ([ backButton ( 130, 0 ) newLevelMsg (ArtStore False)
+        ([ backButton ( 130, 0 ) (ArtStore False)
          , text ("Color: " ++ toString artGame.color)
          ]
             ++ List.map colorBall artGame.balls
@@ -619,8 +628,8 @@ colorBall ball =
 -- COMMON
 
 
-playButton : ( Int, Int ) -> NewLevel msg -> Level -> Html msg
-playButton ( x, y ) newLevelMsg level =
+playButton : ( Int, Int ) -> Level -> Html Msg
+playButton ( x, y ) level =
     button
         [ style
             [ ( "border", "1px solid black" )
@@ -630,13 +639,13 @@ playButton ( x, y ) newLevelMsg level =
             , ( "width", "128px" )
             , ( "height", "64px" )
             ]
-        , onClick (newLevelMsg level)
+        , onClick (NewLevel level)
         ]
         [ text "Play!" ]
 
 
-backButton : ( Int, Int ) -> NewLevel msg -> Level -> Html msg
-backButton ( x, y ) newLevelMsg level =
+backButton : ( Int, Int ) -> Level -> Html Msg
+backButton ( x, y ) level =
     button
         [ style
             [ ( "border", "1px solid black" )
@@ -646,14 +655,14 @@ backButton ( x, y ) newLevelMsg level =
             , ( "width", "128px" )
             , ( "height", "64px" )
             ]
-        , onClick (newLevelMsg level)
+        , onClick (NewLevel level)
         ]
         [ text "Back" ]
 
 
-exit : NewLevel msg -> Level -> Html msg
-exit newLevelMsg level =
-    div [ onClick (newLevelMsg level) ]
+exit : Level -> Html Msg
+exit level =
+    div [ onClick (NewLevel level) ]
         [ tile ( 0, 0 )
         , tile ( 0, 32 )
         , tile ( 32, 0 )
