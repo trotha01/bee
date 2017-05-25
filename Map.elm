@@ -72,19 +72,21 @@ newLevel level map =
 initArtGame : ArtGame
 initArtGame =
     { balls =
-        [ initMovingBall ( 0, 0 ) "blue"
-        , initMovingBall ( 100, 100 ) "green"
+        [ initMovingBall ( 0, 0 ) ( 1, 1 ) "blue"
+        , initMovingBall ( 100, 70 ) ( -1, 1 ) "green"
+        , initMovingBall ( 70, 170 ) ( -1, -1 ) "yellow"
+        , initMovingBall ( 200, 170 ) ( 1, -1 ) "red"
         ]
     }
 
 
-initMovingBall : ( Float, Float ) -> String -> MovingBall
-initMovingBall ( x, y ) color =
+initMovingBall : ( Float, Float ) -> ( Float, Float ) -> String -> MovingBall
+initMovingBall ( x, y ) ( vx, vy ) color =
     { color = color
     , radius = 64
     , pos = vec2 x y
-    , xVelocity = 1
-    , yVelocity = 1
+    , xVelocity = vx
+    , yVelocity = vy
     }
 
 
@@ -109,7 +111,7 @@ animateArtGame timeDiff window artGame =
     { artGame
         | balls =
             artGame.balls
-                -- |> List.map (animateBall timeDiff window)
+                |> List.map (animateBall timeDiff window)
                 |> collisions
     }
 
@@ -119,83 +121,83 @@ collisions balls =
     balls
 
 
-
-{-
-   initLeftWall windowHeight =
-       { pos = vec2 0 windowHeight / 2
-       , halfHeight = windowHeight / 2
-       , halfWidth = 1
-       }
+initLeftWall windowHeight =
+    { pos = vec2 0 <| windowHeight / 2
+    , halfHeight = windowHeight / 2
+    , halfWidth = 1
+    }
 
 
-   initRightWall windowWidth windowHeight =
-       { pos = vec2 windowWidth (windowHeight / 2)
-       , halfHeight = windowHeight / 2
-       , halfWidth = 1
-       }
+initRightWall windowWidth windowHeight =
+    { pos = vec2 windowWidth (windowHeight / 2)
+    , halfHeight = windowHeight / 2
+    , halfWidth = 1
+    }
 
 
-   initTopWall windowWidth =
-       { pos = vec2 (windowWidth / 2) 0
-       , halfHeight = 1
-       , halfWidth = windowWidth / 2
-       }
+initTopWall windowWidth =
+    { pos = vec2 (windowWidth / 2) 0
+    , halfHeight = 1
+    , halfWidth = windowWidth / 2
+    }
 
 
-   initBottomWall windowWidth windowHeight =
-       { pos = vec2 (windowWidth / 2) windowHeight
-       , halfHeight = 1
-       , halfWidth = windowWidth / 2
-       }
--}
-{-
-   animateBall : Time -> Window.Size -> MovingBall -> MovingBall
-   animateBall timeDiff window ball =
-       let
-           ( leftWall, rightWall, topWall, bottomWall ) =
-               ( initLeftWall window.height
-               , initRightWall window.width window.height
-               , initTopWall window.width
-               , initBottomWall window.width window.height
-               )
+initBottomWall windowWidth windowHeight =
+    { pos = vec2 (windowWidth / 2) windowHeight
+    , halfHeight = 1
+    , halfWidth = windowWidth / 2
+    }
 
-           leftCol =
-               collisionBoxBubble
-                   ( leftWall.pos, vec2 leftWall.halfWidth leftWall.halfHeight )
-                   ( ball.pos, ball.radius )
 
-           x =
-               getX ball.pos
+animateBall : Time -> Window.Size -> MovingBall -> MovingBall
+animateBall timeDiff window ball =
+    let
+        ( width, height ) =
+            ( toFloat window.width, toFloat window.height )
 
-           y =
-               getY ball.pos
+        ( leftWall, rightWall, topWall, bottomWall ) =
+            ( initLeftWall height
+            , initRightWall width height
+            , initTopWall width
+            , initBottomWall width height
+            )
 
-           newX =
-               (x + ball.xVelocity * timeDiff)
-                   |> clamp leftWall rightWall
+        leftCol =
+            collisionBoxBubble
+                ( leftWall.pos, vec2 leftWall.halfWidth leftWall.halfHeight )
+                ( ball.pos, ball.radius )
 
-           newY =
-               (y + ball.yVelocity * timeDiff)
-                   |> clamp topWall bottomWall
+        x =
+            getX ball.pos
 
-           newXVelocity =
-               if newX == leftWall || newX == rightWall then
-                   -ball.xVelocity
-               else
-                   ball.xVelocity
+        y =
+            getY ball.pos
 
-           newYVelocity =
-               if newY == topWall || newY == bottomWall then
-                   -ball.yVelocity
-               else
-                   ball.xVelocity
-       in
-           { ball
-               | pos = vec2 newX newY
-               , xVelocity = newXVelocity
-               , yVelocity = newYVelocity
-           }
--}
+        newX =
+            (x + ball.xVelocity * timeDiff)
+                |> clamp (getX leftWall.pos) (getX rightWall.pos)
+
+        newY =
+            (y + ball.yVelocity * timeDiff)
+                |> clamp (getY topWall.pos) (getY bottomWall.pos)
+
+        newXVelocity =
+            if newX == getX leftWall.pos || newX == getX rightWall.pos then
+                -ball.xVelocity
+            else
+                ball.xVelocity
+
+        newYVelocity =
+            if newY == getY topWall.pos || newY == getY bottomWall.pos then
+                -ball.yVelocity
+            else
+                ball.yVelocity
+    in
+    { ball
+        | pos = vec2 newX newY
+        , xVelocity = newXVelocity
+        , yVelocity = newYVelocity
+    }
 
 
 type alias CollisionResult =
@@ -467,7 +469,7 @@ colorCircle playAudioMsg ( x, y ) color audio =
 colorGame : NewLevel msg -> PlayAudio msg -> ArtGame -> Html msg
 colorGame newLevelMsg playAudioMsg artGame =
     div []
-        ([ backButton ( 0, 0 ) newLevelMsg (ArtStore False)
+        ([ backButton ( 130, 0 ) newLevelMsg (ArtStore False)
          , text "Color Game"
          ]
             ++ List.map colorBall artGame.balls

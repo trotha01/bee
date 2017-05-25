@@ -22,7 +22,7 @@ type alias Model =
     , time : Time
     , window : Window.Size
     , map : Map
-    , stop : Bool
+    , pause : Bool
     }
 
 
@@ -37,7 +37,7 @@ init =
     , mouse = Up
     , time = 0
     , window = { width = 100, height = 100 }
-    , stop = False
+    , pause = False
     , map = Map.init { width = 100, height = 100 } Map.Home
     }
 
@@ -54,14 +54,14 @@ type Msg
     | NewLevel Map.Level
     | Tick Time
     | PlayAudio String
-    | Stop
+    | Pause
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Stop ->
-            ( { model | stop = not model.stop }, Cmd.none )
+        Pause ->
+            ( { model | pause = not model.pause }, Cmd.none )
 
         WindowResize newSize ->
             ( { model
@@ -122,8 +122,8 @@ view model =
             [ ( "user-select", "none" )
             ]
         ]
-        [ -- stopButton
-          mapView model.window model.map
+        [ pauseButton
+        , mapView model.window model.map
         , Bee.view Nothing model.user
         ]
 
@@ -133,8 +133,8 @@ mapView =
     Map.view NewLevel PlayAudio
 
 
-stopButton =
-    button [ onClick Stop ] [ text "stop" ]
+pauseButton =
+    button [ onClick Pause ] [ text "pause" ]
 
 
 
@@ -143,7 +143,7 @@ stopButton =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    if model.stop then
+    if model.pause then
         Sub.none
     else
         case model.mouse of
