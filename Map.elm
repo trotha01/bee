@@ -2,10 +2,13 @@ module Map exposing (..)
 
 import Audio
 import Bee exposing (Bee)
+import Dict exposing (Dict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick)
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
+import Random
+import Random.List exposing (choose)
 import Time exposing (Time)
 import Window
 
@@ -18,6 +21,7 @@ type alias Map =
     , artGame : ArtGame
     , window : Window.Size
     , points : Int
+    , seed : Random.Seed
     }
 
 
@@ -27,6 +31,7 @@ init window level =
     , artGame = initArtGame
     , window = window
     , points = 0
+    , seed = Random.initialSeed 0
     }
 
 
@@ -50,9 +55,40 @@ type Color
     | Purple
 
 
+colorGen : Random.Generator Color
+colorGen =
+    Random.int 1 3
+        |> Random.map
+            (\i ->
+                case i of
+                    1 ->
+                        Red
+
+                    2 ->
+                        Orange
+
+                    3 ->
+                        Yellow
+
+                    4 ->
+                        Green
+
+                    5 ->
+                        Blue
+
+                    6 ->
+                        Purple
+
+                    _ ->
+                        Red
+            )
+
+
 type alias ArtGame =
     { color : Color
     , balls : List MovingBall
+    , time : Time
+    , seed : Random.Seed
     }
 
 
@@ -77,14 +113,40 @@ newLevel level map =
 
 initArtGame : ArtGame
 initArtGame =
-    { color = Yellow
-    , balls =
-        [ initMovingBall 1 ( 0, 0 ) ( 1, 1 ) Red
-        , initMovingBall 2 ( 100, 70 ) ( -1, 1 ) Yellow
-        , initMovingBall 3 ( 70, 170 ) ( -1, -1 ) Green
-        , initMovingBall 4 ( 200, 170 ) ( 1, -1 ) Blue
-        ]
+    { time = 0
+    , seed = Random.initialSeed 0
+    , color = Yellow
+    , balls = initialBalls
     }
+
+
+get : Int -> List a -> Maybe a
+get index list =
+    list
+        |> List.drop index
+        |> List.head
+
+
+randItem : List a -> Random.Generator (Maybe a)
+randItem list =
+    Random.int 0 (List.length list - 1)
+        |> Random.map (\i -> get i list)
+
+
+randomColor : Random.Seed -> List MovingBall -> ( Color, Random.Seed )
+randomColor seed balls =
+    Random.step (randItem balls) seed
+        |> Tuple.mapFirst (Maybe.map (\ball -> ball.color))
+        |> Tuple.mapFirst (Maybe.withDefault Red)
+
+
+initialBalls : List MovingBall
+initialBalls =
+    [ initMovingBall 1 ( 0, 0 ) ( 1, 1 ) Red
+    , initMovingBall 2 ( 100, 70 ) ( -1, 1 ) Yellow
+    , initMovingBall 3 ( 70, 170 ) ( -1, -1 ) Green
+    , initMovingBall 4 ( 200, 170 ) ( 1, -1 ) Blue
+    ]
 
 
 initMovingBall : Int -> ( Float, Float ) -> ( Float, Float ) -> Color -> MovingBall
@@ -117,7 +179,7 @@ update msg map =
             ( map, Audio.play file )
 
         ColorClicked id gameColor color ->
-            if gameColor == Debug.log "color clicked" color then
+            if gameColor == color then
                 let
                     artGame =
                         map.artGame
@@ -152,10 +214,31 @@ tick timeDelta map =
     }
 
 
+{-| This is the number of milliseconds we wait
+before changing colors
+-}
+colorSwapTime : Time
+colorSwapTime =
+    2000
+
+
 animateArtGame : Time -> Window.Size -> ArtGame -> ArtGame
 animateArtGame timeDiff window artGame =
+    let
+        newTime =
+            artGame.time + timeDiff
+
+        ( ( newColor, newSeed ), timeReset ) =
+            if newTime > colorSwapTime then
+                ( randomColor artGame.seed artGame.balls, 0 )
+            else
+                ( ( artGame.color, artGame.seed ), newTime )
+    in
     { artGame
-        | balls =
+        | time = timeReset
+        , color = newColor
+        , seed = newSeed
+        , balls =
             artGame.balls
                 |> List.map (animateBall timeDiff window)
                 |> collisions
