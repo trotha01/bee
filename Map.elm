@@ -155,7 +155,7 @@ initMovingBall id ( x, y ) ( vx, vy ) color =
     , color = color
     , radius = 32
     , pos = vec2 x y
-    , velocity = vec2 (vx / 10) (vy / 10)
+    , velocity = vec2 0 0
     }
 
 
@@ -191,7 +191,7 @@ update msg map =
                     | points = map.points + 10
                     , artGame = newArtGame
                   }
-                , Cmd.none
+                , Audio.play "audio/puff.mp3"
                 )
             else
                 ( map, Cmd.none )
