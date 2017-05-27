@@ -9,6 +9,7 @@ import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick)
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
+import Random.Extra
 import Random.List exposing (choose)
 import Time exposing (Time)
 import Window
@@ -71,6 +72,7 @@ type alias ArtGame =
     , balls : List MovingBall
     , time : Time
     , seed : Random.Seed
+    , win : Bool
     }
 
 
@@ -84,30 +86,34 @@ type alias MovingBall =
     }
 
 
-newLevel : Level -> Map -> Map
-newLevel level map =
-    case level of
-        ArtStore True ->
-            let
-                ( artGame, seed ) =
-                    initArtGame map.window map.seed
-            in
-            { map | artGame = artGame, seed = seed, level = level }
 
-        _ ->
-            { map | level = level }
+{-
+   newLevel : Level -> Map -> Map
+   newLevel level map =
+       case level of
+           ArtStore True ->
+               let
+                   ( artGame, seed ) =
+                       initArtGame map.window map.seed
+               in
+               { map | artGame = artGame, seed = seed, level = level }
+
+           _ ->
+               { map | level = level }
+-}
 
 
 initArtGame : Window.Size -> Random.Seed -> ( ArtGame, Random.Seed )
 initArtGame window seed =
     let
         ( balls, newSeed ) =
-            initialBalls window seed
+            Random.step (initialBalls window) seed
     in
     ( { time = 0
       , seed = newSeed
       , color = Yellow
       , balls = balls
+      , win = False
       }
     , newSeed
     )
@@ -201,15 +207,11 @@ randomMovingBall window id =
             )
 
 
-initialBalls : Window.Size -> Random.Seed -> ( List MovingBall, Random.Seed )
-initialBalls window seed =
-    List.foldr
-        (\id ( balls, seed ) ->
-            Random.step (randomMovingBall window id) seed
-                |> Tuple.mapFirst (\ball -> ball :: balls)
-        )
-        ( [], seed )
-        (List.range 0 9)
+initialBalls : Window.Size -> Random.Generator (List MovingBall)
+initialBalls window =
+    List.range 0 9
+        |> List.map (randomMovingBall window)
+        |> Random.Extra.combine
 
 
 initMovingBall : Int -> Color -> ( Float, Float ) -> ( Float, Float ) -> String -> MovingBall
@@ -237,7 +239,16 @@ update : Msg -> Map -> ( Map, Cmd Msg )
 update msg map =
     case msg of
         NewLevel level ->
-            ( { map | level = level }, Cmd.none )
+            let
+                ( artGame, newSeed ) =
+                    case level of
+                        ArtStore True ->
+                            initArtGame map.window map.seed
+
+                        _ ->
+                            ( map.artGame, map.seed )
+            in
+            ( { map | level = level, artGame = artGame, seed = newSeed }, Cmd.none )
 
         PlayAudio file ->
             ( map, Audio.play file )
@@ -248,8 +259,14 @@ update msg map =
                     artGame =
                         map.artGame
 
+                    newBalls =
+                        artGame.balls |> removeBall id
+
+                    win =
+                        List.length newBalls == 0
+
                     newArtGame =
-                        { artGame | balls = artGame.balls |> removeBall id }
+                        { artGame | balls = newBalls, win = win }
                 in
                 ( { map
                     | points = map.points + 10
@@ -731,7 +748,7 @@ artStore play map =
             div [] <|
                 exit HomeTown
                     :: playButton ( 192, 10 ) (ArtStore True)
-                    :: points map.points
+                    :: viewPoints map.points
                     :: List.indexedMap showCircle
                         [ ( "black", "audio/negro.m4a" )
                         , ( "white", "audio/blanco.m4a" )
@@ -741,9 +758,9 @@ artStore play map =
                         ]
 
 
-points : Int -> Html msg
-points count =
-    Html.div [ class "points" ] [ text (toString count) ]
+viewPoints : Int -> Html msg
+viewPoints count =
+    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 colorCircle : ( Int, Int ) -> String -> String -> Html Msg
@@ -766,12 +783,21 @@ colorCircle ( x, y ) color audio =
 
 colorGame : Int -> ArtGame -> Html Msg
 colorGame pointCount artGame =
+    let
+        content =
+            if artGame.win then
+                [ div []
+                    [ text "You Win!!!!!!" ]
+                ]
+            else
+                List.map (colorBall artGame.color) artGame.balls
+    in
     div []
         ([ backButton ( 130, 0 ) (ArtStore False)
          , text ("Color: " ++ toString artGame.color)
-         , points pointCount
+         , viewPoints pointCount
          ]
-            ++ List.map (colorBall artGame.color) artGame.balls
+            ++ content
         )
 
 
