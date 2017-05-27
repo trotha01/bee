@@ -95,12 +95,16 @@ update msg model =
                     )
 
         Tick timeDelta ->
+            let
+                ( newMap, cmd ) =
+                    Map.tick timeDelta model.map
+            in
             ( { model
                 | user = model.user |> Bee.animate model.time
-                , map = Map.tick timeDelta model.map
+                , map = newMap
                 , time = model.time + timeDelta
               }
-            , Cmd.none
+            , cmd |> Cmd.map MapMsg
             )
 
         MapMsg msg ->

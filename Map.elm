@@ -3,6 +3,7 @@ module Map exposing (..)
 import Audio
 import Bee exposing (Bee)
 import Dict exposing (Dict)
+import Dictionary.Spanish as Spanish
 import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
@@ -301,11 +302,17 @@ resize window map =
     { map | window = window }
 
 
-tick : Time -> Map -> Map
+tick : Time -> Map -> ( Map, Cmd Msg )
 tick timeDelta map =
-    { map
-        | artGame = animateArtGame timeDelta map.window map.artGame
-    }
+    let
+        ( newArtGame, cmd ) =
+            animateArtGame timeDelta map.window map.artGame
+    in
+    ( { map
+        | artGame = newArtGame
+      }
+    , cmd
+    )
 
 
 {-| This is the number of milliseconds we wait
@@ -316,19 +323,23 @@ colorSwapTime =
     2000
 
 
-animateArtGame : Time -> Window.Size -> ArtGame -> ArtGame
+animateArtGame : Time -> Window.Size -> ArtGame -> ( ArtGame, Cmd Msg )
 animateArtGame timeDiff window artGame =
     let
         newTime =
             artGame.time + timeDiff
 
-        ( ( newColor, newSeed ), timeReset ) =
+        ( ( newColor, newSeed ), timeReset, cmd ) =
             if newTime > colorSwapTime then
-                ( randomColor artGame.seed artGame.balls, 0 )
+                let
+                    ( randColor, seed ) =
+                        randomColor artGame.seed artGame.balls
+                in
+                ( ( randColor, seed ), 0, Audio.play (Spanish.audio <| toString randColor) )
             else
-                ( ( artGame.color, artGame.seed ), newTime )
+                ( ( artGame.color, artGame.seed ), newTime, Cmd.none )
     in
-    { artGame
+    ( { artGame
         | time = timeReset
         , color = newColor
         , seed = newSeed
@@ -336,7 +347,9 @@ animateArtGame timeDiff window artGame =
             artGame.balls
                 |> List.map (animateBall timeDiff window)
                 |> collisions
-    }
+      }
+    , cmd
+    )
 
 
 collisions : List MovingBall -> List MovingBall
@@ -767,11 +780,11 @@ artStore play map =
                     :: playButton ( 192, 10 ) (ArtStore True)
                     :: viewPoints map.points
                     :: List.indexedMap showCircle
-                        [ ( "black", "audio/negro.m4a" )
-                        , ( "white", "audio/blanco.m4a" )
-                        , ( "red", "audio/rojo.m4a" )
-                        , ( "blue", "audio/azul.m4a" )
-                        , ( "yellow", "audio/amarillo.m4a" )
+                        [ ( "black", Spanish.audio "black" )
+                        , ( "white", Spanish.audio "white" )
+                        , ( "red", Spanish.audio "red" )
+                        , ( "blue", Spanish.audio "blue" )
+                        , ( "yellow", Spanish.audio "yellow" )
                         ]
 
 
@@ -811,7 +824,7 @@ colorGame pointCount artGame =
     in
     div []
         ([ backButton ( 130, 0 ) (ArtStore False)
-         , text ("Color: " ++ toString artGame.color)
+         , text ("Color: " ++ Spanish.translate (toString artGame.color))
          , viewPoints pointCount
          ]
             ++ content
