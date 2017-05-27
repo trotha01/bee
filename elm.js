@@ -11892,20 +11892,20 @@ var _user$project$Map$initMovingBall = F5(
 			color: color,
 			radius: 32,
 			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p7._0, _p7._1),
-			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, 0, 0),
+			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p8._0, _p8._1),
 			img: image
 		};
 	});
-var _user$project$Map$randomVelocity = A2(
-	_elm_lang$core$Random$pair,
+var _user$project$Map$nonZeroFloat = A2(
+	_elm_lang$core$Random$map,
+	_elm_lang$core$Basics$toFloat,
 	A2(
 		_elm_lang$core$Random$map,
-		_elm_lang$core$Basics$toFloat,
-		A2(_elm_lang$core$Random$int, -1, 1)),
-	A2(
-		_elm_lang$core$Random$map,
-		_elm_lang$core$Basics$toFloat,
+		function (i) {
+			return _elm_lang$core$Native_Utils.eq(i, 0) ? 1 : i;
+		},
 		A2(_elm_lang$core$Random$int, -1, 1)));
+var _user$project$Map$randomVelocity = A2(_elm_lang$core$Random$pair, _user$project$Map$nonZeroFloat, _user$project$Map$nonZeroFloat);
 var _user$project$Map$randomPosition = function (window) {
 	return A2(
 		_elm_lang$core$Random$pair,

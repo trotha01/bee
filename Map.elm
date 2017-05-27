@@ -190,8 +190,21 @@ randomPosition window =
 randomVelocity : Random.Generator ( Float, Float )
 randomVelocity =
     Random.pair
-        (Random.map toFloat (Random.int -1 1))
-        (Random.map toFloat (Random.int -1 1))
+        nonZeroFloat
+        nonZeroFloat
+
+
+nonZeroFloat : Random.Generator Float
+nonZeroFloat =
+    Random.int -1 1
+        |> Random.map
+            (\i ->
+                if i == 0 then
+                    1
+                else
+                    i
+            )
+        |> Random.map toFloat
 
 
 randomMovingBall : Window.Size -> Int -> Random.Generator MovingBall
@@ -220,7 +233,7 @@ initMovingBall id color ( x, y ) ( vx, vy ) image =
     , color = color
     , radius = 32
     , pos = vec2 x y
-    , velocity = vec2 0 0
+    , velocity = vec2 vx vy
     , img = image
     }
 
