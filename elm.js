@@ -11811,6 +11811,7 @@ var _user$project$Map$viewPoints = function (count) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Map$slowdown = 1 / 10;
 var _user$project$Map$initBottomWall = F2(
 	function (windowWidth, windowHeight) {
 		return {
@@ -12149,12 +12150,12 @@ var _user$project$Map$animateBall = F3(
 			_elm_lang$core$Basics$clamp,
 			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos),
 			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos),
-			x + (_elm_community$linear_algebra$Math_Vector2$getX(ball.velocity) * timeDiff));
+			x + ((_elm_community$linear_algebra$Math_Vector2$getX(ball.velocity) * timeDiff) * _user$project$Map$slowdown));
 		var newY = A3(
 			_elm_lang$core$Basics$clamp,
 			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos),
 			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos),
-			y + (_elm_community$linear_algebra$Math_Vector2$getY(ball.velocity) * timeDiff));
+			y + ((_elm_community$linear_algebra$Math_Vector2$getY(ball.velocity) * timeDiff) * _user$project$Map$slowdown));
 		var newXVelocity = (_elm_lang$core$Native_Utils.eq(
 			newX,
 			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos)) || _elm_lang$core$Native_Utils.eq(
@@ -12570,7 +12571,7 @@ var _user$project$Map$colorBall = F2(
 					}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
+					_0: _elm_lang$html$Html_Events$onMouseDown(
 						A3(_user$project$Map$ColorClicked, ball.id, gameColor, ball.color)),
 					_1: {ctor: '[]'}
 				}

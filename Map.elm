@@ -6,7 +6,7 @@ import Dict exposing (Dict)
 import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onMouseDown)
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
 import Random.Extra
@@ -459,6 +459,10 @@ initBottomWall windowWidth windowHeight =
     }
 
 
+slowdown =
+    1 / 10
+
+
 animateBall : Time -> Window.Size -> MovingBall -> MovingBall
 animateBall timeDiff window ball =
     let
@@ -484,11 +488,11 @@ animateBall timeDiff window ball =
             getY ball.pos
 
         newX =
-            (x + getX ball.velocity * timeDiff)
+            (x + getX ball.velocity * timeDiff * slowdown)
                 |> clamp (getX leftWall.pos) (getX rightWall.pos)
 
         newY =
-            (y + getY ball.velocity * timeDiff)
+            (y + getY ball.velocity * timeDiff * slowdown)
                 |> clamp (getY topWall.pos) (getY bottomWall.pos)
 
         newXVelocity =
@@ -818,7 +822,7 @@ colorBall gameColor ball =
             , ( "width", toString (ball.radius * 2) ++ "px" )
             , ( "height", toString (ball.radius * 2) ++ "px" )
             ]
-        , onClick (ColorClicked ball.id gameColor ball.color)
+        , onMouseDown (ColorClicked ball.id gameColor ball.color)
         ]
         []
 
