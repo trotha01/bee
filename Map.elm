@@ -3,6 +3,7 @@ module Map exposing (..)
 import Audio
 import Bee exposing (Bee)
 import Dict exposing (Dict)
+import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick)
@@ -27,8 +28,12 @@ type alias Map =
 
 init : Window.Size -> Level -> Map
 init window level =
+    let
+        ( artGame, _ ) =
+            initArtGame window (Random.initialSeed 0)
+    in
     { level = level
-    , artGame = initArtGame
+    , artGame = artGame
     , window = window
     , points = 0
     , seed = Random.initialSeed 0
@@ -57,31 +62,8 @@ type Color
 
 colorGen : Random.Generator Color
 colorGen =
-    Random.int 1 3
-        |> Random.map
-            (\i ->
-                case i of
-                    1 ->
-                        Red
-
-                    2 ->
-                        Orange
-
-                    3 ->
-                        Yellow
-
-                    4 ->
-                        Green
-
-                    5 ->
-                        Blue
-
-                    6 ->
-                        Purple
-
-                    _ ->
-                        Red
-            )
+    randItem [ Red, Orange, Yellow, Green, Blue, Purple ]
+        |> Random.map (Maybe.withDefault Red)
 
 
 type alias ArtGame =
@@ -98,6 +80,7 @@ type alias MovingBall =
     , pos : Vec2
     , radius : Float
     , velocity : Vec2
+    , img : String
     }
 
 
@@ -105,19 +88,29 @@ newLevel : Level -> Map -> Map
 newLevel level map =
     case level of
         ArtStore True ->
-            { map | artGame = initArtGame, level = level }
+            let
+                ( artGame, seed ) =
+                    initArtGame map.window map.seed
+            in
+            { map | artGame = artGame, seed = seed, level = level }
 
         _ ->
             { map | level = level }
 
 
-initArtGame : ArtGame
-initArtGame =
-    { time = 0
-    , seed = Random.initialSeed 0
-    , color = Yellow
-    , balls = initialBalls
-    }
+initArtGame : Window.Size -> Random.Seed -> ( ArtGame, Random.Seed )
+initArtGame window seed =
+    let
+        ( balls, newSeed ) =
+            initialBalls window seed
+    in
+    ( { time = 0
+      , seed = newSeed
+      , color = Yellow
+      , balls = balls
+      }
+    , newSeed
+    )
 
 
 get : Int -> List a -> Maybe a
@@ -140,22 +133,93 @@ randomColor seed balls =
         |> Tuple.mapFirst (Maybe.withDefault Red)
 
 
-initialBalls : List MovingBall
-initialBalls =
-    [ initMovingBall 1 ( 0, 0 ) ( 1, 1 ) Red
-    , initMovingBall 2 ( 100, 70 ) ( -1, 1 ) Yellow
-    , initMovingBall 3 ( 70, 170 ) ( -1, -1 ) Green
-    , initMovingBall 4 ( 200, 170 ) ( 1, -1 ) Blue
-    ]
+imageDir =
+    "imgs/colors/"
 
 
-initMovingBall : Int -> ( Float, Float ) -> ( Float, Float ) -> Color -> MovingBall
-initMovingBall id ( x, y ) ( vx, vy ) color =
+images : EveryDict Color (List String)
+images =
+    EveryDict.fromList
+        [ ( Red, [ "red-cherry.png", "red-umbrella.png" ] )
+        , ( Orange, [ "orange-tangerine.png" ] )
+        , ( Yellow, [ "yellow-banana.png", "yellow-car.png", "yellow-cheese.png" ] )
+        , ( Green, [ "green-frog.png", "green-turtle.png" ] )
+        , ( Blue, [ "blue-bird.png", "blue-fish.png" ] )
+        , ( Purple, [ "purple-octopus.png" ] )
+        ]
+
+
+alwaysGen : a -> Random.Generator a
+alwaysGen x =
+    Random.map (\_ -> x) Random.bool
+
+
+randomImage : Color -> Random.Generator String
+randomImage color =
+    let
+        options =
+            EveryDict.get color images
+    in
+    case options of
+        Nothing ->
+            -- should never happen
+            alwaysGen ""
+
+        Just [] ->
+            -- should never happen
+            alwaysGen ""
+
+        Just imageList ->
+            randItem imageList
+                |> Random.map (Maybe.withDefault "")
+
+
+randomPosition : Window.Size -> Random.Generator ( Float, Float )
+randomPosition window =
+    Random.pair
+        (Random.map toFloat (Random.int 30 window.width))
+        (Random.map toFloat (Random.int 30 window.height))
+
+
+randomVelocity : Random.Generator ( Float, Float )
+randomVelocity =
+    Random.pair
+        (Random.map toFloat (Random.int -1 1))
+        (Random.map toFloat (Random.int -1 1))
+
+
+randomMovingBall : Window.Size -> Int -> Random.Generator MovingBall
+randomMovingBall window id =
+    colorGen
+        |> Random.andThen
+            (\color ->
+                Random.map3
+                    (initMovingBall id color)
+                    (randomPosition window)
+                    randomVelocity
+                    (randomImage color)
+            )
+
+
+initialBalls : Window.Size -> Random.Seed -> ( List MovingBall, Random.Seed )
+initialBalls window seed =
+    List.foldr
+        (\id ( balls, seed ) ->
+            Random.step (randomMovingBall window id) seed
+                |> Tuple.mapFirst (\ball -> ball :: balls)
+        )
+        ( [], seed )
+        (List.range 0 9)
+
+
+initMovingBall : Int -> Color -> ( Float, Float ) -> ( Float, Float ) -> String -> MovingBall
+initMovingBall id color ( x, y ) ( vx, vy ) image =
     { id = id
     , color = color
     , radius = 32
     , pos = vec2 x y
     , velocity = vec2 0 0
+    , img = image
     }
 
 
@@ -716,7 +780,11 @@ colorBall gameColor ball =
     div
         [ style
             [ ( "border-radius", "50%" )
-            , ( "background-color", toString ball.color )
+
+            -- , ( "background-color", toString ball.color )
+            , ( "background-image", "url(" ++ imageDir ++ ball.img ++ ")" )
+            , ( "background-size", "contain" )
+            , ( "background-repeat", "no-repeat" )
             , ( "border", "1px solid black" )
             , ( "position", "absolute" )
             , ( "left", (toString <| getX ball.pos) ++ "px" )
