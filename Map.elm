@@ -5,7 +5,7 @@ import Bee exposing (Bee)
 import Dict exposing (Dict)
 import Dictionary.Translator exposing (Translator)
 import EveryDict exposing (EveryDict)
-import Html exposing (Html, button, div, img, text)
+import Html exposing (Html, button, div, h1, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick, onMouseDown)
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
@@ -150,7 +150,7 @@ tick timeDelta window translator map =
 view : Window.Size -> Translator -> Map -> Html Msg
 view mapSize translator map =
     let
-        body =
+        level =
             case map.level of
                 Home ->
                     home mapSize
@@ -166,8 +166,8 @@ view mapSize translator map =
                         |> Html.map ArtStoreMsg
     in
     div []
-        [ header map
-        , body
+        [ header mapSize map
+        , body level
         ]
 
 
@@ -175,9 +175,45 @@ view mapSize translator map =
 -- HEADER
 
 
-header : Map -> Html Msg
-header map =
-    viewPoints map.points
+header : Window.Size -> Map -> Html Msg
+header window map =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "top", px 0 )
+            , ( "bottom", px 0 )
+            , ( "height", px 100 )
+            , ( "width", px window.width )
+            , ( "border-bottom", "1px solid black" )
+            , ( "background-color", "hsl(189, 100%, 50%)" )
+            ]
+        ]
+        [ h1 [] [ text "Lingua" ]
+        , viewPoints map.points
+        ]
+
+
+
+-- BODY
+
+
+body : Html Msg -> Html Msg
+body level =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "top", px 100 )
+            , ( "bottom", px 0 )
+            , ( "height", px 100 )
+            ]
+        ]
+        [ level
+        ]
+
+
+px : Int -> String
+px x =
+    toString x ++ "px"
 
 
 viewPoints : Int -> Html msg

@@ -84,7 +84,7 @@ initArtGame window seed =
 type Msg
     = ColorClicked Int Color Color
     | Play
-    | Pause
+    | Back
     | PlayAudio String
     | Exit
     | Tick Time
@@ -114,8 +114,6 @@ update window translator msg model =
                         { artGame | balls = newBalls, win = win }
                 in
                 ( { model
-                    -- TODO: add points back in
-                    --  points = map.points + 10
                     | playing = not win
                     , game = newArtGame
                   }
@@ -132,8 +130,8 @@ update window translator msg model =
             in
             ( { playing = True, game = newArtGame }, NoOp, Cmd.none )
 
-        Pause ->
-            ( model, NoOp, Cmd.none )
+        Back ->
+            ( { model | playing = False }, NoOp, Cmd.none )
 
         PlayAudio file ->
             ( model, NoOp, Audio.play file )
@@ -706,7 +704,7 @@ backButton ( x, y ) =
             , ( "width", "128px" )
             , ( "height", "64px" )
             ]
-        , onClick Pause
+        , onClick Back
         ]
         [ text "Back" ]
 

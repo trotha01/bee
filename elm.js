@@ -13523,7 +13523,7 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 			},
 			{ctor: '[]'});
 	});
-var _user$project$Store_ArtStore$Pause = {ctor: 'Pause'};
+var _user$project$Store_ArtStore$Back = {ctor: 'Back'};
 var _user$project$Store_ArtStore$backButton = function (_p35) {
 	var _p36 = _p35;
 	return A2(
@@ -13572,7 +13572,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$Pause),
+				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$Back),
 				_1: {ctor: '[]'}
 			}
 		},
@@ -13909,8 +13909,15 @@ var _user$project$Store_ArtStore$update = F4(
 					_1: _user$project$Store_ArtStore$NoOp,
 					_2: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'Pause':
-				return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+			case 'Back':
+				return {
+					ctor: '_Tuple3',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{playing: false}),
+					_1: _user$project$Store_ArtStore$NoOp,
+					_2: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'PlayAudio':
 				return {
 					ctor: '_Tuple3',
@@ -14003,9 +14010,126 @@ var _user$project$Map$viewPoints = function (count) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Map$header = function (map) {
-	return _user$project$Map$viewPoints(map.points);
+var _user$project$Map$px = function (x) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(x),
+		'px');
 };
+var _user$project$Map$body = function (level) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'top',
+							_1: _user$project$Map$px(100)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'bottom',
+								_1: _user$project$Map$px(0)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'height',
+									_1: _user$project$Map$px(100)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: level,
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Map$header = F2(
+	function (window, map) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'top',
+								_1: _user$project$Map$px(0)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'bottom',
+									_1: _user$project$Map$px(0)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'height',
+										_1: _user$project$Map$px(100)
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'width',
+											_1: _user$project$Map$px(window.width)
+										},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'border-bottom', _1: '1px solid black'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'hsl(189, 100%, 50%)'},
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$h1,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Lingua'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Map$viewPoints(map.points),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Map$init = function (level) {
 	return {
 		level: level,
@@ -14729,7 +14853,7 @@ var _user$project$Map$hometown = function (mapSize) {
 };
 var _user$project$Map$view = F3(
 	function (mapSize, translator, map) {
-		var body = function () {
+		var level = function () {
 			var _p25 = map.level;
 			switch (_p25.ctor) {
 				case 'Home':
@@ -14750,10 +14874,10 @@ var _user$project$Map$view = F3(
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _user$project$Map$header(map),
+				_0: A2(_user$project$Map$header, mapSize, map),
 				_1: {
 					ctor: '::',
-					_0: body,
+					_0: _user$project$Map$body(level),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -14784,7 +14908,16 @@ var _user$project$Main$pauseButton = A2(
 	{
 		ctor: '::',
 		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Pause),
-		_1: {ctor: '[]'}
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'float', _1: 'right'},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
 	},
 	{
 		ctor: '::',

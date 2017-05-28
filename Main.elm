@@ -137,7 +137,7 @@ mapView window translator map =
 
 
 pauseButton =
-    button [ onClick Pause ] [ text "pause" ]
+    button [ onClick Pause, style [ ( "float", "right" ) ] ] [ text "pause" ]
 
 
 
