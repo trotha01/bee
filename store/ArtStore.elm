@@ -333,6 +333,15 @@ randomMovingBall window colors id =
             )
 
 
+randomMovingBallWithColor : Window.Size -> Color -> Int -> Random.Generator MovingBall
+randomMovingBallWithColor window color id =
+    Random.map3
+        (initMovingBall id color)
+        (randomPosition window)
+        randomVelocity
+        (randomImage color)
+
+
 ballsPerRound =
     5
 
@@ -341,8 +350,26 @@ ballsPerRound =
 -}
 initialBalls : Window.Size -> List Color -> Random.Generator (List MovingBall)
 initialBalls window colors =
-    List.range 0 (ballsPerRound - 1)
-        |> List.map (randomMovingBall window colors)
+    let
+        initialLength =
+            List.length colors
+
+        oneOfEach =
+            List.range 0 (initialLength - 1)
+                |> List.Extra.zip colors
+                |> List.map (\( color, id ) -> randomMovingBallWithColor window color id)
+
+        random =
+            List.range initialLength (ballsPerRound - 1)
+                |> List.map (randomMovingBall window colors)
+
+        _ =
+            Debug.log "(initialLength, remainder)" ( initialLength, ballsPerRound - initialLength )
+
+        _ =
+            Debug.log "(oneOfEach, random)" ( List.length oneOfEach, List.length random )
+    in
+    (oneOfEach ++ random)
         |> Random.Extra.combine
 
 
