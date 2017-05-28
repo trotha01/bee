@@ -123,7 +123,7 @@ view translator model =
             [ ( "user-select", "none" )
             ]
         ]
-        [ header model.window model.map
+        [ header model
         , mapView model.window translator model.map
 
         -- , Bee.view Nothing model.user
@@ -147,27 +147,32 @@ mapView window translator map =
 -- HEADER
 
 
-header : Window.Size -> Map -> Html Msg
-header window map =
+header : Model -> Html Msg
+header model =
+    -- TODO: add dropdown selector for language
     div
         [ style
             [ ( "position", "absolute" )
             , ( "top", px 0 )
             , ( "bottom", px 0 )
             , ( "height", px 100 )
-            , ( "width", px window.width )
+            , ( "width", px model.window.width )
             , ( "border-bottom", "1px solid black" )
             , ( "background-color", "hsl(189, 100%, 50%)" )
             ]
         ]
         [ h1 [] [ text "Lingua" ]
-        , viewPoints map.points
-        , pauseButton
+        , viewPoints model.map.points
+        , pauseButton model
         ]
 
 
-pauseButton =
-    button [ onClick Pause, style [ ( "float", "right" ) ] ] [ text "pause" ]
+pauseButton : Model -> Html Msg
+pauseButton model =
+    if model.pause then
+        button [ onClick Pause, style [ ( "float", "right" ) ] ] [ text "play" ]
+    else
+        button [ onClick Pause, style [ ( "float", "right" ) ] ] [ text "pause" ]
 
 
 viewPoints : Int -> Html msg

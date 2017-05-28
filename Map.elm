@@ -73,38 +73,23 @@ type Route
     | ArtStoreRoute
 
 
+(=>) =
+    (,)
+
+
 update : Translator -> Window.Size -> Msg -> Map -> ( Map, Cmd Msg )
 update translator window msg map =
-    case ( map.level, msg ) of
-        ( _, NewLevel route ) ->
-            let
-                level =
-                    case route of
-                        HomeRoute ->
-                            Home
+    case ( msg, map.level ) of
+        ( NewLevel route, _ ) ->
+            newLevel window route map
 
-                        HomeTownRoute ->
-                            HomeTown
+        ( PlayAudio file, _ ) ->
+            map => Audio.play file
 
-                        GroceryStoreRoute ->
-                            GroceryStore
-
-                        ArtStoreRoute ->
-                            let
-                                ( store, _ ) =
-                                    ArtStore.init window map.seed
-                            in
-                            ArtStore store
-            in
-            ( { map | level = level }, Cmd.none )
-
-        ( _, PlayAudio file ) ->
-            ( map, Audio.play file )
-
-        ( _, Tick timeDelta ) ->
+        ( Tick timeDelta, _ ) ->
             tick timeDelta window translator map
 
-        ( ArtStore artStore, ArtStoreMsg msg ) ->
+        ( ArtStoreMsg msg, ArtStore artStore ) ->
             let
                 ( newArtStore, msgFromPage, cmd ) =
                     ArtStore.update window translator msg artStore
@@ -133,8 +118,32 @@ update translator window msg map =
             )
 
         ( _, _ ) ->
-            -- Should not reach here
+            -- Disregard messages from the wrong page
             ( map, Cmd.none )
+
+
+newLevel : Window.Size -> Route -> Map -> ( Map, Cmd Msg )
+newLevel window route map =
+    let
+        ( newLevel, newSeed ) =
+            case route of
+                HomeRoute ->
+                    Home => map.seed
+
+                HomeTownRoute ->
+                    HomeTown => map.seed
+
+                GroceryStoreRoute ->
+                    GroceryStore => map.seed
+
+                ArtStoreRoute ->
+                    let
+                        ( store, newSeed ) =
+                            ArtStore.init window map.seed
+                    in
+                    ArtStore store => newSeed
+    in
+    { map | level = newLevel, seed = newSeed } => Cmd.none
 
 
 tick : Time -> Window.Size -> Translator -> Map -> ( Map, Cmd Msg )
@@ -216,7 +225,8 @@ hometown : Window.Size -> Html Msg
 hometown mapSize =
     div []
         [ house ( 0, 0 )
-        , storeBuilding ( 160, 0 )
+
+        -- , storeBuilding ( 160, 0 )
         , artStoreBuilding ( 320, 0 )
         ]
 

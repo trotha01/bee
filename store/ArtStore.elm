@@ -6,6 +6,7 @@ import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick, onMouseDown)
+import List.Zipper as Zipper exposing (Zipper(..))
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
 import Random.Extra
@@ -18,7 +19,10 @@ import Window
 
 type alias Model =
     { playing : Bool
+
+    -- TODO: change to maybe game instead of using 'playing'
     , game : ArtGame
+    , seed : Random.Seed
     }
 
 
@@ -34,7 +38,8 @@ type alias ArtGame =
     -- TODO: use these to add one color at a time to the game
     -- A list of known and a list of unknown colors
     -- we will introduce one color at a time in the game
-    , knownUnknownColors : ( List Color, List Color )
+    -- TODO: use zipper
+    , knownUnknownColors : Zipper Color
     }
 
 
@@ -66,29 +71,34 @@ type Color
     | Purple
 
 
+initialColors : Zipper Color
+initialColors =
+    Zipper [] Red [ Orange, Yellow, Green, Blue, Purple ]
+
+
 init : Window.Size -> Random.Seed -> ( Model, Random.Seed )
 init window seed =
     let
         ( game, newSeed ) =
-            initArtGame window [] seed
+            initArtGame window initialColors seed
     in
-    ( { game = game, playing = False }, newSeed )
+    ( { game = game, playing = False, seed = newSeed }, newSeed )
 
 
-initArtGame : Window.Size -> List Color -> Random.Seed -> ( ArtGame, Random.Seed )
+initArtGame : Window.Size -> Zipper Color -> Random.Seed -> ( ArtGame, Random.Seed )
 initArtGame window colors seed =
     let
         ( balls, newSeed ) =
-            Random.step (initialBalls window colors) seed
+            Random.step (initialBalls window (Zipper.current colors :: Zipper.before colors)) seed
     in
     ( { time = 0
       , seed = newSeed
       , points = 0
-      , color = Yellow
+      , color = Zipper.current colors
       , balls = balls
       , win = False
       , finishRound = False
-      , knownUnknownColors = ( [], [ Red, Orange, Yellow, Green, Blue, Purple ] )
+      , knownUnknownColors = colors
       }
     , newSeed
     )
@@ -118,48 +128,21 @@ update : Window.Size -> Translator -> Msg -> Model -> ( Model, MsgFromPage, Cmd 
 update window translator msg model =
     case msg of
         ColorClicked id gameColor color ->
-            if gameColor == color then
-                let
-                    artGame =
-                        model.game
-
-                    newBalls =
-                        artGame.balls |> removeBall id
-
-                    finishRound =
-                        List.length newBalls == 0
-
-                    win =
-                        finishRound
-                            && (List.length (unknownColors artGame.knownUnknownColors) == 0)
-
-                    newArtGame =
-                        { artGame | balls = newBalls, finishRound = finishRound, win = win }
-                in
-                ( { model
-                    | game = newArtGame
-                  }
-                , AddPoints 10
-                , Audio.play "audio/puff.mp3"
-                )
-            else
-                ( model, NoOp, Cmd.none )
+            colorClicked ( id, gameColor, color ) model
 
         Play ->
+            ( { model | playing = True }, NoOp, Cmd.none )
+
+        NextRound ->
             let
-                ( newArtGame, _ ) =
-                    -- TODO: pass random seed from parent
-                    initArtGame window (knownColors model.game.knownUnknownColors) (Random.initialSeed 0)
+                ( nextArtGame, newSeed ) =
+                    initArtGame window (Debug.log "new colors" (nextColor model.game.knownUnknownColors)) model.seed
             in
-            ( { playing = True, game = newArtGame } |> nextColor, NoOp, Cmd.none )
+            { model | game = nextArtGame, seed = newSeed }
+                |> update window translator Play
 
         FinishGame ->
             ( { model | playing = False }, NoOp, Cmd.none )
-
-        NextRound ->
-            model
-                |> nextColor
-                |> update window translator Play
 
         PlayAudio file ->
             ( model, NoOp, Audio.play file )
@@ -174,34 +157,50 @@ update window translator msg model =
                 ( model, NoOp, Cmd.none )
 
 
-knownColors : ( List a, List a ) -> List a
-knownColors =
-    Tuple.first
+colorClicked : ( Int, Color, Color ) -> Model -> ( Model, MsgFromPage, Cmd Msg )
+colorClicked ( id, gameColor, colorClicked ) model =
+    if gameColor /= colorClicked then
+        ( model, NoOp, Cmd.none )
+    else
+        let
+            artGame =
+                model.game
+
+            newBalls =
+                artGame.balls |> removeBall id
+
+            finishRound =
+                List.length newBalls == 0
+
+            win =
+                finishRound
+                    && (List.length (unknownColors artGame.knownUnknownColors) == 0)
+
+            newArtGame =
+                { artGame | balls = newBalls, finishRound = finishRound, win = win }
+        in
+        ( { model
+            | game = newArtGame
+          }
+        , AddPoints 10
+        , Audio.play "audio/puff.mp3"
+        )
 
 
-unknownColors : ( List a, List a ) -> List a
-unknownColors =
-    Tuple.second
+knownColors : Zipper a -> List a
+knownColors colors =
+    Zipper.current colors :: Zipper.before colors
 
 
-nextColor : Model -> Model
-nextColor model =
-    let
-        game =
-            model.game
+unknownColors : Zipper a -> List a
+unknownColors colors =
+    Zipper.after colors
 
-        knownUnknownColors =
-            case model.game.knownUnknownColors of
-                ( bs, c :: cs ) ->
-                    ( c :: bs, cs )
 
-                ( bs, [] ) ->
-                    ( bs, [] )
-
-        newGame =
-            { game | knownUnknownColors = knownUnknownColors }
-    in
-    { model | game = newGame }
+nextColor : Zipper a -> Zipper a
+nextColor colors =
+    Zipper.next colors
+        |> Maybe.withDefault colors
 
 
 tick : Time -> Window.Size -> Translator -> Model -> ( Model, MsgFromPage, Cmd Msg )
