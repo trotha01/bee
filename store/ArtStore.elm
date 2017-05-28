@@ -135,7 +135,8 @@ update window translator msg model =
             colorClicked ( id, gameColor, color ) model
 
         Play ->
-            ( { model | playing = True }, NoOp, Cmd.none )
+            { model | playing = True }
+                |> update window translator (PlayAudio (translator.audio <| toString model.game.color))
 
         NextRound ->
             let
@@ -678,6 +679,7 @@ view translator model =
             div [] <|
                 exit ExitStore
                     :: playButton ( 192, 10 )
+                    -- :: backButton ( 130, 0 )
                     :: List.indexedMap showCircle
                         [ ( "black", translator.audio "black" )
                         , ( "white", translator.audio "white" )
@@ -723,8 +725,7 @@ colorGame translator game =
                 ++ List.map deadBall game.deadBalls
     in
     div []
-        ([ backButton ( 130, 0 )
-         , text ("Color: " ++ translator.translate (toString game.color))
+        ([ text ("Color: " ++ translator.translate (toString game.color))
          ]
             ++ content
             ++ balls

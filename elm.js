@@ -15465,18 +15465,13 @@ var _user$project$Store_ArtStore$colorGame = F2(
 				_elm_lang$core$Basics_ops['++'],
 				{
 					ctor: '::',
-					_0: _user$project$Store_ArtStore$backButton(
-						{ctor: '_Tuple2', _0: 130, _1: 0}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Color: ',
-								translator.translate(
-									_elm_lang$core$Basics$toString(game.color)))),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Color: ',
+							translator.translate(
+								_elm_lang$core$Basics$toString(game.color)))),
+					_1: {ctor: '[]'}
 				},
 				A2(_elm_lang$core$Basics_ops['++'], content, balls)));
 	});
@@ -15614,14 +15609,19 @@ var _user$project$Store_ArtStore$update = F4(
 						{ctor: '_Tuple3', _0: _p47._0, _1: _p47._1, _2: _p47._2},
 						model);
 				case 'Play':
-					return {
-						ctor: '_Tuple3',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{playing: true}),
-						_1: _user$project$Store_ArtStore$NoOp,
-						_2: _elm_lang$core$Platform_Cmd$none
-					};
+					var _v23 = window,
+						_v24 = translator,
+						_v25 = _user$project$Store_ArtStore$PlayAudio(
+						translator.audio(
+							_elm_lang$core$Basics$toString(model.game.color))),
+						_v26 = _elm_lang$core$Native_Utils.update(
+						model,
+						{playing: true});
+					window = _v23;
+					translator = _v24;
+					msg = _v25;
+					model = _v26;
+					continue update;
 				case 'NextRound':
 					var _p48 = A3(
 						_user$project$Store_ArtStore$initArtGame,
@@ -15630,16 +15630,16 @@ var _user$project$Store_ArtStore$update = F4(
 						model.seed);
 					var nextArtGame = _p48._0;
 					var newSeed = _p48._1;
-					var _v23 = window,
-						_v24 = translator,
-						_v25 = _user$project$Store_ArtStore$Play,
-						_v26 = _elm_lang$core$Native_Utils.update(
+					var _v27 = window,
+						_v28 = translator,
+						_v29 = _user$project$Store_ArtStore$Play,
+						_v30 = _elm_lang$core$Native_Utils.update(
 						model,
 						{game: nextArtGame, seed: newSeed});
-					window = _v23;
-					translator = _v24;
-					msg = _v25;
-					model = _v26;
+					window = _v27;
+					translator = _v28;
+					msg = _v29;
+					model = _v30;
 					continue update;
 				case 'FinishGame':
 					return {
