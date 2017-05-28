@@ -96,8 +96,11 @@ update msg model =
 
         Tick timeDelta ->
             let
+                _ =
+                    Debug.log "Main Tick"
+
                 ( newMap, cmd ) =
-                    Map.tick timeDelta model.map
+                    Map.update (Map.Tick timeDelta) model.map
             in
             ( { model
                 | user = model.user |> Bee.animate model.time

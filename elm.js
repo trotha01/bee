@@ -11825,6 +11825,1176 @@ var _user$project$Dictionary_Spanish$audio = function (word) {
 		_user$project$Dictionary_Spanish$findWord(word));
 };
 
+var _user$project$Store_ArtStore$tile = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src('imgs/map-tileset.png'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'clip', _1: 'rect(32px 64px 64px 32px)'},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'left',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p1._0 - 32),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'top',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p1._1 - 32),
+											'px')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Store_ArtStore$exit = function (exitMsg) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(exitMsg),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Store_ArtStore$tile(
+				{ctor: '_Tuple2', _0: 0, _1: 0}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Store_ArtStore$tile(
+					{ctor: '_Tuple2', _0: 0, _1: 32}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Store_ArtStore$tile(
+						{ctor: '_Tuple2', _0: 32, _1: 0}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Store_ArtStore$tile(
+							{ctor: '_Tuple2', _0: 32, _1: 32}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Store_ArtStore$viewPoints = function (count) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('points'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'Points: ',
+					_elm_lang$core$Basics$toString(count))),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Store_ArtStore$colorSwapTime = 2000;
+var _user$project$Store_ArtStore$slowdown = 1 / 10;
+var _user$project$Store_ArtStore$initBottomWall = F2(
+	function (windowWidth, windowHeight) {
+		return {
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth / 2, windowHeight),
+			halfHeight: 1,
+			halfWidth: windowWidth / 2
+		};
+	});
+var _user$project$Store_ArtStore$initTopWall = function (windowWidth) {
+	return {
+		pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth / 2, 0),
+		halfHeight: 1,
+		halfWidth: windowWidth / 2
+	};
+};
+var _user$project$Store_ArtStore$initRightWall = F2(
+	function (windowWidth, windowHeight) {
+		return {
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth, windowHeight / 2),
+			halfHeight: windowHeight / 2,
+			halfWidth: 1
+		};
+	});
+var _user$project$Store_ArtStore$initLeftWall = function (windowHeight) {
+	return {
+		pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, 0, windowHeight / 2),
+		halfHeight: windowHeight / 2,
+		halfWidth: 1
+	};
+};
+var _user$project$Store_ArtStore$resolveCollision = F3(
+	function (_p2, b0, b1) {
+		var _p3 = _p2;
+		var _p4 = _p3.normal;
+		var relativeVelocity = A2(_elm_community$linear_algebra$Math_Vector2$sub, b1.velocity, b0.velocity);
+		var velocityAlongNormal = A2(_elm_community$linear_algebra$Math_Vector2$dot, relativeVelocity, _p4);
+		if (_elm_lang$core$Native_Utils.eq(_p3.penetration, 0) || (_elm_lang$core$Native_Utils.cmp(velocityAlongNormal, 0) > 0)) {
+			return {ctor: '_Tuple2', _0: b0, _1: b1};
+		} else {
+			var impulse = _p4;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					b0,
+					{
+						velocity: A2(_elm_community$linear_algebra$Math_Vector2$sub, b0.velocity, impulse)
+					}),
+				_1: _elm_lang$core$Native_Utils.update(
+					b1,
+					{
+						velocity: A2(_elm_community$linear_algebra$Math_Vector2$add, b1.velocity, impulse)
+					})
+			};
+		}
+	});
+var _user$project$Store_ArtStore$removeBall = F2(
+	function (id, balls) {
+		return A2(
+			_elm_lang$core$List$filter,
+			function (ball) {
+				return !_elm_lang$core$Native_Utils.eq(ball.id, id);
+			},
+			balls);
+	});
+var _user$project$Store_ArtStore$initMovingBall = F5(
+	function (id, color, _p6, _p5, image) {
+		var _p7 = _p6;
+		var _p8 = _p5;
+		return {
+			id: id,
+			color: color,
+			radius: 32,
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p7._0, _p7._1),
+			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p8._0, _p8._1),
+			img: image
+		};
+	});
+var _user$project$Store_ArtStore$nonZeroFloat = A2(
+	_elm_lang$core$Random$map,
+	_elm_lang$core$Basics$toFloat,
+	A2(
+		_elm_lang$core$Random$map,
+		function (i) {
+			return _elm_lang$core$Native_Utils.eq(i, 0) ? 1 : i;
+		},
+		A2(_elm_lang$core$Random$int, -1, 1)));
+var _user$project$Store_ArtStore$randomVelocity = A2(_elm_lang$core$Random$pair, _user$project$Store_ArtStore$nonZeroFloat, _user$project$Store_ArtStore$nonZeroFloat);
+var _user$project$Store_ArtStore$randomPosition = function (window) {
+	return A2(
+		_elm_lang$core$Random$pair,
+		A2(
+			_elm_lang$core$Random$map,
+			_elm_lang$core$Basics$toFloat,
+			A2(_elm_lang$core$Random$int, 30, window.width)),
+		A2(
+			_elm_lang$core$Random$map,
+			_elm_lang$core$Basics$toFloat,
+			A2(_elm_lang$core$Random$int, 30, window.height)));
+};
+var _user$project$Store_ArtStore$alwaysGen = function (x) {
+	return A2(
+		_elm_lang$core$Random$map,
+		function (_p9) {
+			return x;
+		},
+		_elm_lang$core$Random$bool);
+};
+var _user$project$Store_ArtStore$imageDir = 'imgs/colors/';
+var _user$project$Store_ArtStore$get = F2(
+	function (index, list) {
+		return _elm_lang$core$List$head(
+			A2(_elm_lang$core$List$drop, index, list));
+	});
+var _user$project$Store_ArtStore$randItem = function (list) {
+	return A2(
+		_elm_lang$core$Random$map,
+		function (i) {
+			return A2(_user$project$Store_ArtStore$get, i, list);
+		},
+		A2(
+			_elm_lang$core$Random$int,
+			0,
+			_elm_lang$core$List$length(list) - 1));
+};
+var _user$project$Store_ArtStore$Model = F2(
+	function (a, b) {
+		return {playing: a, game: b};
+	});
+var _user$project$Store_ArtStore$ArtGame = F6(
+	function (a, b, c, d, e, f) {
+		return {color: a, balls: b, time: c, seed: d, win: e, points: f};
+	});
+var _user$project$Store_ArtStore$MovingBall = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, color: b, pos: c, radius: d, velocity: e, img: f};
+	});
+var _user$project$Store_ArtStore$CollisionResult = F2(
+	function (a, b) {
+		return {normal: a, penetration: b};
+	});
+var _user$project$Store_ArtStore$collisionBubbleBubble = F3(
+	function (b0b1, radius0, radius1) {
+		var distanceSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(b0b1);
+		var radiusb0b1 = radius0 + radius1;
+		if (_elm_lang$core$Native_Utils.eq(distanceSq, 0)) {
+			return A2(
+				_user$project$Store_ArtStore$CollisionResult,
+				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
+				radius0);
+		} else {
+			if (_elm_lang$core$Native_Utils.cmp(distanceSq, radiusb0b1 * radiusb0b1) > -1) {
+				return A2(
+					_user$project$Store_ArtStore$CollisionResult,
+					A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
+					0);
+			} else {
+				var d = _elm_lang$core$Basics$sqrt(distanceSq);
+				return A2(
+					_user$project$Store_ArtStore$CollisionResult,
+					A2(_elm_community$linear_algebra$Math_Vector2$scale, 1 / d, b0b1),
+					radiusb0b1 - d);
+			}
+		}
+	});
+var _user$project$Store_ArtStore$collision = F2(
+	function (body0, body1) {
+		var b0b1 = A2(_elm_community$linear_algebra$Math_Vector2$sub, body1.pos, body0.pos);
+		return A3(_user$project$Store_ArtStore$collisionBubbleBubble, b0b1, body0.radius, body1.radius);
+	});
+var _user$project$Store_ArtStore$collideWith = F3(
+	function (a0, bodies, acc) {
+		collideWith:
+		while (true) {
+			var _p10 = bodies;
+			if (_p10.ctor === '[]') {
+				return {ctor: '::', _0: a0, _1: acc};
+			} else {
+				var _p12 = _p10._0;
+				var collisionResult = A2(_user$project$Store_ArtStore$collision, a0, _p12);
+				var _p11 = A3(_user$project$Store_ArtStore$resolveCollision, collisionResult, a0, _p12);
+				var a1 = _p11._0;
+				var b1 = _p11._1;
+				var _v5 = a1,
+					_v6 = _p10._1,
+					_v7 = {ctor: '::', _0: b1, _1: acc};
+				a0 = _v5;
+				bodies = _v6;
+				acc = _v7;
+				continue collideWith;
+			}
+		}
+	});
+var _user$project$Store_ArtStore$collide = F2(
+	function (acc, bodies) {
+		collide:
+		while (true) {
+			var _p13 = bodies;
+			if (_p13.ctor === '[]') {
+				return acc;
+			} else {
+				var _p14 = A3(
+					_user$project$Store_ArtStore$collideWith,
+					_p13._0,
+					_p13._1,
+					{ctor: '[]'});
+				if (_p14.ctor === '[]') {
+					return {ctor: '[]'};
+				} else {
+					var _v10 = {ctor: '::', _0: _p14._0, _1: acc},
+						_v11 = _p14._1;
+					acc = _v10;
+					bodies = _v11;
+					continue collide;
+				}
+			}
+		}
+	});
+var _user$project$Store_ArtStore$collisions = function (balls) {
+	return A2(
+		_user$project$Store_ArtStore$collide,
+		{ctor: '[]'},
+		balls);
+};
+var _user$project$Store_ArtStore$collisionBoxBubble = F2(
+	function (_p16, _p15) {
+		var _p17 = _p16;
+		var _p24 = _p17._1;
+		var _p18 = _p15;
+		var _p23 = _p18._1;
+		var _p19 = {
+			ctor: '_Tuple2',
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p24),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p24)
+		};
+		var boxX = _p19._0;
+		var boxY = _p19._1;
+		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p18._0, _p17._0);
+		var _p20 = {
+			ctor: '_Tuple2',
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(dist),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(dist)
+		};
+		var dx = _p20._0;
+		var dy = _p20._1;
+		var c = A2(
+			_elm_community$linear_algebra$Math_Vector2$vec2,
+			A3(_elm_lang$core$Basics$clamp, 0 - boxX, boxX, dx),
+			A3(_elm_lang$core$Basics$clamp, 0 - boxY, boxY, dy));
+		var _p21 = {
+			ctor: '_Tuple2',
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(c),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(c)
+		};
+		var cx = _p21._0;
+		var cy = _p21._1;
+		var _p22 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(dx),
+			_elm_lang$core$Basics$abs(dy)) > 0) ? ((_elm_lang$core$Native_Utils.cmp(cx, 0) > 0) ? {
+			ctor: '_Tuple2',
+			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, boxX, cy),
+			_1: true
+		} : {
+			ctor: '_Tuple2',
+			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, 0 - boxX, cy),
+			_1: true
+		}) : ((_elm_lang$core$Native_Utils.cmp(cy, 0) > 0) ? {
+			ctor: '_Tuple2',
+			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, boxY),
+			_1: true
+		} : {
+			ctor: '_Tuple2',
+			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, 0 - boxY),
+			_1: true
+		}));
+		var closest = _p22._0;
+		var inside = _p22._1;
+		var normal = A2(_elm_community$linear_algebra$Math_Vector2$sub, dist, closest);
+		var normalLenSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(normal);
+		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p23 * _p23) > 0) && (!inside)) {
+			return A2(
+				_user$project$Store_ArtStore$CollisionResult,
+				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
+				0);
+		} else {
+			var penetration = _p23 + _elm_lang$core$Basics$sqrt(normalLenSq);
+			return inside ? A2(
+				_user$project$Store_ArtStore$CollisionResult,
+				A2(
+					_elm_community$linear_algebra$Math_Vector2$scale,
+					-1,
+					_elm_community$linear_algebra$Math_Vector2$normalize(normal)),
+				penetration) : A2(
+				_user$project$Store_ArtStore$CollisionResult,
+				_elm_community$linear_algebra$Math_Vector2$normalize(normal),
+				penetration);
+		}
+	});
+var _user$project$Store_ArtStore$animateBall = F3(
+	function (timeDiff, window, ball) {
+		var y = _elm_community$linear_algebra$Math_Vector2$getY(ball.pos);
+		var x = _elm_community$linear_algebra$Math_Vector2$getX(ball.pos);
+		var _p25 = {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$toFloat(window.width),
+			_1: _elm_lang$core$Basics$toFloat(window.height)
+		};
+		var width = _p25._0;
+		var height = _p25._1;
+		var _p26 = {
+			ctor: '_Tuple4',
+			_0: _user$project$Store_ArtStore$initLeftWall(height),
+			_1: A2(_user$project$Store_ArtStore$initRightWall, width, height),
+			_2: _user$project$Store_ArtStore$initTopWall(width),
+			_3: A2(_user$project$Store_ArtStore$initBottomWall, width, height)
+		};
+		var leftWall = _p26._0;
+		var rightWall = _p26._1;
+		var topWall = _p26._2;
+		var bottomWall = _p26._3;
+		var leftCol = A2(
+			_user$project$Store_ArtStore$collisionBoxBubble,
+			{
+				ctor: '_Tuple2',
+				_0: leftWall.pos,
+				_1: A2(_elm_community$linear_algebra$Math_Vector2$vec2, leftWall.halfWidth, leftWall.halfHeight)
+			},
+			{ctor: '_Tuple2', _0: ball.pos, _1: ball.radius});
+		var newX = A3(
+			_elm_lang$core$Basics$clamp,
+			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos),
+			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos),
+			x + ((_elm_community$linear_algebra$Math_Vector2$getX(ball.velocity) * timeDiff) * _user$project$Store_ArtStore$slowdown));
+		var newY = A3(
+			_elm_lang$core$Basics$clamp,
+			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos),
+			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos),
+			y + ((_elm_community$linear_algebra$Math_Vector2$getY(ball.velocity) * timeDiff) * _user$project$Store_ArtStore$slowdown));
+		var newXVelocity = (_elm_lang$core$Native_Utils.eq(
+			newX,
+			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos)) || _elm_lang$core$Native_Utils.eq(
+			newX,
+			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity);
+		var newYVelocity = (_elm_lang$core$Native_Utils.eq(
+			newY,
+			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos)) || _elm_lang$core$Native_Utils.eq(
+			newY,
+			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity);
+		return _elm_lang$core$Native_Utils.update(
+			ball,
+			{
+				pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newX, newY),
+				velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newXVelocity, newYVelocity)
+			});
+	});
+var _user$project$Store_ArtStore$Purple = {ctor: 'Purple'};
+var _user$project$Store_ArtStore$Blue = {ctor: 'Blue'};
+var _user$project$Store_ArtStore$Green = {ctor: 'Green'};
+var _user$project$Store_ArtStore$Yellow = {ctor: 'Yellow'};
+var _user$project$Store_ArtStore$Orange = {ctor: 'Orange'};
+var _user$project$Store_ArtStore$Red = {ctor: 'Red'};
+var _user$project$Store_ArtStore$randomColor = F2(
+	function (seed, balls) {
+		return A2(
+			_elm_lang$core$Tuple$mapFirst,
+			_elm_lang$core$Maybe$withDefault(_user$project$Store_ArtStore$Red),
+			A2(
+				_elm_lang$core$Tuple$mapFirst,
+				_elm_lang$core$Maybe$map(
+					function (ball) {
+						return ball.color;
+					}),
+				A2(
+					_elm_lang$core$Random$step,
+					_user$project$Store_ArtStore$randItem(balls),
+					seed)));
+	});
+var _user$project$Store_ArtStore$animateArtGame = F3(
+	function (timeDiff, window, artGame) {
+		var newTime = artGame.time + timeDiff;
+		var _p27 = function () {
+			if (_elm_lang$core$Native_Utils.cmp(newTime, _user$project$Store_ArtStore$colorSwapTime) > 0) {
+				var _p28 = A2(_user$project$Store_ArtStore$randomColor, artGame.seed, artGame.balls);
+				var randColor = _p28._0;
+				var seed = _p28._1;
+				return {
+					ctor: '_Tuple3',
+					_0: {ctor: '_Tuple2', _0: randColor, _1: seed},
+					_1: 0,
+					_2: _user$project$Audio$play(
+						_user$project$Dictionary_Spanish$audio(
+							_elm_lang$core$Basics$toString(randColor)))
+				};
+			} else {
+				return {
+					ctor: '_Tuple3',
+					_0: {ctor: '_Tuple2', _0: artGame.color, _1: artGame.seed},
+					_1: newTime,
+					_2: _elm_lang$core$Platform_Cmd$none
+				};
+			}
+		}();
+		var newColor = _p27._0._0;
+		var newSeed = _p27._0._1;
+		var timeReset = _p27._1;
+		var cmd = _p27._2;
+		var _p29 = A2(_elm_lang$core$Debug$log, 'animate art game', '');
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				artGame,
+				{
+					time: timeReset,
+					color: newColor,
+					seed: newSeed,
+					balls: _user$project$Store_ArtStore$collisions(
+						A2(
+							_elm_lang$core$List$map,
+							A2(_user$project$Store_ArtStore$animateBall, timeDiff, window),
+							artGame.balls))
+				}),
+			_1: cmd
+		};
+	});
+var _user$project$Store_ArtStore$tick = F3(
+	function (timeDelta, window, model) {
+		var _p30 = A3(_user$project$Store_ArtStore$animateArtGame, timeDelta, window, model.game);
+		var newArtGame = _p30._0;
+		var cmd = _p30._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{game: newArtGame}),
+			_1: cmd
+		};
+	});
+var _user$project$Store_ArtStore$images = _eeue56$elm_all_dict$EveryDict$fromList(
+	{
+		ctor: '::',
+		_0: {
+			ctor: '_Tuple2',
+			_0: _user$project$Store_ArtStore$Red,
+			_1: {
+				ctor: '::',
+				_0: 'red-cherry.png',
+				_1: {
+					ctor: '::',
+					_0: 'red-umbrella.png',
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		_1: {
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: _user$project$Store_ArtStore$Orange,
+				_1: {
+					ctor: '::',
+					_0: 'orange-tangerine.png',
+					_1: {ctor: '[]'}
+				}
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: _user$project$Store_ArtStore$Yellow,
+					_1: {
+						ctor: '::',
+						_0: 'yellow-banana.png',
+						_1: {
+							ctor: '::',
+							_0: 'yellow-car.png',
+							_1: {
+								ctor: '::',
+								_0: 'yellow-cheese.png',
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: _user$project$Store_ArtStore$Green,
+						_1: {
+							ctor: '::',
+							_0: 'green-frog.png',
+							_1: {
+								ctor: '::',
+								_0: 'green-turtle.png',
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: _user$project$Store_ArtStore$Blue,
+							_1: {
+								ctor: '::',
+								_0: 'blue-bird.png',
+								_1: {
+									ctor: '::',
+									_0: 'blue-fish.png',
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: _user$project$Store_ArtStore$Purple,
+								_1: {
+									ctor: '::',
+									_0: 'purple-octopus.png',
+									_1: {ctor: '[]'}
+								}
+							},
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		}
+	});
+var _user$project$Store_ArtStore$randomImage = function (color) {
+	var options = A2(_eeue56$elm_all_dict$EveryDict$get, color, _user$project$Store_ArtStore$images);
+	var _p31 = options;
+	if (_p31.ctor === 'Nothing') {
+		return _user$project$Store_ArtStore$alwaysGen('');
+	} else {
+		if (_p31._0.ctor === '[]') {
+			return _user$project$Store_ArtStore$alwaysGen('');
+		} else {
+			return A2(
+				_elm_lang$core$Random$map,
+				_elm_lang$core$Maybe$withDefault(''),
+				_user$project$Store_ArtStore$randItem(_p31._0));
+		}
+	}
+};
+var _user$project$Store_ArtStore$colorGen = A2(
+	_elm_lang$core$Random$map,
+	_elm_lang$core$Maybe$withDefault(_user$project$Store_ArtStore$Red),
+	_user$project$Store_ArtStore$randItem(
+		{
+			ctor: '::',
+			_0: _user$project$Store_ArtStore$Red,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Store_ArtStore$Orange,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Store_ArtStore$Yellow,
+					_1: {
+						ctor: '::',
+						_0: _user$project$Store_ArtStore$Green,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Store_ArtStore$Blue,
+							_1: {
+								ctor: '::',
+								_0: _user$project$Store_ArtStore$Purple,
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		}));
+var _user$project$Store_ArtStore$randomMovingBall = F2(
+	function (window, id) {
+		return A2(
+			_elm_lang$core$Random$andThen,
+			function (color) {
+				return A4(
+					_elm_lang$core$Random$map3,
+					A2(_user$project$Store_ArtStore$initMovingBall, id, color),
+					_user$project$Store_ArtStore$randomPosition(window),
+					_user$project$Store_ArtStore$randomVelocity,
+					_user$project$Store_ArtStore$randomImage(color));
+			},
+			_user$project$Store_ArtStore$colorGen);
+	});
+var _user$project$Store_ArtStore$initialBalls = function (window) {
+	return _elm_community$random_extra$Random_Extra$combine(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Store_ArtStore$randomMovingBall(window),
+			A2(_elm_lang$core$List$range, 0, 9)));
+};
+var _user$project$Store_ArtStore$initArtGame = F2(
+	function (window, seed) {
+		var _p32 = A2(
+			_elm_lang$core$Random$step,
+			_user$project$Store_ArtStore$initialBalls(window),
+			seed);
+		var balls = _p32._0;
+		var newSeed = _p32._1;
+		return {
+			ctor: '_Tuple2',
+			_0: {time: 0, seed: newSeed, points: 0, color: _user$project$Store_ArtStore$Yellow, balls: balls, win: false},
+			_1: newSeed
+		};
+	});
+var _user$project$Store_ArtStore$init = F2(
+	function (window, seed) {
+		var _p33 = A2(_user$project$Store_ArtStore$initArtGame, window, seed);
+		var game = _p33._0;
+		var newSeed = _p33._1;
+		return {
+			ctor: '_Tuple2',
+			_0: {game: game, playing: false},
+			_1: newSeed
+		};
+	});
+var _user$project$Store_ArtStore$update = F3(
+	function (window, msg, model) {
+		var _p34 = msg;
+		switch (_p34.ctor) {
+			case 'ColorClicked':
+				if (_elm_lang$core$Native_Utils.eq(_p34._1, _p34._2)) {
+					var artGame = model.game;
+					var newBalls = A2(_user$project$Store_ArtStore$removeBall, _p34._0, artGame.balls);
+					var win = _elm_lang$core$Native_Utils.eq(
+						_elm_lang$core$List$length(newBalls),
+						0);
+					var newArtGame = _elm_lang$core$Native_Utils.update(
+						artGame,
+						{balls: newBalls, win: win});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{game: newArtGame}),
+						_1: _user$project$Audio$play('audio/puff.mp3')
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Play':
+				var _p35 = A2(
+					_user$project$Store_ArtStore$initArtGame,
+					window,
+					_elm_lang$core$Random$initialSeed(0));
+				var newArtGame = _p35._0;
+				return {
+					ctor: '_Tuple2',
+					_0: {playing: true, game: newArtGame},
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Pause':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'PlayAudio':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Audio$play(_p34._0)
+				};
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+var _user$project$Store_ArtStore$Exit = {ctor: 'Exit'};
+var _user$project$Store_ArtStore$PlayAudio = function (a) {
+	return {ctor: 'PlayAudio', _0: a};
+};
+var _user$project$Store_ArtStore$colorCircle = F3(
+	function (_p36, color, audio) {
+		var _p37 = _p36;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'background-color', _1: color},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'left',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(_p37._0),
+												'px')
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'top',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(_p37._1),
+													'px')
+											},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'width', _1: '64px'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Store_ArtStore$PlayAudio(audio)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Store_ArtStore$Pause = {ctor: 'Pause'};
+var _user$project$Store_ArtStore$backButton = function (_p38) {
+	var _p39 = _p38;
+	return A2(
+		_elm_lang$html$Html$button,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'left',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(_p39._0),
+									'px')
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'top',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p39._1),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$Pause),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Back'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Store_ArtStore$Play = {ctor: 'Play'};
+var _user$project$Store_ArtStore$playButton = function (_p40) {
+	var _p41 = _p40;
+	return A2(
+		_elm_lang$html$Html$button,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'left',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(_p41._0),
+									'px')
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'top',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p41._1),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$Play),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Play!'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Store_ArtStore$ColorClicked = F3(
+	function (a, b, c) {
+		return {ctor: 'ColorClicked', _0: a, _1: b, _2: c};
+	});
+var _user$project$Store_ArtStore$colorBall = F2(
+	function (gameColor, ball) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'background-image',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									'url(',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_user$project$Store_ArtStore$imageDir,
+										A2(_elm_lang$core$Basics_ops['++'], ball.img, ')')))
+							},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'background-size', _1: 'contain'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'background-repeat', _1: 'no-repeat'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'left',
+													_1: A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(
+															_elm_community$linear_algebra$Math_Vector2$getX(ball.pos)),
+														'px')
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'top',
+														_1: A2(
+															_elm_lang$core$Basics_ops['++'],
+															_elm_lang$core$Basics$toString(
+																_elm_community$linear_algebra$Math_Vector2$getY(ball.pos)),
+															'px')
+													},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '_Tuple2',
+															_0: 'width',
+															_1: A2(
+																_elm_lang$core$Basics_ops['++'],
+																_elm_lang$core$Basics$toString(ball.radius * 2),
+																'px')
+														},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'height',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(ball.radius * 2),
+																	'px')
+															},
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onMouseDown(
+						A3(_user$project$Store_ArtStore$ColorClicked, ball.id, gameColor, ball.color)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Store_ArtStore$colorGame = function (game) {
+	var content = game.win ? {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('You Win!!!!!!'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	} : A2(
+		_elm_lang$core$List$map,
+		_user$project$Store_ArtStore$colorBall(game.color),
+		game.balls);
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Store_ArtStore$backButton(
+					{ctor: '_Tuple2', _0: 130, _1: 0}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Color: ',
+							_user$project$Dictionary_Spanish$translate(
+								_elm_lang$core$Basics$toString(game.color)))),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Store_ArtStore$viewPoints(game.points),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			content));
+};
+var _user$project$Store_ArtStore$view = function (model) {
+	var _p42 = model.playing;
+	if (_p42 === true) {
+		return _user$project$Store_ArtStore$colorGame(model.game);
+	} else {
+		var showCircle = F2(
+			function (n, _p43) {
+				var _p44 = _p43;
+				return A3(
+					_user$project$Store_ArtStore$colorCircle,
+					{ctor: '_Tuple2', _0: 96 * n, _1: 96},
+					_p44._0,
+					_p44._1);
+			});
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _user$project$Store_ArtStore$exit(_user$project$Store_ArtStore$Exit),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Store_ArtStore$playButton(
+						{ctor: '_Tuple2', _0: 192, _1: 10}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Store_ArtStore$viewPoints(model.game.points),
+						_1: A2(
+							_elm_lang$core$List$indexedMap,
+							showCircle,
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'black',
+									_1: _user$project$Dictionary_Spanish$audio('black')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'white',
+										_1: _user$project$Dictionary_Spanish$audio('white')
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'red',
+											_1: _user$project$Dictionary_Spanish$audio('red')
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'blue',
+												_1: _user$project$Dictionary_Spanish$audio('blue')
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'yellow',
+													_1: _user$project$Dictionary_Spanish$audio('yellow')
+												},
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							})
+					}
+				}
+			});
+	}
+};
+
 var _user$project$Map$tile = function (_p0) {
 	var _p1 = _p0;
 	return A2(
@@ -11903,367 +13073,24 @@ var _user$project$Map$viewPoints = function (count) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Map$slowdown = 1 / 10;
-var _user$project$Map$initBottomWall = F2(
-	function (windowWidth, windowHeight) {
-		return {
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth / 2, windowHeight),
-			halfHeight: 1,
-			halfWidth: windowWidth / 2
-		};
-	});
-var _user$project$Map$initTopWall = function (windowWidth) {
-	return {
-		pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth / 2, 0),
-		halfHeight: 1,
-		halfWidth: windowWidth / 2
-	};
-};
-var _user$project$Map$initRightWall = F2(
-	function (windowWidth, windowHeight) {
-		return {
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth, windowHeight / 2),
-			halfHeight: windowHeight / 2,
-			halfWidth: 1
-		};
-	});
-var _user$project$Map$initLeftWall = function (windowHeight) {
-	return {
-		pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, 0, windowHeight / 2),
-		halfHeight: windowHeight / 2,
-		halfWidth: 1
-	};
-};
-var _user$project$Map$resolveCollision = F3(
-	function (_p2, b0, b1) {
-		var _p3 = _p2;
-		var _p4 = _p3.normal;
-		var relativeVelocity = A2(_elm_community$linear_algebra$Math_Vector2$sub, b1.velocity, b0.velocity);
-		var velocityAlongNormal = A2(_elm_community$linear_algebra$Math_Vector2$dot, relativeVelocity, _p4);
-		if (_elm_lang$core$Native_Utils.eq(_p3.penetration, 0) || (_elm_lang$core$Native_Utils.cmp(velocityAlongNormal, 0) > 0)) {
-			return {ctor: '_Tuple2', _0: b0, _1: b1};
-		} else {
-			var impulse = _p4;
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					b0,
-					{
-						velocity: A2(_elm_community$linear_algebra$Math_Vector2$sub, b0.velocity, impulse)
-					}),
-				_1: _elm_lang$core$Native_Utils.update(
-					b1,
-					{
-						velocity: A2(_elm_community$linear_algebra$Math_Vector2$add, b1.velocity, impulse)
-					})
-			};
-		}
-	});
-var _user$project$Map$colorSwapTime = 2000;
 var _user$project$Map$resize = F2(
 	function (window, map) {
 		return _elm_lang$core$Native_Utils.update(
 			map,
 			{window: window});
 	});
-var _user$project$Map$removeBall = F2(
-	function (id, balls) {
-		return A2(
-			_elm_lang$core$List$filter,
-			function (ball) {
-				return !_elm_lang$core$Native_Utils.eq(ball.id, id);
-			},
-			balls);
-	});
-var _user$project$Map$initMovingBall = F5(
-	function (id, color, _p6, _p5, image) {
-		var _p7 = _p6;
-		var _p8 = _p5;
+var _user$project$Map$init = F2(
+	function (window, level) {
 		return {
-			id: id,
-			color: color,
-			radius: 32,
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p7._0, _p7._1),
-			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p8._0, _p8._1),
-			img: image
+			level: level,
+			window: window,
+			points: 0,
+			seed: _elm_lang$core$Random$initialSeed(0)
 		};
 	});
-var _user$project$Map$nonZeroFloat = A2(
-	_elm_lang$core$Random$map,
-	_elm_lang$core$Basics$toFloat,
-	A2(
-		_elm_lang$core$Random$map,
-		function (i) {
-			return _elm_lang$core$Native_Utils.eq(i, 0) ? 1 : i;
-		},
-		A2(_elm_lang$core$Random$int, -1, 1)));
-var _user$project$Map$randomVelocity = A2(_elm_lang$core$Random$pair, _user$project$Map$nonZeroFloat, _user$project$Map$nonZeroFloat);
-var _user$project$Map$randomPosition = function (window) {
-	return A2(
-		_elm_lang$core$Random$pair,
-		A2(
-			_elm_lang$core$Random$map,
-			_elm_lang$core$Basics$toFloat,
-			A2(_elm_lang$core$Random$int, 30, window.width)),
-		A2(
-			_elm_lang$core$Random$map,
-			_elm_lang$core$Basics$toFloat,
-			A2(_elm_lang$core$Random$int, 30, window.height)));
-};
-var _user$project$Map$alwaysGen = function (x) {
-	return A2(
-		_elm_lang$core$Random$map,
-		function (_p9) {
-			return x;
-		},
-		_elm_lang$core$Random$bool);
-};
-var _user$project$Map$imageDir = 'imgs/colors/';
-var _user$project$Map$get = F2(
-	function (index, list) {
-		return _elm_lang$core$List$head(
-			A2(_elm_lang$core$List$drop, index, list));
-	});
-var _user$project$Map$randItem = function (list) {
-	return A2(
-		_elm_lang$core$Random$map,
-		function (i) {
-			return A2(_user$project$Map$get, i, list);
-		},
-		A2(
-			_elm_lang$core$Random$int,
-			0,
-			_elm_lang$core$List$length(list) - 1));
-};
-var _user$project$Map$Map = F5(
-	function (a, b, c, d, e) {
-		return {level: a, artGame: b, window: c, points: d, seed: e};
-	});
-var _user$project$Map$ArtGame = F5(
-	function (a, b, c, d, e) {
-		return {color: a, balls: b, time: c, seed: d, win: e};
-	});
-var _user$project$Map$MovingBall = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, color: b, pos: c, radius: d, velocity: e, img: f};
-	});
-var _user$project$Map$CollisionResult = F2(
-	function (a, b) {
-		return {normal: a, penetration: b};
-	});
-var _user$project$Map$collisionBubbleBubble = F3(
-	function (b0b1, radius0, radius1) {
-		var distanceSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(b0b1);
-		var radiusb0b1 = radius0 + radius1;
-		if (_elm_lang$core$Native_Utils.eq(distanceSq, 0)) {
-			return A2(
-				_user$project$Map$CollisionResult,
-				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
-				radius0);
-		} else {
-			if (_elm_lang$core$Native_Utils.cmp(distanceSq, radiusb0b1 * radiusb0b1) > -1) {
-				return A2(
-					_user$project$Map$CollisionResult,
-					A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
-					0);
-			} else {
-				var d = _elm_lang$core$Basics$sqrt(distanceSq);
-				return A2(
-					_user$project$Map$CollisionResult,
-					A2(_elm_community$linear_algebra$Math_Vector2$scale, 1 / d, b0b1),
-					radiusb0b1 - d);
-			}
-		}
-	});
-var _user$project$Map$collision = F2(
-	function (body0, body1) {
-		var b0b1 = A2(_elm_community$linear_algebra$Math_Vector2$sub, body1.pos, body0.pos);
-		return A3(_user$project$Map$collisionBubbleBubble, b0b1, body0.radius, body1.radius);
-	});
-var _user$project$Map$collideWith = F3(
-	function (a0, bodies, acc) {
-		collideWith:
-		while (true) {
-			var _p10 = bodies;
-			if (_p10.ctor === '[]') {
-				return {ctor: '::', _0: a0, _1: acc};
-			} else {
-				var _p12 = _p10._0;
-				var collisionResult = A2(_user$project$Map$collision, a0, _p12);
-				var _p11 = A3(_user$project$Map$resolveCollision, collisionResult, a0, _p12);
-				var a1 = _p11._0;
-				var b1 = _p11._1;
-				var _v5 = a1,
-					_v6 = _p10._1,
-					_v7 = {ctor: '::', _0: b1, _1: acc};
-				a0 = _v5;
-				bodies = _v6;
-				acc = _v7;
-				continue collideWith;
-			}
-		}
-	});
-var _user$project$Map$collide = F2(
-	function (acc, bodies) {
-		collide:
-		while (true) {
-			var _p13 = bodies;
-			if (_p13.ctor === '[]') {
-				return acc;
-			} else {
-				var _p14 = A3(
-					_user$project$Map$collideWith,
-					_p13._0,
-					_p13._1,
-					{ctor: '[]'});
-				if (_p14.ctor === '[]') {
-					return {ctor: '[]'};
-				} else {
-					var _v10 = {ctor: '::', _0: _p14._0, _1: acc},
-						_v11 = _p14._1;
-					acc = _v10;
-					bodies = _v11;
-					continue collide;
-				}
-			}
-		}
-	});
-var _user$project$Map$collisions = function (balls) {
-	return A2(
-		_user$project$Map$collide,
-		{ctor: '[]'},
-		balls);
-};
-var _user$project$Map$collisionBoxBubble = F2(
-	function (_p16, _p15) {
-		var _p17 = _p16;
-		var _p24 = _p17._1;
-		var _p18 = _p15;
-		var _p23 = _p18._1;
-		var _p19 = {
-			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p24),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p24)
-		};
-		var boxX = _p19._0;
-		var boxY = _p19._1;
-		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p18._0, _p17._0);
-		var _p20 = {
-			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(dist),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(dist)
-		};
-		var dx = _p20._0;
-		var dy = _p20._1;
-		var c = A2(
-			_elm_community$linear_algebra$Math_Vector2$vec2,
-			A3(_elm_lang$core$Basics$clamp, 0 - boxX, boxX, dx),
-			A3(_elm_lang$core$Basics$clamp, 0 - boxY, boxY, dy));
-		var _p21 = {
-			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(c),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(c)
-		};
-		var cx = _p21._0;
-		var cy = _p21._1;
-		var _p22 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Basics$abs(dx),
-			_elm_lang$core$Basics$abs(dy)) > 0) ? ((_elm_lang$core$Native_Utils.cmp(cx, 0) > 0) ? {
-			ctor: '_Tuple2',
-			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, boxX, cy),
-			_1: true
-		} : {
-			ctor: '_Tuple2',
-			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, 0 - boxX, cy),
-			_1: true
-		}) : ((_elm_lang$core$Native_Utils.cmp(cy, 0) > 0) ? {
-			ctor: '_Tuple2',
-			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, boxY),
-			_1: true
-		} : {
-			ctor: '_Tuple2',
-			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, 0 - boxY),
-			_1: true
-		}));
-		var closest = _p22._0;
-		var inside = _p22._1;
-		var normal = A2(_elm_community$linear_algebra$Math_Vector2$sub, dist, closest);
-		var normalLenSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(normal);
-		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p23 * _p23) > 0) && (!inside)) {
-			return A2(
-				_user$project$Map$CollisionResult,
-				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
-				0);
-		} else {
-			var penetration = _p23 + _elm_lang$core$Basics$sqrt(normalLenSq);
-			return inside ? A2(
-				_user$project$Map$CollisionResult,
-				A2(
-					_elm_community$linear_algebra$Math_Vector2$scale,
-					-1,
-					_elm_community$linear_algebra$Math_Vector2$normalize(normal)),
-				penetration) : A2(
-				_user$project$Map$CollisionResult,
-				_elm_community$linear_algebra$Math_Vector2$normalize(normal),
-				penetration);
-		}
-	});
-var _user$project$Map$animateBall = F3(
-	function (timeDiff, window, ball) {
-		var y = _elm_community$linear_algebra$Math_Vector2$getY(ball.pos);
-		var x = _elm_community$linear_algebra$Math_Vector2$getX(ball.pos);
-		var _p25 = {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Basics$toFloat(window.width),
-			_1: _elm_lang$core$Basics$toFloat(window.height)
-		};
-		var width = _p25._0;
-		var height = _p25._1;
-		var _p26 = {
-			ctor: '_Tuple4',
-			_0: _user$project$Map$initLeftWall(height),
-			_1: A2(_user$project$Map$initRightWall, width, height),
-			_2: _user$project$Map$initTopWall(width),
-			_3: A2(_user$project$Map$initBottomWall, width, height)
-		};
-		var leftWall = _p26._0;
-		var rightWall = _p26._1;
-		var topWall = _p26._2;
-		var bottomWall = _p26._3;
-		var leftCol = A2(
-			_user$project$Map$collisionBoxBubble,
-			{
-				ctor: '_Tuple2',
-				_0: leftWall.pos,
-				_1: A2(_elm_community$linear_algebra$Math_Vector2$vec2, leftWall.halfWidth, leftWall.halfHeight)
-			},
-			{ctor: '_Tuple2', _0: ball.pos, _1: ball.radius});
-		var newX = A3(
-			_elm_lang$core$Basics$clamp,
-			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos),
-			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos),
-			x + ((_elm_community$linear_algebra$Math_Vector2$getX(ball.velocity) * timeDiff) * _user$project$Map$slowdown));
-		var newY = A3(
-			_elm_lang$core$Basics$clamp,
-			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos),
-			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos),
-			y + ((_elm_community$linear_algebra$Math_Vector2$getY(ball.velocity) * timeDiff) * _user$project$Map$slowdown));
-		var newXVelocity = (_elm_lang$core$Native_Utils.eq(
-			newX,
-			_elm_community$linear_algebra$Math_Vector2$getX(leftWall.pos)) || _elm_lang$core$Native_Utils.eq(
-			newX,
-			_elm_community$linear_algebra$Math_Vector2$getX(rightWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getX(ball.velocity);
-		var newYVelocity = (_elm_lang$core$Native_Utils.eq(
-			newY,
-			_elm_community$linear_algebra$Math_Vector2$getY(topWall.pos)) || _elm_lang$core$Native_Utils.eq(
-			newY,
-			_elm_community$linear_algebra$Math_Vector2$getY(bottomWall.pos))) ? (0 - _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity)) : _elm_community$linear_algebra$Math_Vector2$getY(ball.velocity);
-		return _elm_lang$core$Native_Utils.update(
-			ball,
-			{
-				pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newX, newY),
-				velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, newXVelocity, newYVelocity)
-			});
+var _user$project$Map$Map = F4(
+	function (a, b, c, d) {
+		return {level: a, window: b, points: c, seed: d};
 	});
 var _user$project$Map$ArtStore = function (a) {
 	return {ctor: 'ArtStore', _0: a};
@@ -12277,428 +13104,93 @@ var _user$project$Map$Green = {ctor: 'Green'};
 var _user$project$Map$Yellow = {ctor: 'Yellow'};
 var _user$project$Map$Orange = {ctor: 'Orange'};
 var _user$project$Map$Red = {ctor: 'Red'};
-var _user$project$Map$colorGen = A2(
-	_elm_lang$core$Random$map,
-	_elm_lang$core$Maybe$withDefault(_user$project$Map$Red),
-	_user$project$Map$randItem(
-		{
-			ctor: '::',
-			_0: _user$project$Map$Red,
-			_1: {
-				ctor: '::',
-				_0: _user$project$Map$Orange,
-				_1: {
-					ctor: '::',
-					_0: _user$project$Map$Yellow,
-					_1: {
-						ctor: '::',
-						_0: _user$project$Map$Green,
-						_1: {
-							ctor: '::',
-							_0: _user$project$Map$Blue,
-							_1: {
-								ctor: '::',
-								_0: _user$project$Map$Purple,
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			}
-		}));
-var _user$project$Map$randomColor = F2(
-	function (seed, balls) {
-		return A2(
-			_elm_lang$core$Tuple$mapFirst,
-			_elm_lang$core$Maybe$withDefault(_user$project$Map$Red),
-			A2(
-				_elm_lang$core$Tuple$mapFirst,
-				_elm_lang$core$Maybe$map(
-					function (ball) {
-						return ball.color;
-					}),
-				A2(
-					_elm_lang$core$Random$step,
-					_user$project$Map$randItem(balls),
-					seed)));
-	});
-var _user$project$Map$animateArtGame = F3(
-	function (timeDiff, window, artGame) {
-		var newTime = artGame.time + timeDiff;
-		var _p27 = function () {
-			if (_elm_lang$core$Native_Utils.cmp(newTime, _user$project$Map$colorSwapTime) > 0) {
-				var _p28 = A2(_user$project$Map$randomColor, artGame.seed, artGame.balls);
-				var randColor = _p28._0;
-				var seed = _p28._1;
-				return {
-					ctor: '_Tuple3',
-					_0: {ctor: '_Tuple2', _0: randColor, _1: seed},
-					_1: 0,
-					_2: _user$project$Audio$play(
-						_user$project$Dictionary_Spanish$audio(
-							_elm_lang$core$Basics$toString(randColor)))
-				};
-			} else {
-				return {
-					ctor: '_Tuple3',
-					_0: {ctor: '_Tuple2', _0: artGame.color, _1: artGame.seed},
-					_1: newTime,
-					_2: _elm_lang$core$Platform_Cmd$none
-				};
-			}
-		}();
-		var newColor = _p27._0._0;
-		var newSeed = _p27._0._1;
-		var timeReset = _p27._1;
-		var cmd = _p27._2;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				artGame,
-				{
-					time: timeReset,
-					color: newColor,
-					seed: newSeed,
-					balls: _user$project$Map$collisions(
-						A2(
-							_elm_lang$core$List$map,
-							A2(_user$project$Map$animateBall, timeDiff, window),
-							artGame.balls))
-				}),
-			_1: cmd
-		};
-	});
+var _user$project$Map$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Map$ArtStoreMsg = function (a) {
+	return {ctor: 'ArtStoreMsg', _0: a};
+};
 var _user$project$Map$tick = F2(
 	function (timeDelta, map) {
-		var _p29 = A3(_user$project$Map$animateArtGame, timeDelta, map.window, map.artGame);
-		var newArtGame = _p29._0;
-		var cmd = _p29._1;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				map,
-				{artGame: newArtGame}),
-			_1: cmd
-		};
-	});
-var _user$project$Map$images = _eeue56$elm_all_dict$EveryDict$fromList(
-	{
-		ctor: '::',
-		_0: {
-			ctor: '_Tuple2',
-			_0: _user$project$Map$Red,
-			_1: {
-				ctor: '::',
-				_0: 'red-cherry.png',
-				_1: {
-					ctor: '::',
-					_0: 'red-umbrella.png',
-					_1: {ctor: '[]'}
-				}
-			}
-		},
-		_1: {
-			ctor: '::',
-			_0: {
+		var _p2 = map.level;
+		if (_p2.ctor === 'ArtStore') {
+			var _p3 = A3(_user$project$Store_ArtStore$tick, timeDelta, map.window, _p2._0);
+			var newArtStore = _p3._0;
+			var cmd = _p3._1;
+			return {
 				ctor: '_Tuple2',
-				_0: _user$project$Map$Orange,
-				_1: {
-					ctor: '::',
-					_0: 'orange-tangerine.png',
-					_1: {ctor: '[]'}
-				}
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: _user$project$Map$Yellow,
-					_1: {
-						ctor: '::',
-						_0: 'yellow-banana.png',
-						_1: {
-							ctor: '::',
-							_0: 'yellow-car.png',
-							_1: {
-								ctor: '::',
-								_0: 'yellow-cheese.png',
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: _user$project$Map$Green,
-						_1: {
-							ctor: '::',
-							_0: 'green-frog.png',
-							_1: {
-								ctor: '::',
-								_0: 'green-turtle.png',
-								_1: {ctor: '[]'}
-							}
-						}
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: _user$project$Map$Blue,
-							_1: {
-								ctor: '::',
-								_0: 'blue-bird.png',
-								_1: {
-									ctor: '::',
-									_0: 'blue-fish.png',
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: _user$project$Map$Purple,
-								_1: {
-									ctor: '::',
-									_0: 'purple-octopus.png',
-									_1: {ctor: '[]'}
-								}
-							},
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		}
-	});
-var _user$project$Map$randomImage = function (color) {
-	var options = A2(_eeue56$elm_all_dict$EveryDict$get, color, _user$project$Map$images);
-	var _p30 = options;
-	if (_p30.ctor === 'Nothing') {
-		return _user$project$Map$alwaysGen('');
-	} else {
-		if (_p30._0.ctor === '[]') {
-			return _user$project$Map$alwaysGen('');
+				_0: _elm_lang$core$Native_Utils.update(
+					map,
+					{
+						level: _user$project$Map$ArtStore(newArtStore)
+					}),
+				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$ArtStoreMsg, cmd)
+			};
 		} else {
-			return A2(
-				_elm_lang$core$Random$map,
-				_elm_lang$core$Maybe$withDefault(''),
-				_user$project$Map$randItem(_p30._0));
+			return {ctor: '_Tuple2', _0: map, _1: _elm_lang$core$Platform_Cmd$none};
 		}
-	}
-};
-var _user$project$Map$randomMovingBall = F2(
-	function (window, id) {
-		return A2(
-			_elm_lang$core$Random$andThen,
-			function (color) {
-				return A4(
-					_elm_lang$core$Random$map3,
-					A2(_user$project$Map$initMovingBall, id, color),
-					_user$project$Map$randomPosition(window),
-					_user$project$Map$randomVelocity,
-					_user$project$Map$randomImage(color));
-			},
-			_user$project$Map$colorGen);
-	});
-var _user$project$Map$initialBalls = function (window) {
-	return _elm_community$random_extra$Random_Extra$combine(
-		A2(
-			_elm_lang$core$List$map,
-			_user$project$Map$randomMovingBall(window),
-			A2(_elm_lang$core$List$range, 0, 9)));
-};
-var _user$project$Map$initArtGame = F2(
-	function (window, seed) {
-		var _p31 = A2(
-			_elm_lang$core$Random$step,
-			_user$project$Map$initialBalls(window),
-			seed);
-		var balls = _p31._0;
-		var newSeed = _p31._1;
-		return {
-			ctor: '_Tuple2',
-			_0: {time: 0, seed: newSeed, color: _user$project$Map$Yellow, balls: balls, win: false},
-			_1: newSeed
-		};
-	});
-var _user$project$Map$init = F2(
-	function (window, level) {
-		var _p32 = A2(
-			_user$project$Map$initArtGame,
-			window,
-			_elm_lang$core$Random$initialSeed(0));
-		var artGame = _p32._0;
-		return {
-			level: level,
-			artGame: artGame,
-			window: window,
-			points: 0,
-			seed: _elm_lang$core$Random$initialSeed(0)
-		};
 	});
 var _user$project$Map$update = F2(
 	function (msg, map) {
-		var _p33 = msg;
-		switch (_p33.ctor) {
+		var _p4 = {ctor: '_Tuple2', _0: map.level, _1: msg};
+		switch (_p4._1.ctor) {
 			case 'NewLevel':
-				var _p36 = _p33._0;
-				var _p34 = function () {
-					var _p35 = _p36;
-					if ((_p35.ctor === 'ArtStore') && (_p35._0 === true)) {
-						return A2(_user$project$Map$initArtGame, map.window, map.seed);
-					} else {
-						return {ctor: '_Tuple2', _0: map.artGame, _1: map.seed};
+				var level = function () {
+					var _p5 = _p4._1._0;
+					switch (_p5.ctor) {
+						case 'HomeRoute':
+							return _user$project$Map$Home;
+						case 'HomeTownRoute':
+							return _user$project$Map$HomeTown;
+						case 'GroceryStoreRoute':
+							return _user$project$Map$GroceryStore;
+						default:
+							var _p6 = A2(_user$project$Store_ArtStore$init, map.window, map.seed);
+							var store = _p6._0;
+							return _user$project$Map$ArtStore(store);
 					}
 				}();
-				var artGame = _p34._0;
-				var newSeed = _p34._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						map,
-						{level: _p36, artGame: artGame, seed: newSeed}),
+						{level: level}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'PlayAudio':
 				return {
 					ctor: '_Tuple2',
 					_0: map,
-					_1: _user$project$Audio$play(_p33._0)
+					_1: _user$project$Audio$play(_p4._1._0)
 				};
+			case 'Tick':
+				var _p7 = _elm_lang$core$Debug$log('Map Tick');
+				return A2(_user$project$Map$tick, _p4._1._0, map);
 			default:
-				if (_elm_lang$core$Native_Utils.eq(_p33._1, _p33._2)) {
-					var artGame = map.artGame;
-					var newBalls = A2(_user$project$Map$removeBall, _p33._0, artGame.balls);
-					var win = _elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$List$length(newBalls),
-						0);
-					var newArtGame = _elm_lang$core$Native_Utils.update(
-						artGame,
-						{balls: newBalls, win: win});
+				if (_p4._0.ctor === 'ArtStore') {
+					var _p8 = A3(_user$project$Store_ArtStore$update, map.window, _p4._1._0, _p4._0._0);
+					var newArtStore = _p8._0;
+					var cmd = _p8._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							map,
-							{points: map.points + 10, artGame: newArtGame}),
-						_1: _user$project$Audio$play('audio/puff.mp3')
+							{
+								level: _user$project$Map$ArtStore(newArtStore)
+							}),
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$ArtStoreMsg, cmd)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: map, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$Map$ColorClicked = F3(
-	function (a, b, c) {
-		return {ctor: 'ColorClicked', _0: a, _1: b, _2: c};
-	});
-var _user$project$Map$colorBall = F2(
-	function (gameColor, ball) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'background-image',
-								_1: A2(
-									_elm_lang$core$Basics_ops['++'],
-									'url(',
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										_user$project$Map$imageDir,
-										A2(_elm_lang$core$Basics_ops['++'], ball.img, ')')))
-							},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'background-size', _1: 'contain'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'background-repeat', _1: 'no-repeat'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-											_1: {
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'left',
-													_1: A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(
-															_elm_community$linear_algebra$Math_Vector2$getX(ball.pos)),
-														'px')
-												},
-												_1: {
-													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'top',
-														_1: A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(
-																_elm_community$linear_algebra$Math_Vector2$getY(ball.pos)),
-															'px')
-													},
-													_1: {
-														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'width',
-															_1: A2(
-																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(ball.radius * 2),
-																'px')
-														},
-														_1: {
-															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'height',
-																_1: A2(
-																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(ball.radius * 2),
-																	'px')
-															},
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onMouseDown(
-						A3(_user$project$Map$ColorClicked, ball.id, gameColor, ball.color)),
-					_1: {ctor: '[]'}
-				}
-			},
-			{ctor: '[]'});
-	});
 var _user$project$Map$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
 var _user$project$Map$groceryItem = F3(
-	function (_p37, image, audio) {
-		var _p38 = _p37;
+	function (_p9, image, audio) {
+		var _p10 = _p9;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -12723,7 +13215,7 @@ var _user$project$Map$groceryItem = F3(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p38._0),
+												_elm_lang$core$Basics$toString(_p10._0),
 												'px')
 										},
 										_1: {
@@ -12733,7 +13225,7 @@ var _user$project$Map$groceryItem = F3(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p38._1),
+													_elm_lang$core$Basics$toString(_p10._1),
 													'px')
 											},
 											_1: {ctor: '[]'}
@@ -12752,405 +13244,12 @@ var _user$project$Map$groceryItem = F3(
 			},
 			{ctor: '[]'});
 	});
-var _user$project$Map$colorCircle = F3(
-	function (_p39, color, audio) {
-		var _p40 = _p39;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'border-radius', _1: '50%'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'background-color', _1: color},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p40._0),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p40._1),
-													'px')
-											},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'width', _1: '64px'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Map$PlayAudio(audio)),
-					_1: {ctor: '[]'}
-				}
-			},
-			{ctor: '[]'});
-	});
 var _user$project$Map$NewLevel = function (a) {
 	return {ctor: 'NewLevel', _0: a};
 };
-var _user$project$Map$house = function (_p41) {
-	var _p42 = _p41;
-	return A2(
-		_elm_lang$html$Html$img,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$src('imgs/home.png'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Map$NewLevel(_user$project$Map$Home)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p42._0),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p42._1),
-													'px')
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Map$storeBuilding = function (_p43) {
-	var _p44 = _p43;
-	var _p46 = _p44._1;
-	var _p45 = _p44._0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Map$NewLevel(_user$project$Map$GroceryStore)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
-											_1: {
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'left',
-													_1: A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p45),
-														'px')
-												},
-												_1: {
-													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'top',
-														_1: A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p46),
-															'px')
-													},
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
-													_1: {
-														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'left',
-															_1: A2(
-																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p45 + 7),
-																'px')
-														},
-														_1: {
-															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'top',
-																_1: A2(
-																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p46 + 10),
-																	'px')
-															},
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Los Comestibles'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Map$artStoreBuilding = function (_p47) {
-	var _p48 = _p47;
-	var _p50 = _p48._1;
-	var _p49 = _p48._0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Map$NewLevel(
-								_user$project$Map$ArtStore(false))),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
-											_1: {
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'left',
-													_1: A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p49),
-														'px')
-												},
-												_1: {
-													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'top',
-														_1: A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p50),
-															'px')
-													},
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
-													_1: {
-														ctor: '::',
-														_0: {
-															ctor: '_Tuple2',
-															_0: 'left',
-															_1: A2(
-																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p49 + 7),
-																'px')
-														},
-														_1: {
-															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'top',
-																_1: A2(
-																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p50 + 10),
-																	'px')
-															},
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('El Arte'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Map$hometown = function (mapSize) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Map$house(
-				{ctor: '_Tuple2', _0: 0, _1: 0}),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Map$storeBuilding(
-					{ctor: '_Tuple2', _0: 160, _1: 0}),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Map$artStoreBuilding(
-						{ctor: '_Tuple2', _0: 320, _1: 0}),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
 var _user$project$Map$playButton = F2(
-	function (_p51, level) {
-		var _p52 = _p51;
+	function (_p11, level) {
+		var _p12 = _p11;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -13169,7 +13268,7 @@ var _user$project$Map$playButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p52._0),
+										_elm_lang$core$Basics$toString(_p12._0),
 										'px')
 								},
 								_1: {
@@ -13179,7 +13278,7 @@ var _user$project$Map$playButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p52._1),
+											_elm_lang$core$Basics$toString(_p12._1),
 											'px')
 									},
 									_1: {
@@ -13209,8 +13308,8 @@ var _user$project$Map$playButton = F2(
 			});
 	});
 var _user$project$Map$backButton = F2(
-	function (_p53, level) {
-		var _p54 = _p53;
+	function (_p13, level) {
+		var _p14 = _p13;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -13229,7 +13328,7 @@ var _user$project$Map$backButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p54._0),
+										_elm_lang$core$Basics$toString(_p14._0),
 										'px')
 								},
 								_1: {
@@ -13239,7 +13338,7 @@ var _user$project$Map$backButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p54._1),
+											_elm_lang$core$Basics$toString(_p14._1),
 											'px')
 									},
 									_1: {
@@ -13267,51 +13366,6 @@ var _user$project$Map$backButton = F2(
 				_0: _elm_lang$html$Html$text('Back'),
 				_1: {ctor: '[]'}
 			});
-	});
-var _user$project$Map$colorGame = F2(
-	function (pointCount, artGame) {
-		var content = artGame.win ? {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('You Win!!!!!!'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		} : A2(
-			_elm_lang$core$List$map,
-			_user$project$Map$colorBall(artGame.color),
-			artGame.balls);
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: A2(
-						_user$project$Map$backButton,
-						{ctor: '_Tuple2', _0: 130, _1: 0},
-						_user$project$Map$ArtStore(false)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Color: ',
-								_user$project$Dictionary_Spanish$translate(
-									_elm_lang$core$Basics$toString(artGame.color)))),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Map$viewPoints(pointCount),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				content));
 	});
 var _user$project$Map$exit = function (level) {
 	return A2(
@@ -13344,13 +13398,268 @@ var _user$project$Map$exit = function (level) {
 			}
 		});
 };
+var _user$project$Map$ArtStoreRoute = {ctor: 'ArtStoreRoute'};
+var _user$project$Map$artStoreBuilding = function (_p15) {
+	var _p16 = _p15;
+	var _p18 = _p16._1;
+	var _p17 = _p16._0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Map$NewLevel(_user$project$Map$ArtStoreRoute)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'left',
+													_1: A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(_p17),
+														'px')
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'top',
+														_1: A2(
+															_elm_lang$core$Basics_ops['++'],
+															_elm_lang$core$Basics$toString(_p18),
+															'px')
+													},
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '_Tuple2',
+															_0: 'left',
+															_1: A2(
+																_elm_lang$core$Basics_ops['++'],
+																_elm_lang$core$Basics$toString(_p17 + 7),
+																'px')
+														},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'top',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(_p18 + 10),
+																	'px')
+															},
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('El Arte'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Map$GroceryStoreRoute = {ctor: 'GroceryStoreRoute'};
+var _user$project$Map$storeBuilding = function (_p19) {
+	var _p20 = _p19;
+	var _p22 = _p20._1;
+	var _p21 = _p20._0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Map$NewLevel(_user$project$Map$GroceryStoreRoute)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'left',
+													_1: A2(
+														_elm_lang$core$Basics_ops['++'],
+														_elm_lang$core$Basics$toString(_p21),
+														'px')
+												},
+												_1: {
+													ctor: '::',
+													_0: {
+														ctor: '_Tuple2',
+														_0: 'top',
+														_1: A2(
+															_elm_lang$core$Basics_ops['++'],
+															_elm_lang$core$Basics$toString(_p22),
+															'px')
+													},
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+													_1: {
+														ctor: '::',
+														_0: {
+															ctor: '_Tuple2',
+															_0: 'left',
+															_1: A2(
+																_elm_lang$core$Basics_ops['++'],
+																_elm_lang$core$Basics$toString(_p21 + 7),
+																'px')
+														},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'top',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(_p22 + 10),
+																	'px')
+															},
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Los Comestibles'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Map$HomeTownRoute = {ctor: 'HomeTownRoute'};
 var _user$project$Map$home = function (mapSize) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Map$exit(_user$project$Map$HomeTown),
+			_0: _user$project$Map$exit(_user$project$Map$HomeTownRoute),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -13374,13 +13683,13 @@ var _user$project$Map$groceryStore = function (mapSize) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Map$exit(_user$project$Map$HomeTown),
+			_0: _user$project$Map$exit(_user$project$Map$HomeTownRoute),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					_user$project$Map$playButton,
 					{ctor: '_Tuple2', _0: 192, _1: 10},
-					_user$project$Map$GroceryStore),
+					_user$project$Map$GroceryStoreRoute),
 				_1: {
 					ctor: '::',
 					_0: A3(
@@ -13401,89 +13710,87 @@ var _user$project$Map$groceryStore = function (mapSize) {
 			}
 		});
 };
-var _user$project$Map$artStore = F2(
-	function (play, map) {
-		var _p55 = play;
-		if (_p55 === true) {
-			return A2(_user$project$Map$colorGame, map.points, map.artGame);
-		} else {
-			var showCircle = F2(
-				function (n, _p56) {
-					var _p57 = _p56;
-					return A3(
-						_user$project$Map$colorCircle,
-						{ctor: '_Tuple2', _0: 96 * n, _1: 96},
-						_p57._0,
-						_p57._1);
-				});
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
+var _user$project$Map$HomeRoute = {ctor: 'HomeRoute'};
+var _user$project$Map$house = function (_p23) {
+	var _p24 = _p23;
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src('imgs/home.png'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_user$project$Map$NewLevel(_user$project$Map$HomeRoute)),
+				_1: {
 					ctor: '::',
-					_0: _user$project$Map$exit(_user$project$Map$HomeTown),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_user$project$Map$playButton,
-							{ctor: '_Tuple2', _0: 192, _1: 10},
-							_user$project$Map$ArtStore(true)),
-						_1: {
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
 							ctor: '::',
-							_0: _user$project$Map$viewPoints(map.points),
-							_1: A2(
-								_elm_lang$core$List$indexedMap,
-								showCircle,
-								{
+							_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
+								_1: {
 									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'black',
-										_1: _user$project$Dictionary_Spanish$audio('black')
-									},
+									_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
 									_1: {
 										ctor: '::',
 										_0: {
 											ctor: '_Tuple2',
-											_0: 'white',
-											_1: _user$project$Dictionary_Spanish$audio('white')
+											_0: 'left',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(_p24._0),
+												'px')
 										},
 										_1: {
 											ctor: '::',
 											_0: {
 												ctor: '_Tuple2',
-												_0: 'red',
-												_1: _user$project$Dictionary_Spanish$audio('red')
+												_0: 'top',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(_p24._1),
+													'px')
 											},
-											_1: {
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'blue',
-													_1: _user$project$Dictionary_Spanish$audio('blue')
-												},
-												_1: {
-													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'yellow',
-														_1: _user$project$Dictionary_Spanish$audio('yellow')
-													},
-													_1: {ctor: '[]'}
-												}
-											}
+											_1: {ctor: '[]'}
 										}
 									}
-								})
-						}
-					}
-				});
-		}
-	});
+								}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Map$hometown = function (mapSize) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Map$house(
+				{ctor: '_Tuple2', _0: 0, _1: 0}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Map$storeBuilding(
+					{ctor: '_Tuple2', _0: 160, _1: 0}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Map$artStoreBuilding(
+						{ctor: '_Tuple2', _0: 320, _1: 0}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$Map$view = F2(
 	function (mapSize, map) {
-		var _p58 = map.level;
-		switch (_p58.ctor) {
+		var _p25 = map.level;
+		switch (_p25.ctor) {
 			case 'Home':
 				return _user$project$Map$home(mapSize);
 			case 'HomeTown':
@@ -13491,7 +13798,10 @@ var _user$project$Map$view = F2(
 			case 'GroceryStore':
 				return _user$project$Map$groceryStore(mapSize);
 			default:
-				return A2(_user$project$Map$artStore, _p58._0, map);
+				return A2(
+					_elm_lang$html$Html$map,
+					_user$project$Map$ArtStoreMsg,
+					_user$project$Store_ArtStore$view(_p25._0));
 		}
 	});
 
@@ -13595,10 +13905,14 @@ var _user$project$Main$update = F2(
 					};
 				}
 			case 'Tick':
-				var _p6 = _p0._0;
-				var _p5 = A2(_user$project$Map$tick, _p6, model.map);
+				var _p7 = _p0._0;
+				var _p5 = A2(
+					_user$project$Map$update,
+					_user$project$Map$Tick(_p7),
+					model.map);
 				var newMap = _p5._0;
 				var cmd = _p5._1;
+				var _p6 = _elm_lang$core$Debug$log('Main Tick');
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13606,14 +13920,14 @@ var _user$project$Main$update = F2(
 						{
 							user: A2(_user$project$Bee$animate, model.time, model.user),
 							map: newMap,
-							time: model.time + _p6
+							time: model.time + _p7
 						}),
 					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$MapMsg, cmd)
 				};
 			default:
-				var _p7 = A2(_user$project$Map$update, _p0._0, model.map);
-				var newMap = _p7._0;
-				var cmd = _p7._1;
+				var _p8 = A2(_user$project$Map$update, _p0._0, model.map);
+				var newMap = _p8._0;
+				var cmd = _p8._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13669,8 +13983,8 @@ var _user$project$Main$subscriptions = function (model) {
 	if (model.pause) {
 		return _elm_lang$core$Platform_Sub$none;
 	} else {
-		var _p8 = model.mouse;
-		if (_p8.ctor === 'Up') {
+		var _p9 = model.mouse;
+		if (_p9.ctor === 'Up') {
 			return _elm_lang$core$Platform_Sub$batch(
 				{
 					ctor: '::',
