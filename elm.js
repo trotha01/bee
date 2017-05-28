@@ -12921,6 +12921,7 @@ var _user$project$Store_ArtStore$initMovingBall = F5(
 			img: image
 		};
 	});
+var _user$project$Store_ArtStore$ballsPerRound = 5;
 var _user$project$Store_ArtStore$nonZeroFloat = A2(
 	_elm_lang$core$Random$map,
 	_elm_lang$core$Basics$toFloat,
@@ -12968,13 +12969,40 @@ var _user$project$Store_ArtStore$randItem = function (list) {
 			0,
 			_elm_lang$core$List$length(list) - 1));
 };
+var _user$project$Store_ArtStore$nextColor = function (model) {
+	var knownUnknownColors = function () {
+		var _p10 = model.game.knownUnknownColors;
+		if (_p10._1.ctor === '::') {
+			return {
+				ctor: '_Tuple2',
+				_0: {ctor: '::', _0: _p10._1._0, _1: _p10._0},
+				_1: _p10._1._1
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _p10._0,
+				_1: {ctor: '[]'}
+			};
+		}
+	}();
+	var game = model.game;
+	var newGame = _elm_lang$core$Native_Utils.update(
+		game,
+		{knownUnknownColors: knownUnknownColors});
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{game: newGame});
+};
+var _user$project$Store_ArtStore$unknownColors = _elm_lang$core$Tuple$second;
+var _user$project$Store_ArtStore$knownColors = _elm_lang$core$Tuple$first;
 var _user$project$Store_ArtStore$Model = F2(
 	function (a, b) {
 		return {playing: a, game: b};
 	});
-var _user$project$Store_ArtStore$ArtGame = F6(
-	function (a, b, c, d, e, f) {
-		return {color: a, balls: b, time: c, seed: d, win: e, points: f};
+var _user$project$Store_ArtStore$ArtGame = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {color: a, balls: b, time: c, seed: d, finishRound: e, win: f, points: g, knownUnknownColors: h};
 	});
 var _user$project$Store_ArtStore$MovingBall = F6(
 	function (a, b, c, d, e, f) {
@@ -13017,21 +13045,21 @@ var _user$project$Store_ArtStore$collideWith = F3(
 	function (a0, bodies, acc) {
 		collideWith:
 		while (true) {
-			var _p10 = bodies;
-			if (_p10.ctor === '[]') {
+			var _p11 = bodies;
+			if (_p11.ctor === '[]') {
 				return {ctor: '::', _0: a0, _1: acc};
 			} else {
-				var _p12 = _p10._0;
-				var collisionResult = A2(_user$project$Store_ArtStore$collision, a0, _p12);
-				var _p11 = A3(_user$project$Store_ArtStore$resolveCollision, collisionResult, a0, _p12);
-				var a1 = _p11._0;
-				var b1 = _p11._1;
-				var _v5 = a1,
-					_v6 = _p10._1,
-					_v7 = {ctor: '::', _0: b1, _1: acc};
-				a0 = _v5;
-				bodies = _v6;
-				acc = _v7;
+				var _p13 = _p11._0;
+				var collisionResult = A2(_user$project$Store_ArtStore$collision, a0, _p13);
+				var _p12 = A3(_user$project$Store_ArtStore$resolveCollision, collisionResult, a0, _p13);
+				var a1 = _p12._0;
+				var b1 = _p12._1;
+				var _v6 = a1,
+					_v7 = _p11._1,
+					_v8 = {ctor: '::', _0: b1, _1: acc};
+				a0 = _v6;
+				bodies = _v7;
+				acc = _v8;
 				continue collideWith;
 			}
 		}
@@ -13040,22 +13068,22 @@ var _user$project$Store_ArtStore$collide = F2(
 	function (acc, bodies) {
 		collide:
 		while (true) {
-			var _p13 = bodies;
-			if (_p13.ctor === '[]') {
+			var _p14 = bodies;
+			if (_p14.ctor === '[]') {
 				return acc;
 			} else {
-				var _p14 = A3(
+				var _p15 = A3(
 					_user$project$Store_ArtStore$collideWith,
-					_p13._0,
-					_p13._1,
+					_p14._0,
+					_p14._1,
 					{ctor: '[]'});
-				if (_p14.ctor === '[]') {
+				if (_p15.ctor === '[]') {
 					return {ctor: '[]'};
 				} else {
-					var _v10 = {ctor: '::', _0: _p14._0, _1: acc},
-						_v11 = _p14._1;
-					acc = _v10;
-					bodies = _v11;
+					var _v11 = {ctor: '::', _0: _p15._0, _1: acc},
+						_v12 = _p15._1;
+					acc = _v11;
+					bodies = _v12;
 					continue collide;
 				}
 			}
@@ -13068,38 +13096,38 @@ var _user$project$Store_ArtStore$collisions = function (balls) {
 		balls);
 };
 var _user$project$Store_ArtStore$collisionBoxBubble = F2(
-	function (_p16, _p15) {
-		var _p17 = _p16;
-		var _p24 = _p17._1;
-		var _p18 = _p15;
-		var _p23 = _p18._1;
-		var _p19 = {
-			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p24),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p24)
-		};
-		var boxX = _p19._0;
-		var boxY = _p19._1;
-		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p18._0, _p17._0);
+	function (_p17, _p16) {
+		var _p18 = _p17;
+		var _p25 = _p18._1;
+		var _p19 = _p16;
+		var _p24 = _p19._1;
 		var _p20 = {
+			ctor: '_Tuple2',
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p25),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p25)
+		};
+		var boxX = _p20._0;
+		var boxY = _p20._1;
+		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p19._0, _p18._0);
+		var _p21 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(dist),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(dist)
 		};
-		var dx = _p20._0;
-		var dy = _p20._1;
+		var dx = _p21._0;
+		var dy = _p21._1;
 		var c = A2(
 			_elm_community$linear_algebra$Math_Vector2$vec2,
 			A3(_elm_lang$core$Basics$clamp, 0 - boxX, boxX, dx),
 			A3(_elm_lang$core$Basics$clamp, 0 - boxY, boxY, dy));
-		var _p21 = {
+		var _p22 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(c),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(c)
 		};
-		var cx = _p21._0;
-		var cy = _p21._1;
-		var _p22 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
+		var cx = _p22._0;
+		var cy = _p22._1;
+		var _p23 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
 			_elm_lang$core$Basics$abs(dx),
 			_elm_lang$core$Basics$abs(dy)) > 0) ? ((_elm_lang$core$Native_Utils.cmp(cx, 0) > 0) ? {
 			ctor: '_Tuple2',
@@ -13118,17 +13146,17 @@ var _user$project$Store_ArtStore$collisionBoxBubble = F2(
 			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, 0 - boxY),
 			_1: true
 		}));
-		var closest = _p22._0;
-		var inside = _p22._1;
+		var closest = _p23._0;
+		var inside = _p23._1;
 		var normal = A2(_elm_community$linear_algebra$Math_Vector2$sub, dist, closest);
 		var normalLenSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(normal);
-		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p23 * _p23) > 0) && (!inside)) {
+		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p24 * _p24) > 0) && (!inside)) {
 			return A2(
 				_user$project$Store_ArtStore$CollisionResult,
 				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
 				0);
 		} else {
-			var penetration = _p23 + _elm_lang$core$Basics$sqrt(normalLenSq);
+			var penetration = _p24 + _elm_lang$core$Basics$sqrt(normalLenSq);
 			return inside ? A2(
 				_user$project$Store_ArtStore$CollisionResult,
 				A2(
@@ -13145,24 +13173,24 @@ var _user$project$Store_ArtStore$animateBall = F3(
 	function (timeDiff, window, ball) {
 		var y = _elm_community$linear_algebra$Math_Vector2$getY(ball.pos);
 		var x = _elm_community$linear_algebra$Math_Vector2$getX(ball.pos);
-		var _p25 = {
+		var _p26 = {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Basics$toFloat(window.width),
 			_1: _elm_lang$core$Basics$toFloat(window.height)
 		};
-		var width = _p25._0;
-		var height = _p25._1;
-		var _p26 = {
+		var width = _p26._0;
+		var height = _p26._1;
+		var _p27 = {
 			ctor: '_Tuple4',
 			_0: _user$project$Store_ArtStore$initLeftWall(height),
 			_1: A2(_user$project$Store_ArtStore$initRightWall, width, height),
 			_2: _user$project$Store_ArtStore$initTopWall(width),
 			_3: A2(_user$project$Store_ArtStore$initBottomWall, width, height)
 		};
-		var leftWall = _p26._0;
-		var rightWall = _p26._1;
-		var topWall = _p26._2;
-		var bottomWall = _p26._3;
+		var leftWall = _p27._0;
+		var rightWall = _p27._1;
+		var topWall = _p27._2;
+		var bottomWall = _p27._3;
 		var leftCol = A2(
 			_user$project$Store_ArtStore$collisionBoxBubble,
 			{
@@ -13223,11 +13251,11 @@ var _user$project$Store_ArtStore$randomColor = F2(
 var _user$project$Store_ArtStore$animateArtGame = F4(
 	function (timeDiff, window, translator, artGame) {
 		var newTime = artGame.time + timeDiff;
-		var _p27 = function () {
+		var _p28 = function () {
 			if (_elm_lang$core$Native_Utils.cmp(newTime, _user$project$Store_ArtStore$colorSwapTime) > 0) {
-				var _p28 = A2(_user$project$Store_ArtStore$randomColor, artGame.seed, artGame.balls);
-				var randColor = _p28._0;
-				var seed = _p28._1;
+				var _p29 = A2(_user$project$Store_ArtStore$randomColor, artGame.seed, artGame.balls);
+				var randColor = _p29._0;
+				var seed = _p29._1;
 				return {
 					ctor: '_Tuple3',
 					_0: {ctor: '_Tuple2', _0: randColor, _1: seed},
@@ -13245,11 +13273,11 @@ var _user$project$Store_ArtStore$animateArtGame = F4(
 				};
 			}
 		}();
-		var newColor = _p27._0._0;
-		var newSeed = _p27._0._1;
-		var timeReset = _p27._1;
-		var cmd = _p27._2;
-		var _p29 = A2(_elm_lang$core$Debug$log, 'animate art game', '');
+		var newColor = _p28._0._0;
+		var newSeed = _p28._0._1;
+		var timeReset = _p28._1;
+		var cmd = _p28._2;
+		var _p30 = A2(_elm_lang$core$Debug$log, 'animate art game', '');
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -13363,51 +13391,28 @@ var _user$project$Store_ArtStore$images = _eeue56$elm_all_dict$EveryDict$fromLis
 	});
 var _user$project$Store_ArtStore$randomImage = function (color) {
 	var options = A2(_eeue56$elm_all_dict$EveryDict$get, color, _user$project$Store_ArtStore$images);
-	var _p30 = options;
-	if (_p30.ctor === 'Nothing') {
+	var _p31 = options;
+	if (_p31.ctor === 'Nothing') {
 		return _user$project$Store_ArtStore$alwaysGen('');
 	} else {
-		if (_p30._0.ctor === '[]') {
+		if (_p31._0.ctor === '[]') {
 			return _user$project$Store_ArtStore$alwaysGen('');
 		} else {
 			return A2(
 				_elm_lang$core$Random$map,
 				_elm_lang$core$Maybe$withDefault(''),
-				_user$project$Store_ArtStore$randItem(_p30._0));
+				_user$project$Store_ArtStore$randItem(_p31._0));
 		}
 	}
 };
-var _user$project$Store_ArtStore$colorGen = A2(
-	_elm_lang$core$Random$map,
-	_elm_lang$core$Maybe$withDefault(_user$project$Store_ArtStore$Red),
-	_user$project$Store_ArtStore$randItem(
-		{
-			ctor: '::',
-			_0: _user$project$Store_ArtStore$Red,
-			_1: {
-				ctor: '::',
-				_0: _user$project$Store_ArtStore$Orange,
-				_1: {
-					ctor: '::',
-					_0: _user$project$Store_ArtStore$Yellow,
-					_1: {
-						ctor: '::',
-						_0: _user$project$Store_ArtStore$Green,
-						_1: {
-							ctor: '::',
-							_0: _user$project$Store_ArtStore$Blue,
-							_1: {
-								ctor: '::',
-								_0: _user$project$Store_ArtStore$Purple,
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			}
-		}));
-var _user$project$Store_ArtStore$randomMovingBall = F2(
-	function (window, id) {
+var _user$project$Store_ArtStore$colorGen = function (colors) {
+	return A2(
+		_elm_lang$core$Random$map,
+		_elm_lang$core$Maybe$withDefault(_user$project$Store_ArtStore$Red),
+		_user$project$Store_ArtStore$randItem(colors));
+};
+var _user$project$Store_ArtStore$randomMovingBall = F3(
+	function (window, colors, id) {
 		return A2(
 			_elm_lang$core$Random$andThen,
 			function (color) {
@@ -13418,34 +13423,76 @@ var _user$project$Store_ArtStore$randomMovingBall = F2(
 					_user$project$Store_ArtStore$randomVelocity,
 					_user$project$Store_ArtStore$randomImage(color));
 			},
-			_user$project$Store_ArtStore$colorGen);
+			_user$project$Store_ArtStore$colorGen(colors));
 	});
-var _user$project$Store_ArtStore$initialBalls = function (window) {
-	return _elm_community$random_extra$Random_Extra$combine(
-		A2(
-			_elm_lang$core$List$map,
-			_user$project$Store_ArtStore$randomMovingBall(window),
-			A2(_elm_lang$core$List$range, 0, 9)));
-};
-var _user$project$Store_ArtStore$initArtGame = F2(
-	function (window, seed) {
-		var _p31 = A2(
+var _user$project$Store_ArtStore$initialBalls = F2(
+	function (window, colors) {
+		return _elm_community$random_extra$Random_Extra$combine(
+			A2(
+				_elm_lang$core$List$map,
+				A2(_user$project$Store_ArtStore$randomMovingBall, window, colors),
+				A2(_elm_lang$core$List$range, 0, _user$project$Store_ArtStore$ballsPerRound - 1)));
+	});
+var _user$project$Store_ArtStore$initArtGame = F3(
+	function (window, colors, seed) {
+		var _p32 = A2(
 			_elm_lang$core$Random$step,
-			_user$project$Store_ArtStore$initialBalls(window),
+			A2(_user$project$Store_ArtStore$initialBalls, window, colors),
 			seed);
-		var balls = _p31._0;
-		var newSeed = _p31._1;
+		var balls = _p32._0;
+		var newSeed = _p32._1;
 		return {
 			ctor: '_Tuple2',
-			_0: {time: 0, seed: newSeed, points: 0, color: _user$project$Store_ArtStore$Yellow, balls: balls, win: false},
+			_0: {
+				time: 0,
+				seed: newSeed,
+				points: 0,
+				color: _user$project$Store_ArtStore$Yellow,
+				balls: balls,
+				win: false,
+				finishRound: false,
+				knownUnknownColors: {
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: {
+						ctor: '::',
+						_0: _user$project$Store_ArtStore$Red,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Store_ArtStore$Orange,
+							_1: {
+								ctor: '::',
+								_0: _user$project$Store_ArtStore$Yellow,
+								_1: {
+									ctor: '::',
+									_0: _user$project$Store_ArtStore$Green,
+									_1: {
+										ctor: '::',
+										_0: _user$project$Store_ArtStore$Blue,
+										_1: {
+											ctor: '::',
+											_0: _user$project$Store_ArtStore$Purple,
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
 			_1: newSeed
 		};
 	});
 var _user$project$Store_ArtStore$init = F2(
 	function (window, seed) {
-		var _p32 = A2(_user$project$Store_ArtStore$initArtGame, window, seed);
-		var game = _p32._0;
-		var newSeed = _p32._1;
+		var _p33 = A3(
+			_user$project$Store_ArtStore$initArtGame,
+			window,
+			{ctor: '[]'},
+			seed);
+		var game = _p33._0;
+		var newSeed = _p33._1;
 		return {
 			ctor: '_Tuple2',
 			_0: {game: game, playing: false},
@@ -13460,8 +13507,8 @@ var _user$project$Store_ArtStore$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
 var _user$project$Store_ArtStore$colorCircle = F3(
-	function (_p33, color, audio) {
-		var _p34 = _p33;
+	function (_p34, color, audio) {
+		var _p35 = _p34;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13486,7 +13533,7 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p34._0),
+												_elm_lang$core$Basics$toString(_p35._0),
 												'px')
 										},
 										_1: {
@@ -13496,7 +13543,7 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p34._1),
+													_elm_lang$core$Basics$toString(_p35._1),
 													'px')
 											},
 											_1: {
@@ -13523,9 +13570,10 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 			},
 			{ctor: '[]'});
 	});
-var _user$project$Store_ArtStore$Back = {ctor: 'Back'};
-var _user$project$Store_ArtStore$backButton = function (_p35) {
-	var _p36 = _p35;
+var _user$project$Store_ArtStore$NextRound = {ctor: 'NextRound'};
+var _user$project$Store_ArtStore$FinishGame = {ctor: 'FinishGame'};
+var _user$project$Store_ArtStore$backButton = function (_p36) {
+	var _p37 = _p36;
 	return A2(
 		_elm_lang$html$Html$button,
 		{
@@ -13544,7 +13592,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 								_0: 'left',
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p36._0),
+									_elm_lang$core$Basics$toString(_p37._0),
 									'px')
 							},
 							_1: {
@@ -13554,7 +13602,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 									_0: 'top',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p36._1),
+										_elm_lang$core$Basics$toString(_p37._1),
 										'px')
 								},
 								_1: {
@@ -13572,7 +13620,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$Back),
+				_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$FinishGame),
 				_1: {ctor: '[]'}
 			}
 		},
@@ -13583,8 +13631,8 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 		});
 };
 var _user$project$Store_ArtStore$Play = {ctor: 'Play'};
-var _user$project$Store_ArtStore$playButton = function (_p37) {
-	var _p38 = _p37;
+var _user$project$Store_ArtStore$playButton = function (_p38) {
+	var _p39 = _p38;
 	return A2(
 		_elm_lang$html$Html$button,
 		{
@@ -13603,7 +13651,7 @@ var _user$project$Store_ArtStore$playButton = function (_p37) {
 								_0: 'left',
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p38._0),
+									_elm_lang$core$Basics$toString(_p39._0),
 									'px')
 							},
 							_1: {
@@ -13613,7 +13661,7 @@ var _user$project$Store_ArtStore$playButton = function (_p37) {
 									_0: 'top',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p38._1),
+										_elm_lang$core$Basics$toString(_p39._1),
 										'px')
 								},
 								_1: {
@@ -13744,15 +13792,41 @@ var _user$project$Store_ArtStore$colorBall = F2(
 	});
 var _user$project$Store_ArtStore$colorGame = F2(
 	function (translator, game) {
-		var content = game.win ? {
+		var content = (game.finishRound || game.win) ? {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$html$Html$div,
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('You Win!!!!!!'),
-					_1: {ctor: '[]'}
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$NextRound),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Next Round'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Store_ArtStore$FinishGame),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Finish Early'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {ctor: '[]'}
 		} : A2(
@@ -13783,18 +13857,18 @@ var _user$project$Store_ArtStore$colorGame = F2(
 	});
 var _user$project$Store_ArtStore$view = F2(
 	function (translator, model) {
-		var _p39 = model.playing;
-		if (_p39 === true) {
+		var _p40 = model.playing;
+		if (_p40 === true) {
 			return A2(_user$project$Store_ArtStore$colorGame, translator, model.game);
 		} else {
 			var showCircle = F2(
-				function (n, _p40) {
-					var _p41 = _p40;
+				function (n, _p41) {
+					var _p42 = _p41;
 					return A3(
 						_user$project$Store_ArtStore$colorCircle,
 						{ctor: '_Tuple2', _0: 96 * n, _1: 96},
-						_p41._0,
-						_p41._1);
+						_p42._0,
+						_p42._1);
 				});
 			return A2(
 				_elm_lang$html$Html$div,
@@ -13857,9 +13931,9 @@ var _user$project$Store_ArtStore$view = F2(
 var _user$project$Store_ArtStore$NoOp = {ctor: 'NoOp'};
 var _user$project$Store_ArtStore$tick = F4(
 	function (timeDelta, window, translator, model) {
-		var _p42 = A4(_user$project$Store_ArtStore$animateArtGame, timeDelta, window, translator, model.game);
-		var newArtGame = _p42._0;
-		var cmd = _p42._1;
+		var _p43 = A4(_user$project$Store_ArtStore$animateArtGame, timeDelta, window, translator, model.game);
+		var newArtGame = _p43._0;
+		var cmd = _p43._1;
 		return {
 			ctor: '_Tuple3',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -13875,61 +13949,80 @@ var _user$project$Store_ArtStore$AddPoints = function (a) {
 };
 var _user$project$Store_ArtStore$update = F4(
 	function (window, translator, msg, model) {
-		var _p43 = msg;
-		switch (_p43.ctor) {
-			case 'ColorClicked':
-				if (_elm_lang$core$Native_Utils.eq(_p43._1, _p43._2)) {
-					var artGame = model.game;
-					var newBalls = A2(_user$project$Store_ArtStore$removeBall, _p43._0, artGame.balls);
-					var win = _elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$List$length(newBalls),
-						0);
-					var newArtGame = _elm_lang$core$Native_Utils.update(
-						artGame,
-						{balls: newBalls, win: win});
+		update:
+		while (true) {
+			var _p44 = msg;
+			switch (_p44.ctor) {
+				case 'ColorClicked':
+					if (_elm_lang$core$Native_Utils.eq(_p44._1, _p44._2)) {
+						var artGame = model.game;
+						var newBalls = A2(_user$project$Store_ArtStore$removeBall, _p44._0, artGame.balls);
+						var finishRound = _elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$List$length(newBalls),
+							0);
+						var win = finishRound && _elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$List$length(
+								_user$project$Store_ArtStore$unknownColors(artGame.knownUnknownColors)),
+							0);
+						var newArtGame = _elm_lang$core$Native_Utils.update(
+							artGame,
+							{balls: newBalls, finishRound: finishRound, win: win});
+						return {
+							ctor: '_Tuple3',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{game: newArtGame}),
+							_1: _user$project$Store_ArtStore$AddPoints(10),
+							_2: _user$project$Audio$play('audio/puff.mp3')
+						};
+					} else {
+						return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+					}
+				case 'Play':
+					var _p45 = A3(
+						_user$project$Store_ArtStore$initArtGame,
+						window,
+						_user$project$Store_ArtStore$knownColors(model.game.knownUnknownColors),
+						_elm_lang$core$Random$initialSeed(0));
+					var newArtGame = _p45._0;
+					return {
+						ctor: '_Tuple3',
+						_0: _user$project$Store_ArtStore$nextColor(
+							{playing: true, game: newArtGame}),
+						_1: _user$project$Store_ArtStore$NoOp,
+						_2: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'FinishGame':
 					return {
 						ctor: '_Tuple3',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{playing: !win, game: newArtGame}),
-						_1: _user$project$Store_ArtStore$AddPoints(10),
-						_2: _user$project$Audio$play('audio/puff.mp3')
+							{playing: false}),
+						_1: _user$project$Store_ArtStore$NoOp,
+						_2: _elm_lang$core$Platform_Cmd$none
 					};
-				} else {
-					return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'Play':
-				var _p44 = A2(
-					_user$project$Store_ArtStore$initArtGame,
-					window,
-					_elm_lang$core$Random$initialSeed(0));
-				var newArtGame = _p44._0;
-				return {
-					ctor: '_Tuple3',
-					_0: {playing: true, game: newArtGame},
-					_1: _user$project$Store_ArtStore$NoOp,
-					_2: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Back':
-				return {
-					ctor: '_Tuple3',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{playing: false}),
-					_1: _user$project$Store_ArtStore$NoOp,
-					_2: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'PlayAudio':
-				return {
-					ctor: '_Tuple3',
-					_0: model,
-					_1: _user$project$Store_ArtStore$NoOp,
-					_2: _user$project$Audio$play(_p43._0)
-				};
-			case 'ExitStore':
-				return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$Exit, _2: _elm_lang$core$Platform_Cmd$none};
-			default:
-				return model.playing ? A4(_user$project$Store_ArtStore$tick, _p43._0, window, translator, model) : {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+				case 'NextRound':
+					var _v22 = window,
+						_v23 = translator,
+						_v24 = _user$project$Store_ArtStore$Play,
+						_v25 = _user$project$Store_ArtStore$nextColor(model);
+					window = _v22;
+					translator = _v23;
+					msg = _v24;
+					model = _v25;
+					continue update;
+				case 'PlayAudio':
+					return {
+						ctor: '_Tuple3',
+						_0: model,
+						_1: _user$project$Store_ArtStore$NoOp,
+						_2: _user$project$Audio$play(_p44._0)
+					};
+				case 'ExitStore':
+					return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$Exit, _2: _elm_lang$core$Platform_Cmd$none};
+				default:
+					return (model.playing && (!(model.game.win || model.game.finishRound))) ? A4(_user$project$Store_ArtStore$tick, _p44._0, window, translator, model) : {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+			}
 		}
 	});
 
@@ -13993,24 +14086,6 @@ var _user$project$Map$tileCountFromPixels = function (pixels) {
 	return _elm_lang$core$Basics$round(
 		_elm_lang$core$Basics$toFloat(pixels) / 32);
 };
-var _user$project$Map$viewPoints = function (count) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('points'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'Points: ',
-					_elm_lang$core$Basics$toString(count))),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Map$px = function (x) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -14060,77 +14135,6 @@ var _user$project$Map$body = function (level) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Map$header = F2(
-	function (window, map) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'top',
-								_1: _user$project$Map$px(0)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'bottom',
-									_1: _user$project$Map$px(0)
-								},
-								_1: {
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'height',
-										_1: _user$project$Map$px(100)
-									},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'width',
-											_1: _user$project$Map$px(window.width)
-										},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'border-bottom', _1: '1px solid black'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'hsl(189, 100%, 50%)'},
-												_1: {ctor: '[]'}
-											}
-										}
-									}
-								}
-							}
-						}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$h1,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Lingua'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Map$viewPoints(map.points),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
 var _user$project$Map$init = function (level) {
 	return {
 		level: level,
@@ -14859,39 +14863,49 @@ var _user$project$Map$hometown = function (mapSize) {
 };
 var _user$project$Map$view = F3(
 	function (mapSize, translator, map) {
-		var level = function () {
-			var _p26 = map.level;
-			switch (_p26.ctor) {
-				case 'Home':
-					return _user$project$Map$home(mapSize);
-				case 'HomeTown':
-					return _user$project$Map$hometown(mapSize);
-				case 'GroceryStore':
-					return _user$project$Map$groceryStore(mapSize);
-				default:
-					return A2(
-						_elm_lang$html$Html$map,
-						_user$project$Map$ArtStoreMsg,
-						A2(_user$project$Store_ArtStore$view, translator, _p26._0));
-			}
-		}();
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(_user$project$Map$header, mapSize, map),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Map$body(level),
-					_1: {ctor: '[]'}
-				}
-			});
+		var _p26 = map.level;
+		switch (_p26.ctor) {
+			case 'Home':
+				return _user$project$Map$home(mapSize);
+			case 'HomeTown':
+				return _user$project$Map$hometown(mapSize);
+			case 'GroceryStore':
+				return _user$project$Map$groceryStore(mapSize);
+			default:
+				return A2(
+					_elm_lang$html$Html$map,
+					_user$project$Map$ArtStoreMsg,
+					A2(_user$project$Store_ArtStore$view, translator, _p26._0));
+		}
 	});
 
 var _user$project$Main$frenchTranslator = {translate: _user$project$Dictionary_French$translate, audio: _user$project$Dictionary_French$audio};
 var _user$project$Main$translator = _user$project$Main$frenchTranslator;
 var _user$project$Main$spanishTranslator = {translate: _user$project$Dictionary_Spanish$translate, audio: _user$project$Dictionary_Spanish$audio};
+var _user$project$Main$px = function (x) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(x),
+		'px');
+};
+var _user$project$Main$viewPoints = function (count) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('points'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'Points: ',
+					_elm_lang$core$Basics$toString(count))),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {user: a, mouse: b, time: c, window: d, map: e, pause: f};
@@ -14929,6 +14943,81 @@ var _user$project$Main$pauseButton = A2(
 		ctor: '::',
 		_0: _elm_lang$html$Html$text('pause'),
 		_1: {ctor: '[]'}
+	});
+var _user$project$Main$header = F2(
+	function (window, map) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'top',
+								_1: _user$project$Main$px(0)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'bottom',
+									_1: _user$project$Main$px(0)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'height',
+										_1: _user$project$Main$px(100)
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'width',
+											_1: _user$project$Main$px(window.width)
+										},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'border-bottom', _1: '1px solid black'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'hsl(189, 100%, 50%)'},
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$h1,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Lingua'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$viewPoints(map.points),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$pauseButton,
+						_1: {ctor: '[]'}
+					}
+				}
+			});
 	});
 var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
@@ -15025,9 +15114,33 @@ var _user$project$Main$update = F3(
 var _user$project$Main$mapView = F3(
 	function (window, translator, map) {
 		return A2(
-			_elm_lang$html$Html$map,
-			_user$project$Main$MapMsg,
-			A3(_user$project$Map$view, window, translator, map));
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'top',
+								_1: _user$project$Main$px(110)
+							},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$map,
+					_user$project$Main$MapMsg,
+					A3(_user$project$Map$view, window, translator, map)),
+				_1: {ctor: '[]'}
+			});
 	});
 var _user$project$Main$view = F2(
 	function (translator, model) {
@@ -15045,7 +15158,7 @@ var _user$project$Main$view = F2(
 			},
 			{
 				ctor: '::',
-				_0: _user$project$Main$pauseButton,
+				_0: A2(_user$project$Main$header, model.window, model.map),
 				_1: {
 					ctor: '::',
 					_0: A3(_user$project$Main$mapView, model.window, translator, model.map),

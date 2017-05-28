@@ -27,9 +27,24 @@ type alias ArtGame =
     , balls : List MovingBall
     , time : Time
     , seed : Random.Seed
+    , finishRound : Bool
     , win : Bool
     , points : Int
+
+    -- TODO: use these to add one color at a time to the game
+    -- A list of known and a list of unknown colors
+    -- we will introduce one color at a time in the game
+    , knownUnknownColors : ( List Color, List Color )
     }
+
+
+
+{-
+   State
+   = PlayingGame (playing == true)
+   | SplashScreen (win == true | finishRound == true) & playing == true
+   | NotPlaying (playing == false)
+-}
 
 
 type alias MovingBall =
@@ -55,16 +70,16 @@ init : Window.Size -> Random.Seed -> ( Model, Random.Seed )
 init window seed =
     let
         ( game, newSeed ) =
-            initArtGame window seed
+            initArtGame window [] seed
     in
     ( { game = game, playing = False }, newSeed )
 
 
-initArtGame : Window.Size -> Random.Seed -> ( ArtGame, Random.Seed )
-initArtGame window seed =
+initArtGame : Window.Size -> List Color -> Random.Seed -> ( ArtGame, Random.Seed )
+initArtGame window colors seed =
     let
         ( balls, newSeed ) =
-            Random.step (initialBalls window) seed
+            Random.step (initialBalls window colors) seed
     in
     ( { time = 0
       , seed = newSeed
@@ -72,6 +87,8 @@ initArtGame window seed =
       , color = Yellow
       , balls = balls
       , win = False
+      , finishRound = False
+      , knownUnknownColors = ( [], [ Red, Orange, Yellow, Green, Blue, Purple ] )
       }
     , newSeed
     )
@@ -84,7 +101,8 @@ initArtGame window seed =
 type Msg
     = ColorClicked Int Color Color
     | Play
-    | Back
+    | FinishGame
+    | NextRound
     | PlayAudio String
     | ExitStore
     | Tick Time
@@ -108,15 +126,18 @@ update window translator msg model =
                     newBalls =
                         artGame.balls |> removeBall id
 
-                    win =
+                    finishRound =
                         List.length newBalls == 0
 
+                    win =
+                        finishRound
+                            && (List.length (unknownColors artGame.knownUnknownColors) == 0)
+
                     newArtGame =
-                        { artGame | balls = newBalls, win = win }
+                        { artGame | balls = newBalls, finishRound = finishRound, win = win }
                 in
                 ( { model
-                    | playing = not win
-                    , game = newArtGame
+                    | game = newArtGame
                   }
                 , AddPoints 10
                 , Audio.play "audio/puff.mp3"
@@ -127,12 +148,18 @@ update window translator msg model =
         Play ->
             let
                 ( newArtGame, _ ) =
-                    initArtGame window (Random.initialSeed 0)
+                    -- TODO: pass random seed from parent
+                    initArtGame window (knownColors model.game.knownUnknownColors) (Random.initialSeed 0)
             in
-            ( { playing = True, game = newArtGame }, NoOp, Cmd.none )
+            ( { playing = True, game = newArtGame } |> nextColor, NoOp, Cmd.none )
 
-        Back ->
+        FinishGame ->
             ( { model | playing = False }, NoOp, Cmd.none )
+
+        NextRound ->
+            model
+                |> nextColor
+                |> update window translator Play
 
         PlayAudio file ->
             ( model, NoOp, Audio.play file )
@@ -141,10 +168,40 @@ update window translator msg model =
             ( model, Exit, Cmd.none )
 
         Tick timeDelta ->
-            if model.playing then
+            if model.playing && not (model.game.win || model.game.finishRound) then
                 tick timeDelta window translator model
             else
                 ( model, NoOp, Cmd.none )
+
+
+knownColors : ( List a, List a ) -> List a
+knownColors =
+    Tuple.first
+
+
+unknownColors : ( List a, List a ) -> List a
+unknownColors =
+    Tuple.second
+
+
+nextColor : Model -> Model
+nextColor model =
+    let
+        game =
+            model.game
+
+        knownUnknownColors =
+            case model.game.knownUnknownColors of
+                ( bs, c :: cs ) ->
+                    ( c :: bs, cs )
+
+                ( bs, [] ) ->
+                    ( bs, [] )
+
+        newGame =
+            { game | knownUnknownColors = knownUnknownColors }
+    in
+    { model | game = newGame }
 
 
 tick : Time -> Window.Size -> Translator -> Model -> ( Model, MsgFromPage, Cmd Msg )
@@ -253,15 +310,15 @@ nonZeroFloat =
         |> Random.map toFloat
 
 
-colorGen : Random.Generator Color
-colorGen =
-    randItem [ Red, Orange, Yellow, Green, Blue, Purple ]
+colorGen : List Color -> Random.Generator Color
+colorGen colors =
+    randItem colors
         |> Random.map (Maybe.withDefault Red)
 
 
-randomMovingBall : Window.Size -> Int -> Random.Generator MovingBall
-randomMovingBall window id =
-    colorGen
+randomMovingBall : Window.Size -> List Color -> Int -> Random.Generator MovingBall
+randomMovingBall window colors id =
+    colorGen colors
         |> Random.andThen
             (\color ->
                 Random.map3
@@ -272,10 +329,14 @@ randomMovingBall window id =
             )
 
 
-initialBalls : Window.Size -> Random.Generator (List MovingBall)
-initialBalls window =
-    List.range 0 9
-        |> List.map (randomMovingBall window)
+ballsPerRound =
+    5
+
+
+initialBalls : Window.Size -> List Color -> Random.Generator (List MovingBall)
+initialBalls window colors =
+    List.range 0 (ballsPerRound - 1)
+        |> List.map (randomMovingBall window colors)
         |> Random.Extra.combine
 
 
@@ -635,9 +696,11 @@ colorGame : Translator -> ArtGame -> Html Msg
 colorGame translator game =
     let
         content =
-            if game.win then
+            if game.finishRound || game.win then
                 [ div []
-                    [ text "You Win!!!!!!" ]
+                    [ button [ onClick NextRound ] [ text "Next Round" ]
+                    , button [ onClick FinishGame ] [ text "Finish Early" ]
+                    ]
                 ]
             else
                 List.map (colorBall game.color) game.balls
@@ -699,7 +762,7 @@ backButton ( x, y ) =
             , ( "width", "128px" )
             , ( "height", "64px" )
             ]
-        , onClick Back
+        , onClick FinishGame
         ]
         [ text "Back" ]
 

@@ -6,8 +6,8 @@ import Bee exposing (Bee)
 import Dictionary.French as French
 import Dictionary.Spanish as Spanish
 import Dictionary.Translator exposing (Translator)
-import Html exposing (Html, button, div, img, text)
-import Html.Attributes exposing (height, src, style, width)
+import Html exposing (Html, button, div, h1, img, text)
+import Html.Attributes exposing (class, height, src, style, width)
 import Html.Events exposing (onClick)
 import Map exposing (Map)
 import Mouse
@@ -123,7 +123,7 @@ view translator model =
             [ ( "user-select", "none" )
             ]
         ]
-        [ pauseButton
+        [ header model.window model.map
         , mapView model.window translator model.map
 
         -- , Bee.view Nothing model.user
@@ -132,12 +132,47 @@ view translator model =
 
 mapView : Window.Size -> Translator -> Map -> Html Msg
 mapView window translator map =
-    Map.view window translator map
-        |> Html.map MapMsg
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "top", px 110 )
+            ]
+        ]
+        [ Map.view window translator map
+            |> Html.map MapMsg
+        ]
+
+
+
+-- HEADER
+
+
+header : Window.Size -> Map -> Html Msg
+header window map =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "top", px 0 )
+            , ( "bottom", px 0 )
+            , ( "height", px 100 )
+            , ( "width", px window.width )
+            , ( "border-bottom", "1px solid black" )
+            , ( "background-color", "hsl(189, 100%, 50%)" )
+            ]
+        ]
+        [ h1 [] [ text "Lingua" ]
+        , viewPoints map.points
+        , pauseButton
+        ]
 
 
 pauseButton =
     button [ onClick Pause, style [ ( "float", "right" ) ] ] [ text "pause" ]
+
+
+viewPoints : Int -> Html msg
+viewPoints count =
+    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 
@@ -164,6 +199,11 @@ subscriptions model =
                     , AnimationFrame.diffs Tick
                     , Window.resizes WindowResize
                     ]
+
+
+px : Int -> String
+px x =
+    toString x ++ "px"
 
 
 

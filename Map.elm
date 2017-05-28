@@ -157,48 +157,19 @@ tick timeDelta window translator map =
 
 view : Window.Size -> Translator -> Map -> Html Msg
 view mapSize translator map =
-    let
-        level =
-            case map.level of
-                Home ->
-                    home mapSize
+    case map.level of
+        Home ->
+            home mapSize
 
-                HomeTown ->
-                    hometown mapSize
+        HomeTown ->
+            hometown mapSize
 
-                GroceryStore ->
-                    groceryStore mapSize
+        GroceryStore ->
+            groceryStore mapSize
 
-                ArtStore store ->
-                    ArtStore.view translator store
-                        |> Html.map ArtStoreMsg
-    in
-    div []
-        [ header mapSize map
-        , body level
-        ]
-
-
-
--- HEADER
-
-
-header : Window.Size -> Map -> Html Msg
-header window map =
-    div
-        [ style
-            [ ( "position", "absolute" )
-            , ( "top", px 0 )
-            , ( "bottom", px 0 )
-            , ( "height", px 100 )
-            , ( "width", px window.width )
-            , ( "border-bottom", "1px solid black" )
-            , ( "background-color", "hsl(189, 100%, 50%)" )
-            ]
-        ]
-        [ h1 [] [ text "Lingua" ]
-        , viewPoints map.points
-        ]
+        ArtStore store ->
+            ArtStore.view translator store
+                |> Html.map ArtStoreMsg
 
 
 
@@ -222,11 +193,6 @@ body level =
 px : Int -> String
 px x =
     toString x ++ "px"
-
-
-viewPoints : Int -> Html msg
-viewPoints count =
-    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 
