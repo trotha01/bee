@@ -6,6 +6,7 @@ import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick, onMouseDown)
+import List.Extra
 import List.Zipper as Zipper exposing (Zipper(..))
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
@@ -29,6 +30,7 @@ type alias Model =
 type alias ArtGame =
     { color : Color
     , balls : List MovingBall
+    , deadBalls : List MovingBall
     , time : Time
     , seed : Random.Seed
     , finishRound : Bool
@@ -59,6 +61,7 @@ type alias MovingBall =
     , radius : Float
     , velocity : Vec2
     , img : String
+    , poof : Bool
     }
 
 
@@ -96,6 +99,7 @@ initArtGame window colors seed =
       , points = 0
       , color = Zipper.current colors
       , balls = balls
+      , deadBalls = []
       , win = False
       , finishRound = False
       , knownUnknownColors = colors
@@ -136,7 +140,7 @@ update window translator msg model =
         NextRound ->
             let
                 ( nextArtGame, newSeed ) =
-                    initArtGame window (Debug.log "new colors" (nextColor model.game.knownUnknownColors)) model.seed
+                    initArtGame window (nextColor model.game.knownUnknownColors) model.seed
             in
             { model | game = nextArtGame, seed = newSeed }
                 |> update window translator Play
@@ -166,8 +170,8 @@ colorClicked ( id, gameColor, colorClicked ) model =
             artGame =
                 model.game
 
-            newBalls =
-                artGame.balls |> removeBall id
+            ( newBalls, deadBalls ) =
+                removeBall id artGame.balls artGame.deadBalls
 
             finishRound =
                 List.length newBalls == 0
@@ -177,7 +181,7 @@ colorClicked ( id, gameColor, colorClicked ) model =
                     && (List.length (unknownColors artGame.knownUnknownColors) == 0)
 
             newArtGame =
-                { artGame | balls = newBalls, finishRound = finishRound, win = win }
+                { artGame | balls = newBalls, deadBalls = deadBalls, finishRound = finishRound, win = win }
         in
         ( { model
             | game = newArtGame
@@ -332,6 +336,8 @@ ballsPerRound =
     5
 
 
+{-| TODO: ensure there is at least one of each color
+-}
 initialBalls : Window.Size -> List Color -> Random.Generator (List MovingBall)
 initialBalls window colors =
     List.range 0 (ballsPerRound - 1)
@@ -347,12 +353,20 @@ initMovingBall id color ( x, y ) ( vx, vy ) image =
     , pos = vec2 x y
     , velocity = vec2 vx vy
     , img = image
+    , poof = False
     }
 
 
-removeBall : Int -> List MovingBall -> List MovingBall
-removeBall id balls =
-    List.filter (\ball -> ball.id /= id) balls
+removeBall : Int -> List MovingBall -> List MovingBall -> ( List MovingBall, List MovingBall )
+removeBall id balls deadBalls =
+    case
+        List.partition (\ball -> ball.id == id) balls
+    of
+        ( [ ball ], balls ) ->
+            ( balls, ball :: deadBalls )
+
+        _ ->
+            ( balls, deadBalls )
 
 
 collisions : List MovingBall -> List MovingBall
@@ -702,13 +716,18 @@ colorGame translator game =
                     ]
                 ]
             else
-                List.map (colorBall game.color) game.balls
+                [ div [] [] ]
+
+        balls =
+            List.map (colorBall game.color) game.balls
+                ++ List.map deadBall game.deadBalls
     in
     div []
         ([ backButton ( 130, 0 )
          , text ("Color: " ++ translator.translate (toString game.color))
          ]
             ++ content
+            ++ balls
         )
 
 
@@ -732,6 +751,42 @@ colorBall gameColor ball =
         , onMouseDown (ColorClicked ball.id gameColor ball.color)
         ]
         []
+
+
+deadBall : MovingBall -> Html Msg
+deadBall ball =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "left", (toString <| getX ball.pos) ++ "px" )
+            , ( "top", (toString <| getY ball.pos) ++ "px" )
+            , ( "width", toString (ball.radius * 2) ++ "px" )
+            , ( "height", toString (ball.radius * 2) ++ "px" )
+
+            -- Using external CSS sheet until I can get these working in elm
+            -- , ( "background", splatBackground )
+            -- , ( "background-repeat", "no-repeat" )
+            -- , ( "background-size", splatBackgroundSize )
+            ]
+        , class "poof"
+        , class <| "poof" ++ toString ball.color
+        ]
+        []
+
+
+splatBackground : String
+splatBackground =
+    "-webkit-radial-gradient(red 0, red 30%, rgba(255,255,255,0) 30%) 0 0,"
+        ++ "-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0,"
+        ++ "-webkit-radial-gradient(red 0, red 20%,  rgba(255,255,255,0) 20%) -9px 37px,"
+        ++ "-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 55px 9px,"
+        ++ "-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 8px 46px,"
+        ++ "-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0;"
+
+
+splatBackgroundSize : String
+splatBackgroundSize =
+    "80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;"
 
 
 playButton : ( Int, Int ) -> Html Msg

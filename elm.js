@@ -5269,6 +5269,1345 @@ var _elm_community$linear_algebra$Math_Vector2$getX = _elm_community$linear_alge
 var _elm_community$linear_algebra$Math_Vector2$vec2 = _elm_community$linear_algebra$Native_Math_Vector2.vec2;
 var _elm_community$linear_algebra$Math_Vector2$Vec2 = {ctor: 'Vec2'};
 
+var _elm_lang$core$Set$foldr = F3(
+	function (f, b, _p0) {
+		var _p1 = _p0;
+		return A3(
+			_elm_lang$core$Dict$foldr,
+			F3(
+				function (k, _p2, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p1._0);
+	});
+var _elm_lang$core$Set$foldl = F3(
+	function (f, b, _p3) {
+		var _p4 = _p3;
+		return A3(
+			_elm_lang$core$Dict$foldl,
+			F3(
+				function (k, _p5, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p4._0);
+	});
+var _elm_lang$core$Set$toList = function (_p6) {
+	var _p7 = _p6;
+	return _elm_lang$core$Dict$keys(_p7._0);
+};
+var _elm_lang$core$Set$size = function (_p8) {
+	var _p9 = _p8;
+	return _elm_lang$core$Dict$size(_p9._0);
+};
+var _elm_lang$core$Set$member = F2(
+	function (k, _p10) {
+		var _p11 = _p10;
+		return A2(_elm_lang$core$Dict$member, k, _p11._0);
+	});
+var _elm_lang$core$Set$isEmpty = function (_p12) {
+	var _p13 = _p12;
+	return _elm_lang$core$Dict$isEmpty(_p13._0);
+};
+var _elm_lang$core$Set$Set_elm_builtin = function (a) {
+	return {ctor: 'Set_elm_builtin', _0: a};
+};
+var _elm_lang$core$Set$empty = _elm_lang$core$Set$Set_elm_builtin(_elm_lang$core$Dict$empty);
+var _elm_lang$core$Set$singleton = function (k) {
+	return _elm_lang$core$Set$Set_elm_builtin(
+		A2(
+			_elm_lang$core$Dict$singleton,
+			k,
+			{ctor: '_Tuple0'}));
+};
+var _elm_lang$core$Set$insert = F2(
+	function (k, _p14) {
+		var _p15 = _p14;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A3(
+				_elm_lang$core$Dict$insert,
+				k,
+				{ctor: '_Tuple0'},
+				_p15._0));
+	});
+var _elm_lang$core$Set$fromList = function (xs) {
+	return A3(_elm_lang$core$List$foldl, _elm_lang$core$Set$insert, _elm_lang$core$Set$empty, xs);
+};
+var _elm_lang$core$Set$map = F2(
+	function (f, s) {
+		return _elm_lang$core$Set$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				f,
+				_elm_lang$core$Set$toList(s)));
+	});
+var _elm_lang$core$Set$remove = F2(
+	function (k, _p16) {
+		var _p17 = _p16;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$remove, k, _p17._0));
+	});
+var _elm_lang$core$Set$union = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$union, _p20._0, _p21._0));
+	});
+var _elm_lang$core$Set$intersect = F2(
+	function (_p23, _p22) {
+		var _p24 = _p23;
+		var _p25 = _p22;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$intersect, _p24._0, _p25._0));
+	});
+var _elm_lang$core$Set$diff = F2(
+	function (_p27, _p26) {
+		var _p28 = _p27;
+		var _p29 = _p26;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$diff, _p28._0, _p29._0));
+	});
+var _elm_lang$core$Set$filter = F2(
+	function (p, _p30) {
+		var _p31 = _p30;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(
+				_elm_lang$core$Dict$filter,
+				F2(
+					function (k, _p32) {
+						return p(k);
+					}),
+				_p31._0));
+	});
+var _elm_lang$core$Set$partition = F2(
+	function (p, _p33) {
+		var _p34 = _p33;
+		var _p35 = A2(
+			_elm_lang$core$Dict$partition,
+			F2(
+				function (k, _p36) {
+					return p(k);
+				}),
+			_p34._0);
+		var p1 = _p35._0;
+		var p2 = _p35._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Set$Set_elm_builtin(p1),
+			_1: _elm_lang$core$Set$Set_elm_builtin(p2)
+		};
+	});
+
+var _elm_community$list_extra$List_Extra$greedyGroupsOfWithStep = F3(
+	function (size, step, xs) {
+		var okayXs = _elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$List$length(xs),
+			0) > 0;
+		var okayArgs = (_elm_lang$core$Native_Utils.cmp(size, 0) > 0) && (_elm_lang$core$Native_Utils.cmp(step, 0) > 0);
+		var xs_ = A2(_elm_lang$core$List$drop, step, xs);
+		var group = A2(_elm_lang$core$List$take, size, xs);
+		return (okayArgs && okayXs) ? {
+			ctor: '::',
+			_0: group,
+			_1: A3(_elm_community$list_extra$List_Extra$greedyGroupsOfWithStep, size, step, xs_)
+		} : {ctor: '[]'};
+	});
+var _elm_community$list_extra$List_Extra$greedyGroupsOf = F2(
+	function (size, xs) {
+		return A3(_elm_community$list_extra$List_Extra$greedyGroupsOfWithStep, size, size, xs);
+	});
+var _elm_community$list_extra$List_Extra$groupsOfWithStep = F3(
+	function (size, step, xs) {
+		var okayArgs = (_elm_lang$core$Native_Utils.cmp(size, 0) > 0) && (_elm_lang$core$Native_Utils.cmp(step, 0) > 0);
+		var xs_ = A2(_elm_lang$core$List$drop, step, xs);
+		var group = A2(_elm_lang$core$List$take, size, xs);
+		var okayLength = _elm_lang$core$Native_Utils.eq(
+			size,
+			_elm_lang$core$List$length(group));
+		return (okayArgs && okayLength) ? {
+			ctor: '::',
+			_0: group,
+			_1: A3(_elm_community$list_extra$List_Extra$groupsOfWithStep, size, step, xs_)
+		} : {ctor: '[]'};
+	});
+var _elm_community$list_extra$List_Extra$groupsOf = F2(
+	function (size, xs) {
+		return A3(_elm_community$list_extra$List_Extra$groupsOfWithStep, size, size, xs);
+	});
+var _elm_community$list_extra$List_Extra$zip5 = _elm_lang$core$List$map5(
+	F5(
+		function (v0, v1, v2, v3, v4) {
+			return {ctor: '_Tuple5', _0: v0, _1: v1, _2: v2, _3: v3, _4: v4};
+		}));
+var _elm_community$list_extra$List_Extra$zip4 = _elm_lang$core$List$map4(
+	F4(
+		function (v0, v1, v2, v3) {
+			return {ctor: '_Tuple4', _0: v0, _1: v1, _2: v2, _3: v3};
+		}));
+var _elm_community$list_extra$List_Extra$zip3 = _elm_lang$core$List$map3(
+	F3(
+		function (v0, v1, v2) {
+			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+		}));
+var _elm_community$list_extra$List_Extra$zip = _elm_lang$core$List$map2(
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}));
+var _elm_community$list_extra$List_Extra$isPrefixOf = F2(
+	function (prefix, xs) {
+		var _p0 = {ctor: '_Tuple2', _0: prefix, _1: xs};
+		if (_p0._0.ctor === '[]') {
+			return true;
+		} else {
+			if (_p0._1.ctor === '[]') {
+				return false;
+			} else {
+				return _elm_lang$core$Native_Utils.eq(_p0._0._0, _p0._1._0) && A2(_elm_community$list_extra$List_Extra$isPrefixOf, _p0._0._1, _p0._1._1);
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$isSuffixOf = F2(
+	function (suffix, xs) {
+		return A2(
+			_elm_community$list_extra$List_Extra$isPrefixOf,
+			_elm_lang$core$List$reverse(suffix),
+			_elm_lang$core$List$reverse(xs));
+	});
+var _elm_community$list_extra$List_Extra$selectSplit = function (xs) {
+	var _p1 = xs;
+	if (_p1.ctor === '[]') {
+		return {ctor: '[]'};
+	} else {
+		var _p5 = _p1._1;
+		var _p4 = _p1._0;
+		return {
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple3',
+				_0: {ctor: '[]'},
+				_1: _p4,
+				_2: _p5
+			},
+			_1: A2(
+				_elm_lang$core$List$map,
+				function (_p2) {
+					var _p3 = _p2;
+					return {
+						ctor: '_Tuple3',
+						_0: {ctor: '::', _0: _p4, _1: _p3._0},
+						_1: _p3._1,
+						_2: _p3._2
+					};
+				},
+				_elm_community$list_extra$List_Extra$selectSplit(_p5))
+		};
+	}
+};
+var _elm_community$list_extra$List_Extra$select = function (xs) {
+	var _p6 = xs;
+	if (_p6.ctor === '[]') {
+		return {ctor: '[]'};
+	} else {
+		var _p10 = _p6._1;
+		var _p9 = _p6._0;
+		return {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: _p9, _1: _p10},
+			_1: A2(
+				_elm_lang$core$List$map,
+				function (_p7) {
+					var _p8 = _p7;
+					return {
+						ctor: '_Tuple2',
+						_0: _p8._0,
+						_1: {ctor: '::', _0: _p9, _1: _p8._1}
+					};
+				},
+				_elm_community$list_extra$List_Extra$select(_p10))
+		};
+	}
+};
+var _elm_community$list_extra$List_Extra$tailsHelp = F2(
+	function (e, list) {
+		var _p11 = list;
+		if (_p11.ctor === '::') {
+			var _p12 = _p11._0;
+			return {
+				ctor: '::',
+				_0: {ctor: '::', _0: e, _1: _p12},
+				_1: {ctor: '::', _0: _p12, _1: _p11._1}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	});
+var _elm_community$list_extra$List_Extra$tails = A2(
+	_elm_lang$core$List$foldr,
+	_elm_community$list_extra$List_Extra$tailsHelp,
+	{
+		ctor: '::',
+		_0: {ctor: '[]'},
+		_1: {ctor: '[]'}
+	});
+var _elm_community$list_extra$List_Extra$isInfixOf = F2(
+	function (infix, xs) {
+		return A2(
+			_elm_lang$core$List$any,
+			_elm_community$list_extra$List_Extra$isPrefixOf(infix),
+			_elm_community$list_extra$List_Extra$tails(xs));
+	});
+var _elm_community$list_extra$List_Extra$inits = A2(
+	_elm_lang$core$List$foldr,
+	F2(
+		function (e, acc) {
+			return {
+				ctor: '::',
+				_0: {ctor: '[]'},
+				_1: A2(
+					_elm_lang$core$List$map,
+					F2(
+						function (x, y) {
+							return {ctor: '::', _0: x, _1: y};
+						})(e),
+					acc)
+			};
+		}),
+	{
+		ctor: '::',
+		_0: {ctor: '[]'},
+		_1: {ctor: '[]'}
+	});
+var _elm_community$list_extra$List_Extra$groupWhileTransitively = F2(
+	function (cmp, xs_) {
+		var _p13 = xs_;
+		if (_p13.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			if (_p13._1.ctor === '[]') {
+				return {
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _p13._0,
+						_1: {ctor: '[]'}
+					},
+					_1: {ctor: '[]'}
+				};
+			} else {
+				var _p15 = _p13._0;
+				var _p14 = A2(_elm_community$list_extra$List_Extra$groupWhileTransitively, cmp, _p13._1);
+				if (_p14.ctor === '::') {
+					return A2(cmp, _p15, _p13._1._0) ? {
+						ctor: '::',
+						_0: {ctor: '::', _0: _p15, _1: _p14._0},
+						_1: _p14._1
+					} : {
+						ctor: '::',
+						_0: {
+							ctor: '::',
+							_0: _p15,
+							_1: {ctor: '[]'}
+						},
+						_1: _p14
+					};
+				} else {
+					return {ctor: '[]'};
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$stripPrefix = F2(
+	function (prefix, xs) {
+		var step = F2(
+			function (e, m) {
+				var _p16 = m;
+				if (_p16.ctor === 'Nothing') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if (_p16._0.ctor === '[]') {
+						return _elm_lang$core$Maybe$Nothing;
+					} else {
+						return _elm_lang$core$Native_Utils.eq(e, _p16._0._0) ? _elm_lang$core$Maybe$Just(_p16._0._1) : _elm_lang$core$Maybe$Nothing;
+					}
+				}
+			});
+		return A3(
+			_elm_lang$core$List$foldl,
+			step,
+			_elm_lang$core$Maybe$Just(xs),
+			prefix);
+	});
+var _elm_community$list_extra$List_Extra$dropWhileRight = function (p) {
+	return A2(
+		_elm_lang$core$List$foldr,
+		F2(
+			function (x, xs) {
+				return (p(x) && _elm_lang$core$List$isEmpty(xs)) ? {ctor: '[]'} : {ctor: '::', _0: x, _1: xs};
+			}),
+		{ctor: '[]'});
+};
+var _elm_community$list_extra$List_Extra$takeWhileRight = function (p) {
+	var step = F2(
+		function (x, _p17) {
+			var _p18 = _p17;
+			var _p19 = _p18._0;
+			return (p(x) && _p18._1) ? {
+				ctor: '_Tuple2',
+				_0: {ctor: '::', _0: x, _1: _p19},
+				_1: true
+			} : {ctor: '_Tuple2', _0: _p19, _1: false};
+		});
+	return function (_p20) {
+		return _elm_lang$core$Tuple$first(
+			A3(
+				_elm_lang$core$List$foldr,
+				step,
+				{
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: true
+				},
+				_p20));
+	};
+};
+var _elm_community$list_extra$List_Extra$splitAt = F2(
+	function (n, xs) {
+		return {
+			ctor: '_Tuple2',
+			_0: A2(_elm_lang$core$List$take, n, xs),
+			_1: A2(_elm_lang$core$List$drop, n, xs)
+		};
+	});
+var _elm_community$list_extra$List_Extra$groupsOfVarying_ = F3(
+	function (listOflengths, list, accu) {
+		groupsOfVarying_:
+		while (true) {
+			var _p21 = {ctor: '_Tuple2', _0: listOflengths, _1: list};
+			if (((_p21.ctor === '_Tuple2') && (_p21._0.ctor === '::')) && (_p21._1.ctor === '::')) {
+				var _p22 = A2(_elm_community$list_extra$List_Extra$splitAt, _p21._0._0, list);
+				var head = _p22._0;
+				var tail = _p22._1;
+				var _v11 = _p21._0._1,
+					_v12 = tail,
+					_v13 = {ctor: '::', _0: head, _1: accu};
+				listOflengths = _v11;
+				list = _v12;
+				accu = _v13;
+				continue groupsOfVarying_;
+			} else {
+				return _elm_lang$core$List$reverse(accu);
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$groupsOfVarying = F2(
+	function (listOflengths, list) {
+		return A3(
+			_elm_community$list_extra$List_Extra$groupsOfVarying_,
+			listOflengths,
+			list,
+			{ctor: '[]'});
+	});
+var _elm_community$list_extra$List_Extra$unfoldr = F2(
+	function (f, seed) {
+		var _p23 = f(seed);
+		if (_p23.ctor === 'Nothing') {
+			return {ctor: '[]'};
+		} else {
+			return {
+				ctor: '::',
+				_0: _p23._0._0,
+				_1: A2(_elm_community$list_extra$List_Extra$unfoldr, f, _p23._0._1)
+			};
+		}
+	});
+var _elm_community$list_extra$List_Extra$scanr1 = F2(
+	function (f, xs_) {
+		var _p24 = xs_;
+		if (_p24.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			if (_p24._1.ctor === '[]') {
+				return {
+					ctor: '::',
+					_0: _p24._0,
+					_1: {ctor: '[]'}
+				};
+			} else {
+				var _p25 = A2(_elm_community$list_extra$List_Extra$scanr1, f, _p24._1);
+				if (_p25.ctor === '::') {
+					return {
+						ctor: '::',
+						_0: A2(f, _p24._0, _p25._0),
+						_1: _p25
+					};
+				} else {
+					return {ctor: '[]'};
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$scanr = F3(
+	function (f, acc, xs_) {
+		var _p26 = xs_;
+		if (_p26.ctor === '[]') {
+			return {
+				ctor: '::',
+				_0: acc,
+				_1: {ctor: '[]'}
+			};
+		} else {
+			var _p27 = A3(_elm_community$list_extra$List_Extra$scanr, f, acc, _p26._1);
+			if (_p27.ctor === '::') {
+				return {
+					ctor: '::',
+					_0: A2(f, _p26._0, _p27._0),
+					_1: _p27
+				};
+			} else {
+				return {ctor: '[]'};
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$scanl1 = F2(
+	function (f, xs_) {
+		var _p28 = xs_;
+		if (_p28.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			return A3(_elm_lang$core$List$scanl, f, _p28._0, _p28._1);
+		}
+	});
+var _elm_community$list_extra$List_Extra$indexedFoldr = F3(
+	function (func, acc, list) {
+		var step = F2(
+			function (x, _p29) {
+				var _p30 = _p29;
+				var _p31 = _p30._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _p31 - 1,
+					_1: A3(func, _p31, x, _p30._1)
+				};
+			});
+		return _elm_lang$core$Tuple$second(
+			A3(
+				_elm_lang$core$List$foldr,
+				step,
+				{
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$List$length(list) - 1,
+					_1: acc
+				},
+				list));
+	});
+var _elm_community$list_extra$List_Extra$indexedFoldl = F3(
+	function (func, acc, list) {
+		var step = F2(
+			function (x, _p32) {
+				var _p33 = _p32;
+				var _p34 = _p33._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _p34 + 1,
+					_1: A3(func, _p34, x, _p33._1)
+				};
+			});
+		return _elm_lang$core$Tuple$second(
+			A3(
+				_elm_lang$core$List$foldl,
+				step,
+				{ctor: '_Tuple2', _0: 0, _1: acc},
+				list));
+	});
+var _elm_community$list_extra$List_Extra$foldr1 = F2(
+	function (f, xs) {
+		var mf = F2(
+			function (x, m) {
+				return _elm_lang$core$Maybe$Just(
+					function () {
+						var _p35 = m;
+						if (_p35.ctor === 'Nothing') {
+							return x;
+						} else {
+							return A2(f, x, _p35._0);
+						}
+					}());
+			});
+		return A3(_elm_lang$core$List$foldr, mf, _elm_lang$core$Maybe$Nothing, xs);
+	});
+var _elm_community$list_extra$List_Extra$foldl1 = F2(
+	function (f, xs) {
+		var mf = F2(
+			function (x, m) {
+				return _elm_lang$core$Maybe$Just(
+					function () {
+						var _p36 = m;
+						if (_p36.ctor === 'Nothing') {
+							return x;
+						} else {
+							return A2(f, _p36._0, x);
+						}
+					}());
+			});
+		return A3(_elm_lang$core$List$foldl, mf, _elm_lang$core$Maybe$Nothing, xs);
+	});
+var _elm_community$list_extra$List_Extra$interweaveHelp = F3(
+	function (l1, l2, acc) {
+		interweaveHelp:
+		while (true) {
+			var _p37 = {ctor: '_Tuple2', _0: l1, _1: l2};
+			_v24_1:
+			do {
+				if (_p37._0.ctor === '::') {
+					if (_p37._1.ctor === '::') {
+						var _v25 = _p37._0._1,
+							_v26 = _p37._1._1,
+							_v27 = A2(
+							_elm_lang$core$Basics_ops['++'],
+							acc,
+							{
+								ctor: '::',
+								_0: _p37._0._0,
+								_1: {
+									ctor: '::',
+									_0: _p37._1._0,
+									_1: {ctor: '[]'}
+								}
+							});
+						l1 = _v25;
+						l2 = _v26;
+						acc = _v27;
+						continue interweaveHelp;
+					} else {
+						break _v24_1;
+					}
+				} else {
+					if (_p37._1.ctor === '[]') {
+						break _v24_1;
+					} else {
+						return A2(_elm_lang$core$Basics_ops['++'], acc, _p37._1);
+					}
+				}
+			} while(false);
+			return A2(_elm_lang$core$Basics_ops['++'], acc, _p37._0);
+		}
+	});
+var _elm_community$list_extra$List_Extra$interweave = F2(
+	function (l1, l2) {
+		return A3(
+			_elm_community$list_extra$List_Extra$interweaveHelp,
+			l1,
+			l2,
+			{ctor: '[]'});
+	});
+var _elm_community$list_extra$List_Extra$permutations = function (xs_) {
+	var _p38 = xs_;
+	if (_p38.ctor === '[]') {
+		return {
+			ctor: '::',
+			_0: {ctor: '[]'},
+			_1: {ctor: '[]'}
+		};
+	} else {
+		var f = function (_p39) {
+			var _p40 = _p39;
+			return A2(
+				_elm_lang$core$List$map,
+				F2(
+					function (x, y) {
+						return {ctor: '::', _0: x, _1: y};
+					})(_p40._0),
+				_elm_community$list_extra$List_Extra$permutations(_p40._1));
+		};
+		return A2(
+			_elm_lang$core$List$concatMap,
+			f,
+			_elm_community$list_extra$List_Extra$select(_p38));
+	}
+};
+var _elm_community$list_extra$List_Extra$isPermutationOf = F2(
+	function (permut, xs) {
+		return A2(
+			_elm_lang$core$List$member,
+			permut,
+			_elm_community$list_extra$List_Extra$permutations(xs));
+	});
+var _elm_community$list_extra$List_Extra$subsequencesNonEmpty = function (xs) {
+	var _p41 = xs;
+	if (_p41.ctor === '[]') {
+		return {ctor: '[]'};
+	} else {
+		var _p42 = _p41._0;
+		var f = F2(
+			function (ys, r) {
+				return {
+					ctor: '::',
+					_0: ys,
+					_1: {
+						ctor: '::',
+						_0: {ctor: '::', _0: _p42, _1: ys},
+						_1: r
+					}
+				};
+			});
+		return {
+			ctor: '::',
+			_0: {
+				ctor: '::',
+				_0: _p42,
+				_1: {ctor: '[]'}
+			},
+			_1: A3(
+				_elm_lang$core$List$foldr,
+				f,
+				{ctor: '[]'},
+				_elm_community$list_extra$List_Extra$subsequencesNonEmpty(_p41._1))
+		};
+	}
+};
+var _elm_community$list_extra$List_Extra$subsequences = function (xs) {
+	return {
+		ctor: '::',
+		_0: {ctor: '[]'},
+		_1: _elm_community$list_extra$List_Extra$subsequencesNonEmpty(xs)
+	};
+};
+var _elm_community$list_extra$List_Extra$isSubsequenceOf = F2(
+	function (subseq, xs) {
+		return A2(
+			_elm_lang$core$List$member,
+			subseq,
+			_elm_community$list_extra$List_Extra$subsequences(xs));
+	});
+var _elm_community$list_extra$List_Extra$transpose = function (ll) {
+	transpose:
+	while (true) {
+		var _p43 = ll;
+		if (_p43.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			if (_p43._0.ctor === '[]') {
+				var _v32 = _p43._1;
+				ll = _v32;
+				continue transpose;
+			} else {
+				var _p44 = _p43._1;
+				var tails = A2(_elm_lang$core$List$filterMap, _elm_lang$core$List$tail, _p44);
+				var heads = A2(_elm_lang$core$List$filterMap, _elm_lang$core$List$head, _p44);
+				return {
+					ctor: '::',
+					_0: {ctor: '::', _0: _p43._0._0, _1: heads},
+					_1: _elm_community$list_extra$List_Extra$transpose(
+						{ctor: '::', _0: _p43._0._1, _1: tails})
+				};
+			}
+		}
+	}
+};
+var _elm_community$list_extra$List_Extra$intercalate = function (xs) {
+	return function (_p45) {
+		return _elm_lang$core$List$concat(
+			A2(_elm_lang$core$List$intersperse, xs, _p45));
+	};
+};
+var _elm_community$list_extra$List_Extra$filterNot = F2(
+	function (pred, list) {
+		return A2(
+			_elm_lang$core$List$filter,
+			function (_p46) {
+				return !pred(_p46);
+			},
+			list);
+	});
+var _elm_community$list_extra$List_Extra$removeAt = F2(
+	function (index, l) {
+		if (_elm_lang$core$Native_Utils.cmp(index, 0) < 0) {
+			return l;
+		} else {
+			var tail = _elm_lang$core$List$tail(
+				A2(_elm_lang$core$List$drop, index, l));
+			var head = A2(_elm_lang$core$List$take, index, l);
+			var _p47 = tail;
+			if (_p47.ctor === 'Nothing') {
+				return l;
+			} else {
+				return A2(_elm_lang$core$List$append, head, _p47._0);
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$stableSortWith = F2(
+	function (pred, list) {
+		var predWithIndex = F2(
+			function (_p49, _p48) {
+				var _p50 = _p49;
+				var _p51 = _p48;
+				var result = A2(pred, _p50._0, _p51._0);
+				var _p52 = result;
+				if (_p52.ctor === 'EQ') {
+					return A2(_elm_lang$core$Basics$compare, _p50._1, _p51._1);
+				} else {
+					return result;
+				}
+			});
+		var listWithIndex = A2(
+			_elm_lang$core$List$indexedMap,
+			F2(
+				function (i, a) {
+					return {ctor: '_Tuple2', _0: a, _1: i};
+				}),
+			list);
+		return A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$Tuple$first,
+			A2(_elm_lang$core$List$sortWith, predWithIndex, listWithIndex));
+	});
+var _elm_community$list_extra$List_Extra$setAt = F3(
+	function (index, value, l) {
+		if (_elm_lang$core$Native_Utils.cmp(index, 0) < 0) {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			var tail = _elm_lang$core$List$tail(
+				A2(_elm_lang$core$List$drop, index, l));
+			var head = A2(_elm_lang$core$List$take, index, l);
+			var _p53 = tail;
+			if (_p53.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_elm_lang$core$List$append,
+						head,
+						{ctor: '::', _0: value, _1: _p53._0}));
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$remove = F2(
+	function (x, xs) {
+		var _p54 = xs;
+		if (_p54.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			var _p56 = _p54._1;
+			var _p55 = _p54._0;
+			return _elm_lang$core$Native_Utils.eq(x, _p55) ? _p56 : {
+				ctor: '::',
+				_0: _p55,
+				_1: A2(_elm_community$list_extra$List_Extra$remove, x, _p56)
+			};
+		}
+	});
+var _elm_community$list_extra$List_Extra$updateIfIndex = F3(
+	function (predicate, update, list) {
+		return A2(
+			_elm_lang$core$List$indexedMap,
+			F2(
+				function (i, x) {
+					return predicate(i) ? update(x) : x;
+				}),
+			list);
+	});
+var _elm_community$list_extra$List_Extra$updateAt = F3(
+	function (index, update, list) {
+		return ((_elm_lang$core$Native_Utils.cmp(index, 0) < 0) || (_elm_lang$core$Native_Utils.cmp(
+			index,
+			_elm_lang$core$List$length(list)) > -1)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
+			A3(
+				_elm_community$list_extra$List_Extra$updateIfIndex,
+				F2(
+					function (x, y) {
+						return _elm_lang$core$Native_Utils.eq(x, y);
+					})(index),
+				update,
+				list));
+	});
+var _elm_community$list_extra$List_Extra$updateIf = F3(
+	function (predicate, update, list) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (item) {
+				return predicate(item) ? update(item) : item;
+			},
+			list);
+	});
+var _elm_community$list_extra$List_Extra$replaceIf = F3(
+	function (predicate, replacement, list) {
+		return A3(
+			_elm_community$list_extra$List_Extra$updateIf,
+			predicate,
+			_elm_lang$core$Basics$always(replacement),
+			list);
+	});
+var _elm_community$list_extra$List_Extra$findIndices = function (p) {
+	return function (_p57) {
+		return A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$Tuple$first,
+			A2(
+				_elm_lang$core$List$filter,
+				function (_p58) {
+					var _p59 = _p58;
+					return p(_p59._1);
+				},
+				A2(
+					_elm_lang$core$List$indexedMap,
+					F2(
+						function (v0, v1) {
+							return {ctor: '_Tuple2', _0: v0, _1: v1};
+						}),
+					_p57)));
+	};
+};
+var _elm_community$list_extra$List_Extra$findIndex = function (p) {
+	return function (_p60) {
+		return _elm_lang$core$List$head(
+			A2(_elm_community$list_extra$List_Extra$findIndices, p, _p60));
+	};
+};
+var _elm_community$list_extra$List_Extra$splitWhen = F2(
+	function (predicate, list) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (i) {
+				return A2(_elm_community$list_extra$List_Extra$splitAt, i, list);
+			},
+			A2(_elm_community$list_extra$List_Extra$findIndex, predicate, list));
+	});
+var _elm_community$list_extra$List_Extra$elemIndices = function (x) {
+	return _elm_community$list_extra$List_Extra$findIndices(
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(x));
+};
+var _elm_community$list_extra$List_Extra$elemIndex = function (x) {
+	return _elm_community$list_extra$List_Extra$findIndex(
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(x));
+};
+var _elm_community$list_extra$List_Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			var _p61 = list;
+			if (_p61.ctor === '[]') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p62 = _p61._0;
+				if (predicate(_p62)) {
+					return _elm_lang$core$Maybe$Just(_p62);
+				} else {
+					var _v41 = predicate,
+						_v42 = _p61._1;
+					predicate = _v41;
+					list = _v42;
+					continue find;
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$notMember = function (x) {
+	return function (_p63) {
+		return !A2(_elm_lang$core$List$member, x, _p63);
+	};
+};
+var _elm_community$list_extra$List_Extra$andThen = _elm_lang$core$List$concatMap;
+var _elm_community$list_extra$List_Extra$lift2 = F3(
+	function (f, la, lb) {
+		return A2(
+			_elm_community$list_extra$List_Extra$andThen,
+			function (a) {
+				return A2(
+					_elm_community$list_extra$List_Extra$andThen,
+					function (b) {
+						return {
+							ctor: '::',
+							_0: A2(f, a, b),
+							_1: {ctor: '[]'}
+						};
+					},
+					lb);
+			},
+			la);
+	});
+var _elm_community$list_extra$List_Extra$lift3 = F4(
+	function (f, la, lb, lc) {
+		return A2(
+			_elm_community$list_extra$List_Extra$andThen,
+			function (a) {
+				return A2(
+					_elm_community$list_extra$List_Extra$andThen,
+					function (b) {
+						return A2(
+							_elm_community$list_extra$List_Extra$andThen,
+							function (c) {
+								return {
+									ctor: '::',
+									_0: A3(f, a, b, c),
+									_1: {ctor: '[]'}
+								};
+							},
+							lc);
+					},
+					lb);
+			},
+			la);
+	});
+var _elm_community$list_extra$List_Extra$lift4 = F5(
+	function (f, la, lb, lc, ld) {
+		return A2(
+			_elm_community$list_extra$List_Extra$andThen,
+			function (a) {
+				return A2(
+					_elm_community$list_extra$List_Extra$andThen,
+					function (b) {
+						return A2(
+							_elm_community$list_extra$List_Extra$andThen,
+							function (c) {
+								return A2(
+									_elm_community$list_extra$List_Extra$andThen,
+									function (d) {
+										return {
+											ctor: '::',
+											_0: A4(f, a, b, c, d),
+											_1: {ctor: '[]'}
+										};
+									},
+									ld);
+							},
+							lc);
+					},
+					lb);
+			},
+			la);
+	});
+var _elm_community$list_extra$List_Extra$andMap = F2(
+	function (l, fl) {
+		return A3(
+			_elm_lang$core$List$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			fl,
+			l);
+	});
+var _elm_community$list_extra$List_Extra$uniqueHelp = F3(
+	function (f, existing, remaining) {
+		uniqueHelp:
+		while (true) {
+			var _p64 = remaining;
+			if (_p64.ctor === '[]') {
+				return {ctor: '[]'};
+			} else {
+				var _p66 = _p64._1;
+				var _p65 = _p64._0;
+				var computedFirst = f(_p65);
+				if (A2(_elm_lang$core$Set$member, computedFirst, existing)) {
+					var _v44 = f,
+						_v45 = existing,
+						_v46 = _p66;
+					f = _v44;
+					existing = _v45;
+					remaining = _v46;
+					continue uniqueHelp;
+				} else {
+					return {
+						ctor: '::',
+						_0: _p65,
+						_1: A3(
+							_elm_community$list_extra$List_Extra$uniqueHelp,
+							f,
+							A2(_elm_lang$core$Set$insert, computedFirst, existing),
+							_p66)
+					};
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$uniqueBy = F2(
+	function (f, list) {
+		return A3(_elm_community$list_extra$List_Extra$uniqueHelp, f, _elm_lang$core$Set$empty, list);
+	});
+var _elm_community$list_extra$List_Extra$allDifferentBy = F2(
+	function (f, list) {
+		return _elm_lang$core$Native_Utils.eq(
+			_elm_lang$core$List$length(list),
+			_elm_lang$core$List$length(
+				A2(_elm_community$list_extra$List_Extra$uniqueBy, f, list)));
+	});
+var _elm_community$list_extra$List_Extra$allDifferent = function (list) {
+	return A2(_elm_community$list_extra$List_Extra$allDifferentBy, _elm_lang$core$Basics$identity, list);
+};
+var _elm_community$list_extra$List_Extra$unique = function (list) {
+	return A3(_elm_community$list_extra$List_Extra$uniqueHelp, _elm_lang$core$Basics$identity, _elm_lang$core$Set$empty, list);
+};
+var _elm_community$list_extra$List_Extra$dropWhile = F2(
+	function (predicate, list) {
+		dropWhile:
+		while (true) {
+			var _p67 = list;
+			if (_p67.ctor === '[]') {
+				return {ctor: '[]'};
+			} else {
+				if (predicate(_p67._0)) {
+					var _v48 = predicate,
+						_v49 = _p67._1;
+					predicate = _v48;
+					list = _v49;
+					continue dropWhile;
+				} else {
+					return list;
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$takeWhile = function (predicate) {
+	var takeWhileMemo = F2(
+		function (memo, list) {
+			takeWhileMemo:
+			while (true) {
+				var _p68 = list;
+				if (_p68.ctor === '[]') {
+					return _elm_lang$core$List$reverse(memo);
+				} else {
+					var _p69 = _p68._0;
+					if (predicate(_p69)) {
+						var _v51 = {ctor: '::', _0: _p69, _1: memo},
+							_v52 = _p68._1;
+						memo = _v51;
+						list = _v52;
+						continue takeWhileMemo;
+					} else {
+						return _elm_lang$core$List$reverse(memo);
+					}
+				}
+			}
+		});
+	return takeWhileMemo(
+		{ctor: '[]'});
+};
+var _elm_community$list_extra$List_Extra$span = F2(
+	function (p, xs) {
+		return {
+			ctor: '_Tuple2',
+			_0: A2(_elm_community$list_extra$List_Extra$takeWhile, p, xs),
+			_1: A2(_elm_community$list_extra$List_Extra$dropWhile, p, xs)
+		};
+	});
+var _elm_community$list_extra$List_Extra$break = function (p) {
+	return _elm_community$list_extra$List_Extra$span(
+		function (_p70) {
+			return !p(_p70);
+		});
+};
+var _elm_community$list_extra$List_Extra$groupWhile = F2(
+	function (eq, xs_) {
+		var _p71 = xs_;
+		if (_p71.ctor === '[]') {
+			return {ctor: '[]'};
+		} else {
+			var _p73 = _p71._0;
+			var _p72 = A2(
+				_elm_community$list_extra$List_Extra$span,
+				eq(_p73),
+				_p71._1);
+			var ys = _p72._0;
+			var zs = _p72._1;
+			return {
+				ctor: '::',
+				_0: {ctor: '::', _0: _p73, _1: ys},
+				_1: A2(_elm_community$list_extra$List_Extra$groupWhile, eq, zs)
+			};
+		}
+	});
+var _elm_community$list_extra$List_Extra$group = _elm_community$list_extra$List_Extra$groupWhile(
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		}));
+var _elm_community$list_extra$List_Extra$minimumBy = F2(
+	function (f, ls) {
+		var minBy = F2(
+			function (x, _p74) {
+				var _p75 = _p74;
+				var _p76 = _p75._1;
+				var fx = f(x);
+				return (_elm_lang$core$Native_Utils.cmp(fx, _p76) < 0) ? {ctor: '_Tuple2', _0: x, _1: fx} : {ctor: '_Tuple2', _0: _p75._0, _1: _p76};
+			});
+		var _p77 = ls;
+		if (_p77.ctor === '::') {
+			if (_p77._1.ctor === '[]') {
+				return _elm_lang$core$Maybe$Just(_p77._0);
+			} else {
+				var _p78 = _p77._0;
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Tuple$first(
+						A3(
+							_elm_lang$core$List$foldl,
+							minBy,
+							{
+								ctor: '_Tuple2',
+								_0: _p78,
+								_1: f(_p78)
+							},
+							_p77._1)));
+			}
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _elm_community$list_extra$List_Extra$maximumBy = F2(
+	function (f, ls) {
+		var maxBy = F2(
+			function (x, _p79) {
+				var _p80 = _p79;
+				var _p81 = _p80._1;
+				var fx = f(x);
+				return (_elm_lang$core$Native_Utils.cmp(fx, _p81) > 0) ? {ctor: '_Tuple2', _0: x, _1: fx} : {ctor: '_Tuple2', _0: _p80._0, _1: _p81};
+			});
+		var _p82 = ls;
+		if (_p82.ctor === '::') {
+			if (_p82._1.ctor === '[]') {
+				return _elm_lang$core$Maybe$Just(_p82._0);
+			} else {
+				var _p83 = _p82._0;
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Tuple$first(
+						A3(
+							_elm_lang$core$List$foldl,
+							maxBy,
+							{
+								ctor: '_Tuple2',
+								_0: _p83,
+								_1: f(_p83)
+							},
+							_p82._1)));
+			}
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _elm_community$list_extra$List_Extra$uncons = function (xs) {
+	var _p84 = xs;
+	if (_p84.ctor === '[]') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(
+			{ctor: '_Tuple2', _0: _p84._0, _1: _p84._1});
+	}
+};
+var _elm_community$list_extra$List_Extra$swapAt = F3(
+	function (index1, index2, l) {
+		swapAt:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.eq(index1, index2)) {
+				return _elm_lang$core$Maybe$Just(l);
+			} else {
+				if (_elm_lang$core$Native_Utils.cmp(index1, index2) > 0) {
+					var _v59 = index2,
+						_v60 = index1,
+						_v61 = l;
+					index1 = _v59;
+					index2 = _v60;
+					l = _v61;
+					continue swapAt;
+				} else {
+					if (_elm_lang$core$Native_Utils.cmp(index1, 0) < 0) {
+						return _elm_lang$core$Maybe$Nothing;
+					} else {
+						var _p85 = A2(_elm_community$list_extra$List_Extra$splitAt, index1, l);
+						var part1 = _p85._0;
+						var tail1 = _p85._1;
+						var _p86 = A2(_elm_community$list_extra$List_Extra$splitAt, index2 - index1, tail1);
+						var head2 = _p86._0;
+						var tail2 = _p86._1;
+						return A3(
+							_elm_lang$core$Maybe$map2,
+							F2(
+								function (_p88, _p87) {
+									var _p89 = _p88;
+									var _p90 = _p87;
+									return _elm_lang$core$List$concat(
+										{
+											ctor: '::',
+											_0: part1,
+											_1: {
+												ctor: '::',
+												_0: {ctor: '::', _0: _p90._0, _1: _p89._1},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '::', _0: _p89._0, _1: _p90._1},
+													_1: {ctor: '[]'}
+												}
+											}
+										});
+								}),
+							_elm_community$list_extra$List_Extra$uncons(head2),
+							_elm_community$list_extra$List_Extra$uncons(tail2));
+					}
+				}
+			}
+		}
+	});
+var _elm_community$list_extra$List_Extra$iterate = F2(
+	function (f, x) {
+		var _p91 = f(x);
+		if (_p91.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: x,
+				_1: A2(_elm_community$list_extra$List_Extra$iterate, f, _p91._0)
+			};
+		} else {
+			return {
+				ctor: '::',
+				_0: x,
+				_1: {ctor: '[]'}
+			};
+		}
+	});
+var _elm_community$list_extra$List_Extra$getAt = F2(
+	function (idx, xs) {
+		return (_elm_lang$core$Native_Utils.cmp(idx, 0) < 0) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$List$head(
+			A2(_elm_lang$core$List$drop, idx, xs));
+	});
+var _elm_community$list_extra$List_Extra_ops = _elm_community$list_extra$List_Extra_ops || {};
+_elm_community$list_extra$List_Extra_ops['!!'] = _elm_lang$core$Basics$flip(_elm_community$list_extra$List_Extra$getAt);
+var _elm_community$list_extra$List_Extra$init = function () {
+	var maybe = F2(
+		function (d, f) {
+			return function (_p92) {
+				return A2(
+					_elm_lang$core$Maybe$withDefault,
+					d,
+					A2(_elm_lang$core$Maybe$map, f, _p92));
+			};
+		});
+	return A2(
+		_elm_lang$core$List$foldr,
+		function (x) {
+			return function (_p93) {
+				return _elm_lang$core$Maybe$Just(
+					A3(
+						maybe,
+						{ctor: '[]'},
+						F2(
+							function (x, y) {
+								return {ctor: '::', _0: x, _1: y};
+							})(x),
+						_p93));
+			};
+		},
+		_elm_lang$core$Maybe$Nothing);
+}();
+var _elm_community$list_extra$List_Extra$last = _elm_community$list_extra$List_Extra$foldl1(
+	_elm_lang$core$Basics$flip(_elm_lang$core$Basics$always));
+
 //import Native.List //
 
 var _elm_lang$core$Native_Array = function() {
@@ -13030,6 +14369,93 @@ var _user$project$Store_ArtStore$exit = function (exitMsg) {
 			}
 		});
 };
+var _user$project$Store_ArtStore$splatBackgroundSize = '80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;';
+var _user$project$Store_ArtStore$splatBackground = A2(
+	_elm_lang$core$Basics_ops['++'],
+	'-webkit-radial-gradient(red 0, red 30%, rgba(255,255,255,0) 30%) 0 0,',
+	A2(
+		_elm_lang$core$Basics_ops['++'],
+		'-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0,',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'-webkit-radial-gradient(red 0, red 20%,  rgba(255,255,255,0) 20%) -9px 37px,',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 55px 9px,',
+				A2(_elm_lang$core$Basics_ops['++'], '-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 8px 46px,', '-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0;')))));
+var _user$project$Store_ArtStore$deadBall = function (ball) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'left',
+							_1: A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(
+									_elm_community$linear_algebra$Math_Vector2$getX(ball.pos)),
+								'px')
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'top',
+								_1: A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(
+										_elm_community$linear_algebra$Math_Vector2$getY(ball.pos)),
+									'px')
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'width',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(ball.radius * 2),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'height',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(ball.radius * 2),
+											'px')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('poof'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'poof',
+							_elm_lang$core$Basics$toString(ball.color))),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
 var _user$project$Store_ArtStore$colorSwapTime = 2000;
 var _user$project$Store_ArtStore$slowdown = 1 / 10;
 var _user$project$Store_ArtStore$initBottomWall = F2(
@@ -13087,26 +14513,36 @@ var _user$project$Store_ArtStore$resolveCollision = F3(
 			};
 		}
 	});
-var _user$project$Store_ArtStore$removeBall = F2(
-	function (id, balls) {
-		return A2(
-			_elm_lang$core$List$filter,
+var _user$project$Store_ArtStore$removeBall = F3(
+	function (id, balls, deadBalls) {
+		var _p5 = A2(
+			_elm_lang$core$List$partition,
 			function (ball) {
-				return !_elm_lang$core$Native_Utils.eq(ball.id, id);
+				return _elm_lang$core$Native_Utils.eq(ball.id, id);
 			},
 			balls);
+		if (((_p5.ctor === '_Tuple2') && (_p5._0.ctor === '::')) && (_p5._0._1.ctor === '[]')) {
+			return {
+				ctor: '_Tuple2',
+				_0: _p5._1,
+				_1: {ctor: '::', _0: _p5._0._0, _1: deadBalls}
+			};
+		} else {
+			return {ctor: '_Tuple2', _0: balls, _1: deadBalls};
+		}
 	});
 var _user$project$Store_ArtStore$initMovingBall = F5(
-	function (id, color, _p6, _p5, image) {
-		var _p7 = _p6;
-		var _p8 = _p5;
+	function (id, color, _p7, _p6, image) {
+		var _p8 = _p7;
+		var _p9 = _p6;
 		return {
 			id: id,
 			color: color,
 			radius: 32,
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p7._0, _p7._1),
-			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p8._0, _p8._1),
-			img: image
+			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p8._0, _p8._1),
+			velocity: A2(_elm_community$linear_algebra$Math_Vector2$vec2, _p9._0, _p9._1),
+			img: image,
+			poof: false
 		};
 	});
 var _user$project$Store_ArtStore$ballsPerRound = 5;
@@ -13135,7 +14571,7 @@ var _user$project$Store_ArtStore$randomPosition = function (window) {
 var _user$project$Store_ArtStore$alwaysGen = function (x) {
 	return A2(
 		_elm_lang$core$Random$map,
-		function (_p9) {
+		function (_p10) {
 			return x;
 		},
 		_elm_lang$core$Random$bool);
@@ -13177,13 +14613,13 @@ var _user$project$Store_ArtStore$Model = F3(
 	function (a, b, c) {
 		return {playing: a, game: b, seed: c};
 	});
-var _user$project$Store_ArtStore$ArtGame = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {color: a, balls: b, time: c, seed: d, finishRound: e, win: f, points: g, knownUnknownColors: h};
+var _user$project$Store_ArtStore$ArtGame = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {color: a, balls: b, deadBalls: c, time: d, seed: e, finishRound: f, win: g, points: h, knownUnknownColors: i};
 	});
-var _user$project$Store_ArtStore$MovingBall = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, color: b, pos: c, radius: d, velocity: e, img: f};
+var _user$project$Store_ArtStore$MovingBall = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, color: b, pos: c, radius: d, velocity: e, img: f, poof: g};
 	});
 var _user$project$Store_ArtStore$CollisionResult = F2(
 	function (a, b) {
@@ -13222,21 +14658,21 @@ var _user$project$Store_ArtStore$collideWith = F3(
 	function (a0, bodies, acc) {
 		collideWith:
 		while (true) {
-			var _p10 = bodies;
-			if (_p10.ctor === '[]') {
+			var _p11 = bodies;
+			if (_p11.ctor === '[]') {
 				return {ctor: '::', _0: a0, _1: acc};
 			} else {
-				var _p12 = _p10._0;
-				var collisionResult = A2(_user$project$Store_ArtStore$collision, a0, _p12);
-				var _p11 = A3(_user$project$Store_ArtStore$resolveCollision, collisionResult, a0, _p12);
-				var a1 = _p11._0;
-				var b1 = _p11._1;
-				var _v5 = a1,
-					_v6 = _p10._1,
-					_v7 = {ctor: '::', _0: b1, _1: acc};
-				a0 = _v5;
-				bodies = _v6;
-				acc = _v7;
+				var _p13 = _p11._0;
+				var collisionResult = A2(_user$project$Store_ArtStore$collision, a0, _p13);
+				var _p12 = A3(_user$project$Store_ArtStore$resolveCollision, collisionResult, a0, _p13);
+				var a1 = _p12._0;
+				var b1 = _p12._1;
+				var _v6 = a1,
+					_v7 = _p11._1,
+					_v8 = {ctor: '::', _0: b1, _1: acc};
+				a0 = _v6;
+				bodies = _v7;
+				acc = _v8;
 				continue collideWith;
 			}
 		}
@@ -13245,22 +14681,22 @@ var _user$project$Store_ArtStore$collide = F2(
 	function (acc, bodies) {
 		collide:
 		while (true) {
-			var _p13 = bodies;
-			if (_p13.ctor === '[]') {
+			var _p14 = bodies;
+			if (_p14.ctor === '[]') {
 				return acc;
 			} else {
-				var _p14 = A3(
+				var _p15 = A3(
 					_user$project$Store_ArtStore$collideWith,
-					_p13._0,
-					_p13._1,
+					_p14._0,
+					_p14._1,
 					{ctor: '[]'});
-				if (_p14.ctor === '[]') {
+				if (_p15.ctor === '[]') {
 					return {ctor: '[]'};
 				} else {
-					var _v10 = {ctor: '::', _0: _p14._0, _1: acc},
-						_v11 = _p14._1;
-					acc = _v10;
-					bodies = _v11;
+					var _v11 = {ctor: '::', _0: _p15._0, _1: acc},
+						_v12 = _p15._1;
+					acc = _v11;
+					bodies = _v12;
 					continue collide;
 				}
 			}
@@ -13273,38 +14709,38 @@ var _user$project$Store_ArtStore$collisions = function (balls) {
 		balls);
 };
 var _user$project$Store_ArtStore$collisionBoxBubble = F2(
-	function (_p16, _p15) {
-		var _p17 = _p16;
-		var _p24 = _p17._1;
-		var _p18 = _p15;
-		var _p23 = _p18._1;
-		var _p19 = {
-			ctor: '_Tuple2',
-			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p24),
-			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p24)
-		};
-		var boxX = _p19._0;
-		var boxY = _p19._1;
-		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p18._0, _p17._0);
+	function (_p17, _p16) {
+		var _p18 = _p17;
+		var _p25 = _p18._1;
+		var _p19 = _p16;
+		var _p24 = _p19._1;
 		var _p20 = {
+			ctor: '_Tuple2',
+			_0: _elm_community$linear_algebra$Math_Vector2$getX(_p25),
+			_1: _elm_community$linear_algebra$Math_Vector2$getY(_p25)
+		};
+		var boxX = _p20._0;
+		var boxY = _p20._1;
+		var dist = A2(_elm_community$linear_algebra$Math_Vector2$sub, _p19._0, _p18._0);
+		var _p21 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(dist),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(dist)
 		};
-		var dx = _p20._0;
-		var dy = _p20._1;
+		var dx = _p21._0;
+		var dy = _p21._1;
 		var c = A2(
 			_elm_community$linear_algebra$Math_Vector2$vec2,
 			A3(_elm_lang$core$Basics$clamp, 0 - boxX, boxX, dx),
 			A3(_elm_lang$core$Basics$clamp, 0 - boxY, boxY, dy));
-		var _p21 = {
+		var _p22 = {
 			ctor: '_Tuple2',
 			_0: _elm_community$linear_algebra$Math_Vector2$getX(c),
 			_1: _elm_community$linear_algebra$Math_Vector2$getY(c)
 		};
-		var cx = _p21._0;
-		var cy = _p21._1;
-		var _p22 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
+		var cx = _p22._0;
+		var cy = _p22._1;
+		var _p23 = (!_elm_lang$core$Native_Utils.eq(dist, c)) ? {ctor: '_Tuple2', _0: c, _1: false} : ((_elm_lang$core$Native_Utils.cmp(
 			_elm_lang$core$Basics$abs(dx),
 			_elm_lang$core$Basics$abs(dy)) > 0) ? ((_elm_lang$core$Native_Utils.cmp(cx, 0) > 0) ? {
 			ctor: '_Tuple2',
@@ -13323,17 +14759,17 @@ var _user$project$Store_ArtStore$collisionBoxBubble = F2(
 			_0: A2(_elm_community$linear_algebra$Math_Vector2$vec2, cx, 0 - boxY),
 			_1: true
 		}));
-		var closest = _p22._0;
-		var inside = _p22._1;
+		var closest = _p23._0;
+		var inside = _p23._1;
 		var normal = A2(_elm_community$linear_algebra$Math_Vector2$sub, dist, closest);
 		var normalLenSq = _elm_community$linear_algebra$Math_Vector2$lengthSquared(normal);
-		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p23 * _p23) > 0) && (!inside)) {
+		if ((_elm_lang$core$Native_Utils.cmp(normalLenSq, _p24 * _p24) > 0) && (!inside)) {
 			return A2(
 				_user$project$Store_ArtStore$CollisionResult,
 				A2(_elm_community$linear_algebra$Math_Vector2$vec2, 1, 0),
 				0);
 		} else {
-			var penetration = _p23 + _elm_lang$core$Basics$sqrt(normalLenSq);
+			var penetration = _p24 + _elm_lang$core$Basics$sqrt(normalLenSq);
 			return inside ? A2(
 				_user$project$Store_ArtStore$CollisionResult,
 				A2(
@@ -13350,24 +14786,24 @@ var _user$project$Store_ArtStore$animateBall = F3(
 	function (timeDiff, window, ball) {
 		var y = _elm_community$linear_algebra$Math_Vector2$getY(ball.pos);
 		var x = _elm_community$linear_algebra$Math_Vector2$getX(ball.pos);
-		var _p25 = {
+		var _p26 = {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Basics$toFloat(window.width),
 			_1: _elm_lang$core$Basics$toFloat(window.height)
 		};
-		var width = _p25._0;
-		var height = _p25._1;
-		var _p26 = {
+		var width = _p26._0;
+		var height = _p26._1;
+		var _p27 = {
 			ctor: '_Tuple4',
 			_0: _user$project$Store_ArtStore$initLeftWall(height),
 			_1: A2(_user$project$Store_ArtStore$initRightWall, width, height),
 			_2: _user$project$Store_ArtStore$initTopWall(width),
 			_3: A2(_user$project$Store_ArtStore$initBottomWall, width, height)
 		};
-		var leftWall = _p26._0;
-		var rightWall = _p26._1;
-		var topWall = _p26._2;
-		var bottomWall = _p26._3;
+		var leftWall = _p27._0;
+		var rightWall = _p27._1;
+		var topWall = _p27._2;
+		var bottomWall = _p27._3;
 		var leftCol = A2(
 			_user$project$Store_ArtStore$collisionBoxBubble,
 			{
@@ -13453,11 +14889,11 @@ var _user$project$Store_ArtStore$randomColor = F2(
 var _user$project$Store_ArtStore$animateArtGame = F4(
 	function (timeDiff, window, translator, artGame) {
 		var newTime = artGame.time + timeDiff;
-		var _p27 = function () {
+		var _p28 = function () {
 			if (_elm_lang$core$Native_Utils.cmp(newTime, _user$project$Store_ArtStore$colorSwapTime) > 0) {
-				var _p28 = A2(_user$project$Store_ArtStore$randomColor, artGame.seed, artGame.balls);
-				var randColor = _p28._0;
-				var seed = _p28._1;
+				var _p29 = A2(_user$project$Store_ArtStore$randomColor, artGame.seed, artGame.balls);
+				var randColor = _p29._0;
+				var seed = _p29._1;
 				return {
 					ctor: '_Tuple3',
 					_0: {ctor: '_Tuple2', _0: randColor, _1: seed},
@@ -13475,11 +14911,11 @@ var _user$project$Store_ArtStore$animateArtGame = F4(
 				};
 			}
 		}();
-		var newColor = _p27._0._0;
-		var newSeed = _p27._0._1;
-		var timeReset = _p27._1;
-		var cmd = _p27._2;
-		var _p29 = A2(_elm_lang$core$Debug$log, 'animate art game', '');
+		var newColor = _p28._0._0;
+		var newSeed = _p28._0._1;
+		var timeReset = _p28._1;
+		var cmd = _p28._2;
+		var _p30 = A2(_elm_lang$core$Debug$log, 'animate art game', '');
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -13593,17 +15029,17 @@ var _user$project$Store_ArtStore$images = _eeue56$elm_all_dict$EveryDict$fromLis
 	});
 var _user$project$Store_ArtStore$randomImage = function (color) {
 	var options = A2(_eeue56$elm_all_dict$EveryDict$get, color, _user$project$Store_ArtStore$images);
-	var _p30 = options;
-	if (_p30.ctor === 'Nothing') {
+	var _p31 = options;
+	if (_p31.ctor === 'Nothing') {
 		return _user$project$Store_ArtStore$alwaysGen('');
 	} else {
-		if (_p30._0.ctor === '[]') {
+		if (_p31._0.ctor === '[]') {
 			return _user$project$Store_ArtStore$alwaysGen('');
 		} else {
 			return A2(
 				_elm_lang$core$Random$map,
 				_elm_lang$core$Maybe$withDefault(''),
-				_user$project$Store_ArtStore$randItem(_p30._0));
+				_user$project$Store_ArtStore$randItem(_p31._0));
 		}
 	}
 };
@@ -13637,7 +15073,7 @@ var _user$project$Store_ArtStore$initialBalls = F2(
 	});
 var _user$project$Store_ArtStore$initArtGame = F3(
 	function (window, colors, seed) {
-		var _p31 = A2(
+		var _p32 = A2(
 			_elm_lang$core$Random$step,
 			A2(
 				_user$project$Store_ArtStore$initialBalls,
@@ -13648,8 +15084,8 @@ var _user$project$Store_ArtStore$initArtGame = F3(
 					_1: _wernerdegroot$listzipper$List_Zipper$before(colors)
 				}),
 			seed);
-		var balls = _p31._0;
-		var newSeed = _p31._1;
+		var balls = _p32._0;
+		var newSeed = _p32._1;
 		return {
 			ctor: '_Tuple2',
 			_0: {
@@ -13658,6 +15094,7 @@ var _user$project$Store_ArtStore$initArtGame = F3(
 				points: 0,
 				color: _wernerdegroot$listzipper$List_Zipper$current(colors),
 				balls: balls,
+				deadBalls: {ctor: '[]'},
 				win: false,
 				finishRound: false,
 				knownUnknownColors: colors
@@ -13667,9 +15104,9 @@ var _user$project$Store_ArtStore$initArtGame = F3(
 	});
 var _user$project$Store_ArtStore$init = F2(
 	function (window, seed) {
-		var _p32 = A3(_user$project$Store_ArtStore$initArtGame, window, _user$project$Store_ArtStore$initialColors, seed);
-		var game = _p32._0;
-		var newSeed = _p32._1;
+		var _p33 = A3(_user$project$Store_ArtStore$initArtGame, window, _user$project$Store_ArtStore$initialColors, seed);
+		var game = _p33._0;
+		var newSeed = _p33._1;
 		return {
 			ctor: '_Tuple2',
 			_0: {game: game, playing: false, seed: newSeed},
@@ -13684,8 +15121,8 @@ var _user$project$Store_ArtStore$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
 var _user$project$Store_ArtStore$colorCircle = F3(
-	function (_p33, color, audio) {
-		var _p34 = _p33;
+	function (_p34, color, audio) {
+		var _p35 = _p34;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13710,7 +15147,7 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p34._0),
+												_elm_lang$core$Basics$toString(_p35._0),
 												'px')
 										},
 										_1: {
@@ -13720,7 +15157,7 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p34._1),
+													_elm_lang$core$Basics$toString(_p35._1),
 													'px')
 											},
 											_1: {
@@ -13749,8 +15186,8 @@ var _user$project$Store_ArtStore$colorCircle = F3(
 	});
 var _user$project$Store_ArtStore$NextRound = {ctor: 'NextRound'};
 var _user$project$Store_ArtStore$FinishGame = {ctor: 'FinishGame'};
-var _user$project$Store_ArtStore$backButton = function (_p35) {
-	var _p36 = _p35;
+var _user$project$Store_ArtStore$backButton = function (_p36) {
+	var _p37 = _p36;
 	return A2(
 		_elm_lang$html$Html$button,
 		{
@@ -13769,7 +15206,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 								_0: 'left',
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p36._0),
+									_elm_lang$core$Basics$toString(_p37._0),
 									'px')
 							},
 							_1: {
@@ -13779,7 +15216,7 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 									_0: 'top',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p36._1),
+										_elm_lang$core$Basics$toString(_p37._1),
 										'px')
 								},
 								_1: {
@@ -13808,8 +15245,8 @@ var _user$project$Store_ArtStore$backButton = function (_p35) {
 		});
 };
 var _user$project$Store_ArtStore$Play = {ctor: 'Play'};
-var _user$project$Store_ArtStore$playButton = function (_p37) {
-	var _p38 = _p37;
+var _user$project$Store_ArtStore$playButton = function (_p38) {
+	var _p39 = _p38;
 	return A2(
 		_elm_lang$html$Html$button,
 		{
@@ -13828,7 +15265,7 @@ var _user$project$Store_ArtStore$playButton = function (_p37) {
 								_0: 'left',
 								_1: A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p38._0),
+									_elm_lang$core$Basics$toString(_p39._0),
 									'px')
 							},
 							_1: {
@@ -13838,7 +15275,7 @@ var _user$project$Store_ArtStore$playButton = function (_p37) {
 									_0: 'top',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p38._1),
+										_elm_lang$core$Basics$toString(_p39._1),
 										'px')
 								},
 								_1: {
@@ -13969,6 +15406,13 @@ var _user$project$Store_ArtStore$colorBall = F2(
 	});
 var _user$project$Store_ArtStore$colorGame = F2(
 	function (translator, game) {
+		var balls = A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$List$map,
+				_user$project$Store_ArtStore$colorBall(game.color),
+				game.balls),
+			A2(_elm_lang$core$List$map, _user$project$Store_ArtStore$deadBall, game.deadBalls));
 		var content = (game.finishRound || game.win) ? {
 			ctor: '::',
 			_0: A2(
@@ -14006,10 +15450,14 @@ var _user$project$Store_ArtStore$colorGame = F2(
 					}
 				}),
 			_1: {ctor: '[]'}
-		} : A2(
-			_elm_lang$core$List$map,
-			_user$project$Store_ArtStore$colorBall(game.color),
-			game.balls);
+		} : {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -14030,22 +15478,22 @@ var _user$project$Store_ArtStore$colorGame = F2(
 						_1: {ctor: '[]'}
 					}
 				},
-				content));
+				A2(_elm_lang$core$Basics_ops['++'], content, balls)));
 	});
 var _user$project$Store_ArtStore$view = F2(
 	function (translator, model) {
-		var _p39 = model.playing;
-		if (_p39 === true) {
+		var _p40 = model.playing;
+		if (_p40 === true) {
 			return A2(_user$project$Store_ArtStore$colorGame, translator, model.game);
 		} else {
 			var showCircle = F2(
-				function (n, _p40) {
-					var _p41 = _p40;
+				function (n, _p41) {
+					var _p42 = _p41;
 					return A3(
 						_user$project$Store_ArtStore$colorCircle,
 						{ctor: '_Tuple2', _0: 96 * n, _1: 96},
-						_p41._0,
-						_p41._1);
+						_p42._0,
+						_p42._1);
 				});
 			return A2(
 				_elm_lang$html$Html$div,
@@ -14108,9 +15556,9 @@ var _user$project$Store_ArtStore$view = F2(
 var _user$project$Store_ArtStore$NoOp = {ctor: 'NoOp'};
 var _user$project$Store_ArtStore$tick = F4(
 	function (timeDelta, window, translator, model) {
-		var _p42 = A4(_user$project$Store_ArtStore$animateArtGame, timeDelta, window, translator, model.game);
-		var newArtGame = _p42._0;
-		var cmd = _p42._1;
+		var _p43 = A4(_user$project$Store_ArtStore$animateArtGame, timeDelta, window, translator, model.game);
+		var newArtGame = _p43._0;
+		var cmd = _p43._1;
 		return {
 			ctor: '_Tuple3',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -14125,13 +15573,15 @@ var _user$project$Store_ArtStore$AddPoints = function (a) {
 	return {ctor: 'AddPoints', _0: a};
 };
 var _user$project$Store_ArtStore$colorClicked = F2(
-	function (_p43, model) {
-		var _p44 = _p43;
-		if (!_elm_lang$core$Native_Utils.eq(_p44._1, _p44._2)) {
+	function (_p44, model) {
+		var _p45 = _p44;
+		if (!_elm_lang$core$Native_Utils.eq(_p45._1, _p45._2)) {
 			return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
 		} else {
 			var artGame = model.game;
-			var newBalls = A2(_user$project$Store_ArtStore$removeBall, _p44._0, artGame.balls);
+			var _p46 = A3(_user$project$Store_ArtStore$removeBall, _p45._0, artGame.balls, artGame.deadBalls);
+			var newBalls = _p46._0;
+			var deadBalls = _p46._1;
 			var finishRound = _elm_lang$core$Native_Utils.eq(
 				_elm_lang$core$List$length(newBalls),
 				0);
@@ -14141,7 +15591,7 @@ var _user$project$Store_ArtStore$colorClicked = F2(
 				0);
 			var newArtGame = _elm_lang$core$Native_Utils.update(
 				artGame,
-				{balls: newBalls, finishRound: finishRound, win: win});
+				{balls: newBalls, deadBalls: deadBalls, finishRound: finishRound, win: win});
 			return {
 				ctor: '_Tuple3',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -14156,12 +15606,12 @@ var _user$project$Store_ArtStore$update = F4(
 	function (window, translator, msg, model) {
 		update:
 		while (true) {
-			var _p45 = msg;
-			switch (_p45.ctor) {
+			var _p47 = msg;
+			switch (_p47.ctor) {
 				case 'ColorClicked':
 					return A2(
 						_user$project$Store_ArtStore$colorClicked,
-						{ctor: '_Tuple3', _0: _p45._0, _1: _p45._1, _2: _p45._2},
+						{ctor: '_Tuple3', _0: _p47._0, _1: _p47._1, _2: _p47._2},
 						model);
 				case 'Play':
 					return {
@@ -14173,26 +15623,23 @@ var _user$project$Store_ArtStore$update = F4(
 						_2: _elm_lang$core$Platform_Cmd$none
 					};
 				case 'NextRound':
-					var _p46 = A3(
+					var _p48 = A3(
 						_user$project$Store_ArtStore$initArtGame,
 						window,
-						A2(
-							_elm_lang$core$Debug$log,
-							'new colors',
-							_user$project$Store_ArtStore$nextColor(model.game.knownUnknownColors)),
+						_user$project$Store_ArtStore$nextColor(model.game.knownUnknownColors),
 						model.seed);
-					var nextArtGame = _p46._0;
-					var newSeed = _p46._1;
-					var _v22 = window,
-						_v23 = translator,
-						_v24 = _user$project$Store_ArtStore$Play,
-						_v25 = _elm_lang$core$Native_Utils.update(
+					var nextArtGame = _p48._0;
+					var newSeed = _p48._1;
+					var _v23 = window,
+						_v24 = translator,
+						_v25 = _user$project$Store_ArtStore$Play,
+						_v26 = _elm_lang$core$Native_Utils.update(
 						model,
 						{game: nextArtGame, seed: newSeed});
-					window = _v22;
-					translator = _v23;
-					msg = _v24;
-					model = _v25;
+					window = _v23;
+					translator = _v24;
+					msg = _v25;
+					model = _v26;
 					continue update;
 				case 'FinishGame':
 					return {
@@ -14208,12 +15655,12 @@ var _user$project$Store_ArtStore$update = F4(
 						ctor: '_Tuple3',
 						_0: model,
 						_1: _user$project$Store_ArtStore$NoOp,
-						_2: _user$project$Audio$play(_p45._0)
+						_2: _user$project$Audio$play(_p47._0)
 					};
 				case 'ExitStore':
 					return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$Exit, _2: _elm_lang$core$Platform_Cmd$none};
 				default:
-					return (model.playing && (!(model.game.win || model.game.finishRound))) ? A4(_user$project$Store_ArtStore$tick, _p45._0, window, translator, model) : {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+					return (model.playing && (!(model.game.win || model.game.finishRound))) ? A4(_user$project$Store_ArtStore$tick, _p47._0, window, translator, model) : {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
 			}
 		}
 	});

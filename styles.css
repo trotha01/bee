@@ -2,3 +2,75 @@ body {
   border: 0px;
   margin: 0px;
 }
+
+.poofRed {
+background:
+-webkit-radial-gradient(red 0, red 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(red 0, red 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(red 0, red 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
+
+.poofOrange {
+background:
+-webkit-radial-gradient(orange 0, orange 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(orange 0, orange 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(orange 0, orange 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(orange 0, orange 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(orange 0, orange 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(orange 0, orange 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
+
+.poofYellow {
+background:
+-webkit-radial-gradient(yellow 0, yellow 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(yellow 0, yellow 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(yellow 0, yellow 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(yellow 0, yellow 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(yellow 0, yellow 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(yellow 0, yellow 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
+
+.poofGreen {
+background:
+-webkit-radial-gradient(green 0, green 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(green 0, green 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(green 0, green 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(green 0, green 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(green 0, green 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(green 0, green 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
+
+.poofBlue {
+background:
+-webkit-radial-gradient(blue 0, blue 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(blue 0, blue 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(blue 0, blue 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(blue 0, blue 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(blue 0, blue 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(blue 0, blue 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
+
+.poofPurple {
+background:
+-webkit-radial-gradient(purple 0, purple 30%, rgba(255,255,255,0) 30%) 0 0,
+-webkit-radial-gradient(purple 0, purple 11%, rgba(255,255,255,0) 11%) 0 0,
+-webkit-radial-gradient(purple 0, purple 20%,  rgba(255,255,255,0) 20%) -9px 37px,
+-webkit-radial-gradient(purple 0, purple 11%, rgba(255,255,255,0) 11%) 55px 9px,
+-webkit-radial-gradient(purple 0, purple 11%, rgba(255,255,255,0) 11%) 8px 46px,
+-webkit-radial-gradient(purple 0, purple 11%, rgba(255,255,255,0) 11%) 0 0;
+background-repeat: no-repeat;
+-webkit-background-size: 80px 68px, 37px 30px, 26px 13px, 10px 10px, 30px 30px, 50px 50px, 100% 100%;
+}
