@@ -3,6 +3,9 @@ port module Main exposing (..)
 import Animation exposing (..)
 import AnimationFrame
 import Bee exposing (Bee)
+import Dictionary.French as French
+import Dictionary.Spanish as Spanish
+import Dictionary.Translator exposing (Translator)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (height, src, style, width)
 import Html.Events exposing (onClick)
@@ -38,7 +41,7 @@ init =
     , time = 0
     , window = { width = 100, height = 100 }
     , pause = False
-    , map = Map.init { width = 100, height = 100 } Map.Home
+    , map = Map.init Map.Home
     }
 
 
@@ -56,19 +59,14 @@ type Msg
     | Pause
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Translator -> Msg -> Model -> ( Model, Cmd Msg )
+update translator msg model =
     case msg of
         Pause ->
             ( { model | pause = not model.pause }, Cmd.none )
 
         WindowResize newSize ->
-            ( { model
-                | window = newSize
-                , map = Map.resize newSize model.map
-              }
-            , Cmd.none
-            )
+            ( { model | window = newSize }, Cmd.none )
 
         MouseUp _ ->
             ( { model | mouse = Up }, Cmd.none )
@@ -95,50 +93,46 @@ update msg model =
                     )
 
         Tick timeDelta ->
-            let
-                _ =
-                    Debug.log "Main Tick"
-
-                ( newMap, cmd ) =
-                    Map.update (Map.Tick timeDelta) model.map
-            in
-            ( { model
+            { model
                 | user = model.user |> Bee.animate model.time
-                , map = newMap
                 , time = model.time + timeDelta
-              }
-            , cmd |> Cmd.map MapMsg
-            )
+            }
+                |> updateMap translator (Map.Tick timeDelta)
 
         MapMsg msg ->
-            let
-                ( newMap, cmd ) =
-                    Map.update msg model.map
-            in
-            ( { model | map = newMap }, Cmd.map MapMsg cmd )
+            updateMap translator msg model
+
+
+updateMap : Translator -> Map.Msg -> Model -> ( Model, Cmd Msg )
+updateMap translator mapMsg model =
+    let
+        ( map, cmd ) =
+            Map.update translator model.window mapMsg model.map
+    in
+    ( { model | map = map }, cmd |> Cmd.map MapMsg )
 
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
+view : Translator -> Model -> Html Msg
+view translator model =
     div
         [ style
             [ ( "user-select", "none" )
             ]
         ]
         [ pauseButton
-        , mapView model.window model.map
+        , mapView model.window translator model.map
 
         -- , Bee.view Nothing model.user
         ]
 
 
-mapView : Window.Size -> Map -> Html Msg
-mapView window map =
-    Map.view window map
+mapView : Window.Size -> Translator -> Map -> Html Msg
+mapView window translator map =
+    Map.view window translator map
         |> Html.map MapMsg
 
 
@@ -176,10 +170,26 @@ subscriptions model =
 -- MAIN
 
 
+spanishTranslator =
+    { translate = Spanish.translate
+    , audio = Spanish.audio
+    }
+
+
+frenchTranslator =
+    { translate = French.translate
+    , audio = French.audio
+    }
+
+
+translator =
+    frenchTranslator
+
+
 main =
     Html.program
         { init = ( init, Task.perform WindowResize Window.size )
-        , view = view
-        , update = update
+        , view = view translator
+        , update = update translator
         , subscriptions = subscriptions
         }

@@ -3,7 +3,7 @@ module Map exposing (..)
 import Audio
 import Bee exposing (Bee)
 import Dict exposing (Dict)
-import Dictionary.Spanish as Spanish
+import Dictionary.Translator exposing (Translator)
 import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
@@ -22,16 +22,14 @@ import Window
 
 type alias Map =
     { level : Level
-    , window : Window.Size
     , points : Int
     , seed : Random.Seed
     }
 
 
-init : Window.Size -> Level -> Map
-init window level =
+init : Level -> Map
+init level =
     { level = level
-    , window = window
     , points = 0
     , seed = Random.initialSeed 0
     }
@@ -75,8 +73,8 @@ type Route
     | ArtStoreRoute
 
 
-update : Msg -> Map -> ( Map, Cmd Msg )
-update msg map =
+update : Translator -> Window.Size -> Msg -> Map -> ( Map, Cmd Msg )
+update translator window msg map =
     case ( map.level, msg ) of
         ( _, NewLevel route ) ->
             let
@@ -94,7 +92,7 @@ update msg map =
                         ArtStoreRoute ->
                             let
                                 ( store, _ ) =
-                                    ArtStore.init map.window map.seed
+                                    ArtStore.init window map.seed
                             in
                             ArtStore store
             in
@@ -104,36 +102,40 @@ update msg map =
             ( map, Audio.play file )
 
         ( _, Tick timeDelta ) ->
-            let
-                _ =
-                    Debug.log "Map Tick"
-            in
-            tick timeDelta map
+            tick timeDelta window translator map
 
         ( ArtStore artStore, ArtStoreMsg msg ) ->
             let
-                ( newArtStore, cmd ) =
-                    ArtStore.update map.window msg artStore
+                ( newArtStore, msgFromPage, cmd ) =
+                    ArtStore.update window translator msg artStore
+
+                points =
+                    case msgFromPage of
+                        ArtStore.NoOp ->
+                            map.points
+
+                        ArtStore.AddPoints newPoints ->
+                            map.points + newPoints
             in
-            ( { map | level = ArtStore newArtStore }, Cmd.map ArtStoreMsg cmd )
+            ( { map
+                | level = ArtStore newArtStore
+                , points = points
+              }
+            , Cmd.map ArtStoreMsg cmd
+            )
 
         ( _, _ ) ->
             -- Should not reach here
             ( map, Cmd.none )
 
 
-resize : Window.Size -> Map -> Map
-resize window map =
-    { map | window = window }
-
-
-tick : Time -> Map -> ( Map, Cmd Msg )
-tick timeDelta map =
+tick : Time -> Window.Size -> Translator -> Map -> ( Map, Cmd Msg )
+tick timeDelta window translator map =
     case map.level of
         ArtStore store ->
             let
-                ( newArtStore, cmd ) =
-                    ArtStore.tick timeDelta map.window store
+                ( newArtStore, msgFromPage, cmd ) =
+                    ArtStore.update window translator (ArtStore.Tick timeDelta) store
             in
             ( { map | level = ArtStore newArtStore }, cmd |> Cmd.map ArtStoreMsg )
 
@@ -145,21 +147,42 @@ tick timeDelta map =
 -- VIEW
 
 
-view : Window.Size -> Map -> Html Msg
-view mapSize map =
-    case map.level of
-        Home ->
-            home mapSize
+view : Window.Size -> Translator -> Map -> Html Msg
+view mapSize translator map =
+    let
+        body =
+            case map.level of
+                Home ->
+                    home mapSize
 
-        HomeTown ->
-            hometown mapSize
+                HomeTown ->
+                    hometown mapSize
 
-        GroceryStore ->
-            groceryStore mapSize
+                GroceryStore ->
+                    groceryStore mapSize
 
-        ArtStore store ->
-            ArtStore.view store
-                |> Html.map ArtStoreMsg
+                ArtStore store ->
+                    ArtStore.view translator store
+                        |> Html.map ArtStoreMsg
+    in
+    div []
+        [ header map
+        , body
+        ]
+
+
+
+-- HEADER
+
+
+header : Map -> Html Msg
+header map =
+    viewPoints map.points
+
+
+viewPoints : Int -> Html msg
+viewPoints count =
+    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 
@@ -294,15 +317,6 @@ groceryItem ( x, y ) image audio =
         , onClick (PlayAudio audio)
         ]
         []
-
-
-
--- ART STORE
-
-
-viewPoints : Int -> Html msg
-viewPoints count =
-    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 

@@ -1,7 +1,7 @@
 module Store.ArtStore exposing (..)
 
 import Audio
-import Dictionary.Spanish as Spanish
+import Dictionary.Translator exposing (Translator)
 import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, img, text)
 import Html.Attributes exposing (class, src, style)
@@ -87,10 +87,16 @@ type Msg
     | Pause
     | PlayAudio String
     | Exit
+    | Tick Time
 
 
-update : Window.Size -> Msg -> Model -> ( Model, Cmd Msg )
-update window msg model =
+type MsgFromPage
+    = AddPoints Int
+    | NoOp
+
+
+update : Window.Size -> Translator -> Msg -> Model -> ( Model, MsgFromPage, Cmd Msg )
+update window translator msg model =
     case msg of
         ColorClicked id gameColor color ->
             if gameColor == color then
@@ -110,39 +116,48 @@ update window msg model =
                 ( { model
                     -- TODO: add points back in
                     --  points = map.points + 10
-                    | game = newArtGame
+                    | playing = not win
+                    , game = newArtGame
                   }
+                , AddPoints 10
                 , Audio.play "audio/puff.mp3"
                 )
             else
-                ( model, Cmd.none )
+                ( model, NoOp, Cmd.none )
 
         Play ->
             let
                 ( newArtGame, _ ) =
                     initArtGame window (Random.initialSeed 0)
             in
-            ( { playing = True, game = newArtGame }, Cmd.none )
+            ( { playing = True, game = newArtGame }, NoOp, Cmd.none )
 
         Pause ->
-            ( model, Cmd.none )
+            ( model, NoOp, Cmd.none )
 
         PlayAudio file ->
-            ( model, Audio.play file )
+            ( model, NoOp, Audio.play file )
 
         Exit ->
-            ( model, Cmd.none )
+            ( model, NoOp, Cmd.none )
+
+        Tick timeDelta ->
+            if model.playing then
+                tick timeDelta window translator model
+            else
+                ( model, NoOp, Cmd.none )
 
 
-tick : Time -> Window.Size -> Model -> ( Model, Cmd Msg )
-tick timeDelta window model =
+tick : Time -> Window.Size -> Translator -> Model -> ( Model, MsgFromPage, Cmd Msg )
+tick timeDelta window translator model =
     let
         ( newArtGame, cmd ) =
-            animateArtGame timeDelta window model.game
+            animateArtGame timeDelta window translator model.game
     in
     ( { model
         | game = newArtGame
       }
+    , NoOp
     , cmd
     )
 
@@ -543,8 +558,8 @@ colorSwapTime =
     2000
 
 
-animateArtGame : Time -> Window.Size -> ArtGame -> ( ArtGame, Cmd Msg )
-animateArtGame timeDiff window artGame =
+animateArtGame : Time -> Window.Size -> Translator -> ArtGame -> ( ArtGame, Cmd Msg )
+animateArtGame timeDiff window translator artGame =
     let
         _ =
             Debug.log "animate art game" ""
@@ -558,7 +573,7 @@ animateArtGame timeDiff window artGame =
                     ( randColor, seed ) =
                         randomColor artGame.seed artGame.balls
                 in
-                ( ( randColor, seed ), 0, Audio.play (Spanish.audio <| toString randColor) )
+                ( ( randColor, seed ), 0, Audio.play (translator.audio <| toString randColor) )
             else
                 ( ( artGame.color, artGame.seed ), newTime, Cmd.none )
     in
@@ -582,11 +597,11 @@ animateArtGame timeDiff window artGame =
 {-| artStore : PlayGame -> Map -> Html Msg
 artStore play map =
 -}
-view : Model -> Html Msg
-view model =
+view : Translator -> Model -> Html Msg
+view translator model =
     case model.playing of
         True ->
-            colorGame model.game
+            colorGame translator model.game
 
         False ->
             let
@@ -596,13 +611,12 @@ view model =
             div [] <|
                 exit Exit
                     :: playButton ( 192, 10 )
-                    :: viewPoints model.game.points
                     :: List.indexedMap showCircle
-                        [ ( "black", Spanish.audio "black" )
-                        , ( "white", Spanish.audio "white" )
-                        , ( "red", Spanish.audio "red" )
-                        , ( "blue", Spanish.audio "blue" )
-                        , ( "yellow", Spanish.audio "yellow" )
+                        [ ( "black", translator.audio "black" )
+                        , ( "white", translator.audio "white" )
+                        , ( "red", translator.audio "red" )
+                        , ( "blue", translator.audio "blue" )
+                        , ( "yellow", translator.audio "yellow" )
                         ]
 
 
@@ -624,8 +638,8 @@ colorCircle ( x, y ) color audio =
         []
 
 
-colorGame : ArtGame -> Html Msg
-colorGame game =
+colorGame : Translator -> ArtGame -> Html Msg
+colorGame translator game =
     let
         content =
             if game.win then
@@ -637,8 +651,7 @@ colorGame game =
     in
     div []
         ([ backButton ( 130, 0 )
-         , text ("Color: " ++ Spanish.translate (toString game.color))
-         , viewPoints game.points
+         , text ("Color: " ++ translator.translate (toString game.color))
          ]
             ++ content
         )
@@ -664,11 +677,6 @@ colorBall gameColor ball =
         , onMouseDown (ColorClicked ball.id gameColor ball.color)
         ]
         []
-
-
-viewPoints : Int -> Html msg
-viewPoints count =
-    Html.div [ class "points" ] [ text <| "Points: " ++ toString count ]
 
 
 playButton : ( Int, Int ) -> Html Msg

@@ -1,4 +1,4 @@
-module Dictionary.Spanish exposing (..)
+module Dictionary.French exposing (..)
 
 import Dict exposing (Dict)
 import String.Extra exposing (replace)
@@ -20,14 +20,14 @@ dictionary =
 colors : Dict String Word
 colors =
     Dict.fromList
-        [ ( "red", "rojo" )
-        , ( "orange", "naranja" )
-        , ( "yellow", "amarillo" )
-        , ( "green", "verde" )
-        , ( "blue", "azul" )
-        , ( "purple", "púrpura" )
-        , ( "black", "negro" )
-        , ( "white", "blanco" )
+        [ ( "red", "pula" )
+        , ( "orange", "kahel" )
+        , ( "yellow", "dilaw" )
+        , ( "green", "berde" )
+        , ( "blue", "asul" )
+        , ( "purple", "lila" )
+        , ( "black", "itim" )
+        , ( "white", "puti" )
         ]
 
 
@@ -62,7 +62,7 @@ audio word =
 
 
 audioDir =
-    "audio/spanish/"
+    "audio/french/"
 
 
 audioFile : String -> String
