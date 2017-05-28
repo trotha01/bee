@@ -111,14 +111,22 @@ update translator window msg map =
 
                 points =
                     case msgFromPage of
-                        ArtStore.NoOp ->
-                            map.points
-
                         ArtStore.AddPoints newPoints ->
                             map.points + newPoints
+
+                        _ ->
+                            map.points
+
+                level =
+                    case msgFromPage of
+                        ArtStore.Exit ->
+                            HomeTown
+
+                        _ ->
+                            ArtStore newArtStore
             in
             ( { map
-                | level = ArtStore newArtStore
+                | level = level
                 , points = points
               }
             , Cmd.map ArtStoreMsg cmd

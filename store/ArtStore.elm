@@ -86,12 +86,13 @@ type Msg
     | Play
     | Back
     | PlayAudio String
-    | Exit
+    | ExitStore
     | Tick Time
 
 
 type MsgFromPage
     = AddPoints Int
+    | Exit
     | NoOp
 
 
@@ -136,8 +137,8 @@ update window translator msg model =
         PlayAudio file ->
             ( model, NoOp, Audio.play file )
 
-        Exit ->
-            ( model, NoOp, Cmd.none )
+        ExitStore ->
+            ( model, Exit, Cmd.none )
 
         Tick timeDelta ->
             if model.playing then
@@ -331,10 +332,9 @@ collideWith a0 bodies acc =
             collideWith a1 bs (b1 :: acc)
 
 
-
--- figure out what collision resolution to use
-
-
+{-| figure out what collision resolution to use
+(currently only colliding bubbles)
+-}
 collision : MovingBall -> MovingBall -> CollisionResult
 collision body0 body1 =
     let
@@ -344,11 +344,9 @@ collision body0 body1 =
     collisionBubbleBubble b0b1 body0.radius body1.radius
 
 
-
--- calculate collision normal, penetration depth of a collision among bubbles
+{-| calculate collision normal, penetration depth of a collision among bubbles
 -- takes distance vector b0b1 and the bubble radii as argument
-
-
+-}
 collisionBubbleBubble : Vec2 -> Float -> Float -> CollisionResult
 collisionBubbleBubble b0b1 radius0 radius1 =
     let
@@ -384,15 +382,12 @@ resolveCollision { normal, penetration } b0 b1 =
             Vec2.dot relativeVelocity normal
     in
     if penetration == 0 || velocityAlongNormal > 0 then
-        ( b0, b1 )
         -- no collision or velocities separating
+        ( b0, b1 )
     else
         let
-            -- impulse scalar
             impulse =
                 normal
-
-            -- impulse vector
         in
         ( { b0 | velocity = Vec2.sub b0.velocity impulse }
         , { b1 | velocity = Vec2.add b1.velocity impulse }
@@ -607,7 +602,7 @@ view translator model =
                     colorCircle ( 96 * n, 96 ) color audio
             in
             div [] <|
-                exit Exit
+                exit ExitStore
                     :: playButton ( 192, 10 )
                     :: List.indexedMap showCircle
                         [ ( "black", translator.audio "black" )

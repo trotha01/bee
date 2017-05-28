@@ -13455,7 +13455,7 @@ var _user$project$Store_ArtStore$init = F2(
 var _user$project$Store_ArtStore$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
-var _user$project$Store_ArtStore$Exit = {ctor: 'Exit'};
+var _user$project$Store_ArtStore$ExitStore = {ctor: 'ExitStore'};
 var _user$project$Store_ArtStore$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
@@ -13801,7 +13801,7 @@ var _user$project$Store_ArtStore$view = F2(
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _user$project$Store_ArtStore$exit(_user$project$Store_ArtStore$Exit),
+					_0: _user$project$Store_ArtStore$exit(_user$project$Store_ArtStore$ExitStore),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Store_ArtStore$playButton(
@@ -13869,6 +13869,7 @@ var _user$project$Store_ArtStore$tick = F4(
 			_2: cmd
 		};
 	});
+var _user$project$Store_ArtStore$Exit = {ctor: 'Exit'};
 var _user$project$Store_ArtStore$AddPoints = function (a) {
 	return {ctor: 'AddPoints', _0: a};
 };
@@ -13925,8 +13926,8 @@ var _user$project$Store_ArtStore$update = F4(
 					_1: _user$project$Store_ArtStore$NoOp,
 					_2: _user$project$Audio$play(_p43._0)
 				};
-			case 'Exit':
-				return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
+			case 'ExitStore':
+				return {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$Exit, _2: _elm_lang$core$Platform_Cmd$none};
 			default:
 				return model.playing ? A4(_user$project$Store_ArtStore$tick, _p43._0, window, translator, model) : {ctor: '_Tuple3', _0: model, _1: _user$project$Store_ArtStore$NoOp, _2: _elm_lang$core$Platform_Cmd$none};
 		}
@@ -14228,20 +14229,25 @@ var _user$project$Map$update = F4(
 					var cmd = _p7._2;
 					var points = function () {
 						var _p8 = msgFromPage;
-						if (_p8.ctor === 'NoOp') {
-							return map.points;
-						} else {
+						if (_p8.ctor === 'AddPoints') {
 							return map.points + _p8._0;
+						} else {
+							return map.points;
+						}
+					}();
+					var level = function () {
+						var _p9 = msgFromPage;
+						if (_p9.ctor === 'Exit') {
+							return _user$project$Map$HomeTown;
+						} else {
+							return _user$project$Map$ArtStore(newArtStore);
 						}
 					}();
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							map,
-							{
-								level: _user$project$Map$ArtStore(newArtStore),
-								points: points
-							}),
+							{level: level, points: points}),
 						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$ArtStoreMsg, cmd)
 					};
 				} else {
@@ -14253,8 +14259,8 @@ var _user$project$Map$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
 var _user$project$Map$groceryItem = F3(
-	function (_p9, image, audio) {
-		var _p10 = _p9;
+	function (_p10, image, audio) {
+		var _p11 = _p10;
 		return A2(
 			_elm_lang$html$Html$img,
 			{
@@ -14279,7 +14285,7 @@ var _user$project$Map$groceryItem = F3(
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p10._0),
+												_elm_lang$core$Basics$toString(_p11._0),
 												'px')
 										},
 										_1: {
@@ -14289,7 +14295,7 @@ var _user$project$Map$groceryItem = F3(
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p10._1),
+													_elm_lang$core$Basics$toString(_p11._1),
 													'px')
 											},
 											_1: {ctor: '[]'}
@@ -14312,8 +14318,8 @@ var _user$project$Map$NewLevel = function (a) {
 	return {ctor: 'NewLevel', _0: a};
 };
 var _user$project$Map$playButton = F2(
-	function (_p11, level) {
-		var _p12 = _p11;
+	function (_p12, level) {
+		var _p13 = _p12;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -14332,7 +14338,7 @@ var _user$project$Map$playButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p12._0),
+										_elm_lang$core$Basics$toString(_p13._0),
 										'px')
 								},
 								_1: {
@@ -14342,7 +14348,7 @@ var _user$project$Map$playButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p12._1),
+											_elm_lang$core$Basics$toString(_p13._1),
 											'px')
 									},
 									_1: {
@@ -14372,8 +14378,8 @@ var _user$project$Map$playButton = F2(
 			});
 	});
 var _user$project$Map$backButton = F2(
-	function (_p13, level) {
-		var _p14 = _p13;
+	function (_p14, level) {
+		var _p15 = _p14;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -14392,7 +14398,7 @@ var _user$project$Map$backButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p14._0),
+										_elm_lang$core$Basics$toString(_p15._0),
 										'px')
 								},
 								_1: {
@@ -14402,7 +14408,7 @@ var _user$project$Map$backButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p14._1),
+											_elm_lang$core$Basics$toString(_p15._1),
 											'px')
 									},
 									_1: {
@@ -14463,10 +14469,10 @@ var _user$project$Map$exit = function (level) {
 		});
 };
 var _user$project$Map$ArtStoreRoute = {ctor: 'ArtStoreRoute'};
-var _user$project$Map$artStoreBuilding = function (_p15) {
-	var _p16 = _p15;
-	var _p18 = _p16._1;
-	var _p17 = _p16._0;
+var _user$project$Map$artStoreBuilding = function (_p16) {
+	var _p17 = _p16;
+	var _p19 = _p17._1;
+	var _p18 = _p17._0;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -14500,7 +14506,7 @@ var _user$project$Map$artStoreBuilding = function (_p15) {
 													_0: 'left',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p17),
+														_elm_lang$core$Basics$toString(_p18),
 														'px')
 												},
 												_1: {
@@ -14510,7 +14516,7 @@ var _user$project$Map$artStoreBuilding = function (_p15) {
 														_0: 'top',
 														_1: A2(
 															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p18),
+															_elm_lang$core$Basics$toString(_p19),
 															'px')
 													},
 													_1: {ctor: '[]'}
@@ -14556,7 +14562,7 @@ var _user$project$Map$artStoreBuilding = function (_p15) {
 															_0: 'left',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p17 + 7),
+																_elm_lang$core$Basics$toString(_p18 + 7),
 																'px')
 														},
 														_1: {
@@ -14566,7 +14572,7 @@ var _user$project$Map$artStoreBuilding = function (_p15) {
 																_0: 'top',
 																_1: A2(
 																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p18 + 10),
+																	_elm_lang$core$Basics$toString(_p19 + 10),
 																	'px')
 															},
 															_1: {ctor: '[]'}
@@ -14590,10 +14596,10 @@ var _user$project$Map$artStoreBuilding = function (_p15) {
 		});
 };
 var _user$project$Map$GroceryStoreRoute = {ctor: 'GroceryStoreRoute'};
-var _user$project$Map$storeBuilding = function (_p19) {
-	var _p20 = _p19;
-	var _p22 = _p20._1;
-	var _p21 = _p20._0;
+var _user$project$Map$storeBuilding = function (_p20) {
+	var _p21 = _p20;
+	var _p23 = _p21._1;
+	var _p22 = _p21._0;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -14627,7 +14633,7 @@ var _user$project$Map$storeBuilding = function (_p19) {
 													_0: 'left',
 													_1: A2(
 														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p21),
+														_elm_lang$core$Basics$toString(_p22),
 														'px')
 												},
 												_1: {
@@ -14637,7 +14643,7 @@ var _user$project$Map$storeBuilding = function (_p19) {
 														_0: 'top',
 														_1: A2(
 															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p22),
+															_elm_lang$core$Basics$toString(_p23),
 															'px')
 													},
 													_1: {ctor: '[]'}
@@ -14683,7 +14689,7 @@ var _user$project$Map$storeBuilding = function (_p19) {
 															_0: 'left',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p21 + 7),
+																_elm_lang$core$Basics$toString(_p22 + 7),
 																'px')
 														},
 														_1: {
@@ -14693,7 +14699,7 @@ var _user$project$Map$storeBuilding = function (_p19) {
 																_0: 'top',
 																_1: A2(
 																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p22 + 10),
+																	_elm_lang$core$Basics$toString(_p23 + 10),
 																	'px')
 															},
 															_1: {ctor: '[]'}
@@ -14775,8 +14781,8 @@ var _user$project$Map$groceryStore = function (mapSize) {
 		});
 };
 var _user$project$Map$HomeRoute = {ctor: 'HomeRoute'};
-var _user$project$Map$house = function (_p23) {
-	var _p24 = _p23;
+var _user$project$Map$house = function (_p24) {
+	var _p25 = _p24;
 	return A2(
 		_elm_lang$html$Html$img,
 		{
@@ -14805,7 +14811,7 @@ var _user$project$Map$house = function (_p23) {
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p24._0),
+												_elm_lang$core$Basics$toString(_p25._0),
 												'px')
 										},
 										_1: {
@@ -14815,7 +14821,7 @@ var _user$project$Map$house = function (_p23) {
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p24._1),
+													_elm_lang$core$Basics$toString(_p25._1),
 													'px')
 											},
 											_1: {ctor: '[]'}
@@ -14854,8 +14860,8 @@ var _user$project$Map$hometown = function (mapSize) {
 var _user$project$Map$view = F3(
 	function (mapSize, translator, map) {
 		var level = function () {
-			var _p25 = map.level;
-			switch (_p25.ctor) {
+			var _p26 = map.level;
+			switch (_p26.ctor) {
 				case 'Home':
 					return _user$project$Map$home(mapSize);
 				case 'HomeTown':
@@ -14866,7 +14872,7 @@ var _user$project$Map$view = F3(
 					return A2(
 						_elm_lang$html$Html$map,
 						_user$project$Map$ArtStoreMsg,
-						A2(_user$project$Store_ArtStore$view, translator, _p25._0));
+						A2(_user$project$Store_ArtStore$view, translator, _p26._0));
 			}
 		}();
 		return A2(
