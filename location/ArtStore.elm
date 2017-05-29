@@ -1,4 +1,4 @@
-module Store.ArtStore exposing (..)
+module Location.ArtStore exposing (..)
 
 import Audio
 import Dictionary.Translator exposing (Translator)
@@ -343,7 +343,7 @@ randomMovingBallWithColor window color id =
 
 
 ballsPerRound =
-    1
+    10
 
 
 {-| TODO: ensure there is at least one of each color
@@ -391,7 +391,7 @@ removeBall id balls deadBalls =
         List.partition (\ball -> ball.id == id) balls
     of
         ( [ ball ], balls ) ->
-            ( balls, ball :: deadBalls )
+            ( balls, deadBalls ++ [ ball ] )
 
         _ ->
             ( balls, deadBalls )
@@ -749,8 +749,8 @@ colorGame translator game =
                 [ div [] [] ]
 
         balls =
-            List.map (colorBall game.color) game.balls
-                ++ List.map deadBall game.deadBalls
+            List.map deadBall game.deadBalls
+                ++ List.map (colorBall game.color) game.balls
     in
     div []
         ([ text ("Color: " ++ translator.translate (toString game.color))
@@ -765,8 +765,7 @@ colorBall gameColor ball =
     div
         [ style
             [ ( "border-radius", "50%" )
-
-            -- , ( "background-color", toString ball.color )
+            , ( "background-color", "white" )
             , ( "background-image", "url(" ++ imageDir ++ ball.img ++ ")" )
             , ( "background-size", "contain" )
             , ( "background-repeat", "no-repeat" )

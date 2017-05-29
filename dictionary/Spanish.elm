@@ -14,7 +14,17 @@ type alias Audio =
 
 dictionary : Dict String Word
 dictionary =
-    colors
+    Dict.union
+        family
+        colors
+
+
+family : Dict String Word
+family =
+    Dict.fromList
+        [ ( "mom", "mamá" )
+        , ( "dad", "papá" )
+        ]
 
 
 colors : Dict String Word
@@ -38,7 +48,7 @@ wordToString str =
 
 wordAudio : Word -> String
 wordAudio str =
-    audioFile (replace "ú" "u" str)
+    audioFile str
 
 
 findWord : String -> Word

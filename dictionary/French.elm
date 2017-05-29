@@ -14,7 +14,17 @@ type alias Audio =
 
 dictionary : Dict String Word
 dictionary =
-    colors
+    Dict.union
+        family
+        colors
+
+
+family : Dict String Word
+family =
+    Dict.fromList
+        [ ( "mom", "maman" )
+        , ( "dad", "papa" )
+        ]
 
 
 colors : Dict String Word

@@ -9,6 +9,7 @@ import Dictionary.Translator exposing (Translator)
 import Html exposing (Html, button, div, h1, img, text)
 import Html.Attributes exposing (class, height, src, style, width)
 import Html.Events exposing (onClick)
+import Location.Home as Home
 import Map exposing (Map)
 import Mouse
 import Task
@@ -41,7 +42,7 @@ init =
     , time = 0
     , window = { width = 100, height = 100 }
     , pause = False
-    , map = Map.init Map.Home
+    , map = Map.init (Map.Home Home.init)
     }
 
 

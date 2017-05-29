@@ -8,11 +8,12 @@ import EveryDict exposing (EveryDict)
 import Html exposing (Html, button, div, h1, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick, onMouseDown)
+import Location.ArtStore as ArtStore
+import Location.Home as Home
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
 import Random.Extra
 import Random.List exposing (choose)
-import Store.ArtStore as ArtStore
 import Time exposing (Time)
 import Window
 
@@ -36,7 +37,7 @@ init level =
 
 
 type Level
-    = Home
+    = Home Home.Model
     | HomeTown
     | GroceryStore
     | ArtStore ArtStore.Model
@@ -62,8 +63,9 @@ type Color
 type Msg
     = NewLevel Route
     | PlayAudio String
-    | ArtStoreMsg ArtStore.Msg
     | Tick Time
+    | ArtStoreMsg ArtStore.Msg
+    | HomeMsg Home.Msg
 
 
 type Route
@@ -88,6 +90,34 @@ update translator window msg map =
 
         ( Tick timeDelta, _ ) ->
             tick timeDelta window translator map
+
+        ( HomeMsg msg, Home home ) ->
+            let
+                ( newHome, msgFromPage, cmd ) =
+                    Home.update window translator msg home
+
+                points =
+                    case msgFromPage of
+                        Home.AddPoints newPoints ->
+                            map.points + newPoints
+
+                        _ ->
+                            map.points
+
+                level =
+                    case msgFromPage of
+                        Home.Exit ->
+                            HomeTown
+
+                        _ ->
+                            Home home
+            in
+            ( { map
+                | level = level
+                , points = points
+              }
+            , Cmd.map HomeMsg cmd
+            )
 
         ( ArtStoreMsg msg, ArtStore artStore ) ->
             let
@@ -128,7 +158,7 @@ newLevel window route map =
         ( newLevel, newSeed ) =
             case route of
                 HomeRoute ->
-                    Home => map.seed
+                    Home Home.init => map.seed
 
                 HomeTownRoute ->
                     HomeTown => map.seed
@@ -167,8 +197,9 @@ tick timeDelta window translator map =
 view : Window.Size -> Translator -> Map -> Html Msg
 view mapSize translator map =
     case map.level of
-        Home ->
-            home mapSize
+        Home homeModel ->
+            Home.view mapSize translator
+                |> Html.map HomeMsg
 
         HomeTown ->
             hometown mapSize
@@ -202,19 +233,6 @@ body level =
 px : Int -> String
 px x =
     toString x ++ "px"
-
-
-
--- HOME
-
-
-home : Window.Size -> Html Msg
-home mapSize =
-    div []
-        [ exit HomeTownRoute
-        , Bee.view (Just PlayAudio) Bee.mama
-        , Bee.view (Just PlayAudio) Bee.papa
-        ]
 
 
 

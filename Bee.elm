@@ -1,6 +1,7 @@
 module Bee exposing (..)
 
 import Animation exposing (Animation, animation, from, speed, to)
+import Dictionary.Translator exposing (Translator)
 import Html exposing (Html, div, img)
 import Html.Attributes exposing (height, src, style, width)
 import Html.Events exposing (onClick)
@@ -71,23 +72,25 @@ player =
     }
 
 
-mama =
+mama : Translator -> Bee
+mama translator =
     { x = 100
     , y = 100
     , animX = animation 0
     , animY = animation 0
     , src = "imgs/mama-bee.png"
-    , audio = Just "audio/madre.mov"
+    , audio = Just (translator.audio "mom")
     }
 
 
-papa =
+papa : Translator -> Bee
+papa translator =
     { x = 600
     , y = 100
     , animX = animation 0
     , animY = animation 0
     , src = "imgs/papa-bee.png"
-    , audio = Just "audio/padre.m4a"
+    , audio = Just (translator.audio "dad")
     }
 
 
