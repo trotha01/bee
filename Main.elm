@@ -106,8 +106,14 @@ update translator msg model =
 updateMap : Translator -> Map.Msg -> Model -> ( Model, Cmd Msg )
 updateMap translator mapMsg model =
     let
+        window =
+            model.window
+
+        mapScreen =
+            { window | height = window.height - headerHeight }
+
         ( map, cmd ) =
-            Map.update translator model.window mapMsg model.map
+            Map.update translator mapScreen mapMsg model.map
     in
     ( { model | map = map }, cmd |> Cmd.map MapMsg )
 
@@ -138,13 +144,17 @@ mapView window translator map =
             , ( "top", px 110 )
             ]
         ]
-        [ Map.view window translator map
+        [ Map.view { window | height = window.height - headerHeight } translator map
             |> Html.map MapMsg
         ]
 
 
 
 -- HEADER
+
+
+headerHeight =
+    100
 
 
 header : Model -> Html Msg
@@ -155,7 +165,7 @@ header model =
             [ ( "position", "absolute" )
             , ( "top", px 0 )
             , ( "bottom", px 0 )
-            , ( "height", px 100 )
+            , ( "height", px headerHeight )
             , ( "width", px model.window.width )
             , ( "border-bottom", "1px solid black" )
             , ( "background-color", "hsl(189, 100%, 50%)" )

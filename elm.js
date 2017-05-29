@@ -14475,11 +14475,14 @@ var _user$project$Store_ArtStore$initTopWall = function (windowWidth) {
 };
 var _user$project$Store_ArtStore$initRightWall = F2(
 	function (windowWidth, windowHeight) {
-		return {
-			pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth, windowHeight / 2),
-			halfHeight: windowHeight / 2,
-			halfWidth: 1
-		};
+		return A2(
+			_elm_lang$core$Debug$log,
+			'rightWall',
+			{
+				pos: A2(_elm_community$linear_algebra$Math_Vector2$vec2, windowWidth, windowHeight / 2),
+				halfHeight: windowHeight / 2,
+				halfWidth: 1
+			});
 	});
 var _user$project$Store_ArtStore$initLeftWall = function (windowHeight) {
 	return {
@@ -14545,7 +14548,7 @@ var _user$project$Store_ArtStore$initMovingBall = F5(
 			poof: false
 		};
 	});
-var _user$project$Store_ArtStore$ballsPerRound = 5;
+var _user$project$Store_ArtStore$ballsPerRound = 1;
 var _user$project$Store_ArtStore$nonZeroFloat = A2(
 	_elm_lang$core$Random$map,
 	_elm_lang$core$Basics$toFloat,
@@ -14693,7 +14696,14 @@ var _user$project$Store_ArtStore$collide = F2(
 				if (_p15.ctor === '[]') {
 					return {ctor: '[]'};
 				} else {
-					var _v11 = {ctor: '::', _0: _p15._0, _1: acc},
+					var _v11 = A2(
+						_elm_lang$core$Basics_ops['++'],
+						acc,
+						{
+							ctor: '::',
+							_0: _p15._0,
+							_1: {ctor: '[]'}
+						}),
 						_v12 = _p15._1;
 					acc = _v11;
 					bodies = _v12;
@@ -14796,9 +14806,9 @@ var _user$project$Store_ArtStore$animateBall = F3(
 		var _p27 = {
 			ctor: '_Tuple4',
 			_0: _user$project$Store_ArtStore$initLeftWall(height),
-			_1: A2(_user$project$Store_ArtStore$initRightWall, width, height),
+			_1: A2(_user$project$Store_ArtStore$initRightWall, width - (ball.radius * 2), height),
 			_2: _user$project$Store_ArtStore$initTopWall(width),
-			_3: A2(_user$project$Store_ArtStore$initBottomWall, width, height)
+			_3: A2(_user$project$Store_ArtStore$initBottomWall, width, height - (ball.radius * 2))
 		};
 		var leftWall = _p27._0;
 		var rightWall = _p27._1;
@@ -16586,6 +16596,7 @@ var _user$project$Main$viewPoints = function (count) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Main$headerHeight = 100;
 var _user$project$Main$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {user: a, mouse: b, time: c, window: d, map: e, pause: f};
@@ -16674,7 +16685,7 @@ var _user$project$Main$header = function (model) {
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'height',
-									_1: _user$project$Main$px(100)
+									_1: _user$project$Main$px(_user$project$Main$headerHeight)
 								},
 								_1: {
 									ctor: '::',
@@ -16728,7 +16739,11 @@ var _user$project$Main$MapMsg = function (a) {
 };
 var _user$project$Main$updateMap = F3(
 	function (translator, mapMsg, model) {
-		var _p0 = A4(_user$project$Map$update, translator, model.window, mapMsg, model.map);
+		var window = model.window;
+		var mapScreen = _elm_lang$core$Native_Utils.update(
+			window,
+			{height: window.height - _user$project$Main$headerHeight});
+		var _p0 = A4(_user$project$Map$update, translator, mapScreen, mapMsg, model.map);
 		var map = _p0._0;
 		var cmd = _p0._1;
 		return {
@@ -16839,7 +16854,13 @@ var _user$project$Main$mapView = F3(
 				_0: A2(
 					_elm_lang$html$Html$map,
 					_user$project$Main$MapMsg,
-					A3(_user$project$Map$view, window, translator, map)),
+					A3(
+						_user$project$Map$view,
+						_elm_lang$core$Native_Utils.update(
+							window,
+							{height: window.height - _user$project$Main$headerHeight}),
+						translator,
+						map)),
 				_1: {ctor: '[]'}
 			});
 	});

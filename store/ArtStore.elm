@@ -343,7 +343,7 @@ randomMovingBallWithColor window color id =
 
 
 ballsPerRound =
-    5
+    1
 
 
 {-| TODO: ensure there is at least one of each color
@@ -414,7 +414,7 @@ collide acc bodies =
                     []
 
                 h1 :: t1 ->
-                    collide (h1 :: acc) t1
+                    collide (acc ++ [ h1 ]) t1
 
 
 collideWith : MovingBall -> List MovingBall -> List MovingBall -> List MovingBall
@@ -504,10 +504,11 @@ initLeftWall windowHeight =
 
 
 initRightWall windowWidth windowHeight =
-    { pos = vec2 windowWidth (windowHeight / 2)
-    , halfHeight = windowHeight / 2
-    , halfWidth = 1
-    }
+    Debug.log "rightWall"
+        { pos = vec2 windowWidth (windowHeight / 2)
+        , halfHeight = windowHeight / 2
+        , halfWidth = 1
+        }
 
 
 initTopWall windowWidth =
@@ -536,9 +537,9 @@ animateBall timeDiff window ball =
 
         ( leftWall, rightWall, topWall, bottomWall ) =
             ( initLeftWall height
-            , initRightWall width height
+            , initRightWall (width - ball.radius * 2) height
             , initTopWall width
-            , initBottomWall width height
+            , initBottomWall width (height - ball.radius * 2)
             )
 
         leftCol =
