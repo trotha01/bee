@@ -9,6 +9,7 @@ import Html exposing (Html, button, div, h1, img, text)
 import Html.Attributes exposing (class, src, style)
 import Html.Events exposing (onClick, onMouseDown)
 import Location.ArtStore as ArtStore
+import Location.GroceryStore as GroceryStore
 import Location.Home as Home
 import Math.Vector2 as Vec2 exposing (Vec2, getX, getY, vec2)
 import Random
@@ -37,9 +38,9 @@ init level =
 
 
 type Level
-    = Home Home.Model
-    | HomeTown
-    | GroceryStore
+    = HomeTown
+    | Home Home.Model
+    | GroceryStore GroceryStore.Model
     | ArtStore ArtStore.Model
 
 
@@ -64,8 +65,10 @@ type Msg
     = NewLevel Route
     | PlayAudio String
     | Tick Time
-    | ArtStoreMsg ArtStore.Msg
+    | NoOp
     | HomeMsg Home.Msg
+    | ArtStoreMsg ArtStore.Msg
+    | GroceryStoreMsg GroceryStore.Msg
 
 
 type Route
@@ -147,6 +150,34 @@ update translator window msg map =
             , Cmd.map ArtStoreMsg cmd
             )
 
+        ( GroceryStoreMsg msg, GroceryStore artStore ) ->
+            let
+                ( newGroceryStore, msgFromPage, cmd ) =
+                    GroceryStore.update window translator msg artStore
+
+                points =
+                    case msgFromPage of
+                        GroceryStore.AddPoints newPoints ->
+                            map.points + newPoints
+
+                        _ ->
+                            map.points
+
+                level =
+                    case msgFromPage of
+                        GroceryStore.Exit ->
+                            HomeTown
+
+                        _ ->
+                            GroceryStore newGroceryStore
+            in
+            ( { map
+                | level = level
+                , points = points
+              }
+            , Cmd.map GroceryStoreMsg cmd
+            )
+
         ( _, _ ) ->
             -- Disregard messages from the wrong page
             ( map, Cmd.none )
@@ -164,7 +195,7 @@ newLevel window route map =
                     HomeTown => map.seed
 
                 GroceryStoreRoute ->
-                    GroceryStore => map.seed
+                    GroceryStore GroceryStore.init => map.seed
 
                 ArtStoreRoute ->
                     let
@@ -197,16 +228,18 @@ tick timeDelta window translator map =
 view : Window.Size -> Translator -> Map -> Html Msg
 view mapSize translator map =
     case map.level of
+        HomeTown ->
+            hometown mapSize translator
+
         Home homeModel ->
             Home.view mapSize translator
                 |> Html.map HomeMsg
 
-        HomeTown ->
-            hometown mapSize
+        GroceryStore store ->
+            GroceryStore.view mapSize translator store
+                |> Html.map GroceryStoreMsg
 
-        GroceryStore ->
-            groceryStore mapSize
-
+        -- groceryStore mapSize
         ArtStore store ->
             ArtStore.view translator store
                 |> Html.map ArtStoreMsg
@@ -239,13 +272,12 @@ px x =
 -- TOWN
 
 
-hometown : Window.Size -> Html Msg
-hometown mapSize =
+hometown : Window.Size -> Translator -> Html Msg
+hometown mapSize translator =
     div []
         [ house ( 0, 0 )
-
-        -- , storeBuilding ( 160, 0 )
-        , artStoreBuilding ( 320, 0 )
+        , groceryStoreBuilding ( 160, 0 ) translator True
+        , artStoreBuilding ( 320, 0 ) translator
         ]
 
 
@@ -265,19 +297,28 @@ house ( x, y ) =
         []
 
 
-storeBuilding : ( Int, Int ) -> Html Msg
-storeBuilding ( x, y ) =
+groceryStoreBuilding : ( Int, Int ) -> Translator -> Bool -> Html Msg
+groceryStoreBuilding ( x, y ) translator locked =
+    let
+        ( click, extraAttrs ) =
+            if locked then
+                ( onClick NoOp, [ ( "filter", "grayscale(100%)" ) ] )
+            else
+                ( onClick (NewLevel GroceryStoreRoute), [] )
+    in
     div []
         [ img
             [ src "imgs/store.png"
-            , onClick (NewLevel GroceryStoreRoute)
+            , click
             , style
-                [ ( "position", "absolute" )
-                , ( "height", "128px" )
-                , ( "width", "128px" )
-                , ( "left", toString x ++ "px" )
-                , ( "top", toString y ++ "px" )
-                ]
+                ([ ( "position", "absolute" )
+                 , ( "height", "128px" )
+                 , ( "width", "128px" )
+                 , ( "left", toString x ++ "px" )
+                 , ( "top", toString y ++ "px" )
+                 ]
+                    ++ extraAttrs
+                )
             ]
             []
         , div
@@ -292,12 +333,12 @@ storeBuilding ( x, y ) =
                 , ( "top", toString (y + 10) ++ "px" )
                 ]
             ]
-            [ text "Los Comestibles" ]
+            [ text <| translator.translate "grocery store" ]
         ]
 
 
-artStoreBuilding : ( Int, Int ) -> Html Msg
-artStoreBuilding ( x, y ) =
+artStoreBuilding : ( Int, Int ) -> Translator -> Html Msg
+artStoreBuilding ( x, y ) translator =
     div []
         [ img
             [ src "imgs/store.png"
@@ -323,38 +364,8 @@ artStoreBuilding ( x, y ) =
                 , ( "top", toString (y + 10) ++ "px" )
                 ]
             ]
-            [ text "El Arte" ]
+            [ text <| translator.translate "art store" ]
         ]
-
-
-
--- GROCERY STORE
-
-
-groceryStore : Window.Size -> Html Msg
-groceryStore mapSize =
-    div []
-        [ exit HomeTownRoute
-        , playButton ( 192, 10 ) GroceryStoreRoute
-        , groceryItem ( 64, 96 ) "imgs/banana.png" "audio/el_platano.mp3"
-        , groceryItem ( 192, 96 ) "imgs/milk.png" "audio/leche.mp3"
-        ]
-
-
-groceryItem : ( Int, Int ) -> String -> String -> Html Msg
-groceryItem ( x, y ) image audio =
-    img
-        [ src image
-        , style
-            [ ( "width", "64px" )
-            , ( "height", "64px" )
-            , ( "position", "absolute" )
-            , ( "left", toString x ++ "px" )
-            , ( "top", toString y ++ "px" )
-            ]
-        , onClick (PlayAudio audio)
-        ]
-        []
 
 
 

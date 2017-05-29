@@ -13991,6 +13991,16 @@ var _user$project$Dictionary_French$wordAudio = function (str) {
 var _user$project$Dictionary_French$wordToString = function (str) {
 	return str;
 };
+var _user$project$Dictionary_French$places = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'art store', _1: 'magasin d\'art'},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'grocery store', _1: 'épicerie'},
+			_1: {ctor: '[]'}
+		}
+	});
 var _user$project$Dictionary_French$colors = _elm_lang$core$Dict$fromList(
 	{
 		ctor: '::',
@@ -14035,7 +14045,23 @@ var _user$project$Dictionary_French$family = _elm_lang$core$Dict$fromList(
 			_1: {ctor: '[]'}
 		}
 	});
-var _user$project$Dictionary_French$dictionary = A2(_elm_lang$core$Dict$union, _user$project$Dictionary_French$family, _user$project$Dictionary_French$colors);
+var _user$project$Dictionary_French$dictionary = A3(
+	_elm_lang$core$List$foldl,
+	_elm_lang$core$Dict$union,
+	_elm_lang$core$Dict$empty,
+	{
+		ctor: '::',
+		_0: _user$project$Dictionary_French$family,
+		_1: {
+			ctor: '::',
+			_0: _user$project$Dictionary_French$colors,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Dictionary_French$places,
+				_1: {ctor: '[]'}
+			}
+		}
+	});
 var _user$project$Dictionary_French$findWord = function (original) {
 	return A2(
 		_elm_lang$core$Maybe$withDefault,
@@ -14067,6 +14093,16 @@ var _user$project$Dictionary_Spanish$wordAudio = function (str) {
 var _user$project$Dictionary_Spanish$wordToString = function (str) {
 	return str;
 };
+var _user$project$Dictionary_Spanish$places = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'art store', _1: 'tienda de arte'},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'grocery store', _1: 'el mercado'},
+			_1: {ctor: '[]'}
+		}
+	});
 var _user$project$Dictionary_Spanish$colors = _elm_lang$core$Dict$fromList(
 	{
 		ctor: '::',
@@ -14111,7 +14147,23 @@ var _user$project$Dictionary_Spanish$family = _elm_lang$core$Dict$fromList(
 			_1: {ctor: '[]'}
 		}
 	});
-var _user$project$Dictionary_Spanish$dictionary = A2(_elm_lang$core$Dict$union, _user$project$Dictionary_Spanish$family, _user$project$Dictionary_Spanish$colors);
+var _user$project$Dictionary_Spanish$dictionary = A3(
+	_elm_lang$core$List$foldl,
+	_elm_lang$core$Dict$union,
+	_elm_lang$core$Dict$empty,
+	{
+		ctor: '::',
+		_0: _user$project$Dictionary_Spanish$family,
+		_1: {
+			ctor: '::',
+			_0: _user$project$Dictionary_Spanish$colors,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Dictionary_Spanish$places,
+				_1: {ctor: '[]'}
+			}
+		}
+	});
 var _user$project$Dictionary_Spanish$findWord = function (original) {
 	return A2(
 		_elm_lang$core$Maybe$withDefault,
@@ -15522,7 +15574,7 @@ var _user$project$Location_ArtStore$colorGame = F2(
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Finish Early'),
+								_0: _elm_lang$html$Html$text('Finish'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -15743,6 +15795,191 @@ var _user$project$Location_ArtStore$update = F4(
 			}
 		}
 	});
+
+var _user$project$Location_GroceryStore$tile = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$src('imgs/map-tileset.png'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'clip', _1: 'rect(32px 64px 64px 32px)'},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'left',
+									_1: A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(_p1._0 - 32),
+										'px')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'top',
+										_1: A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(_p1._1 - 32),
+											'px')
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Location_GroceryStore$exit = function (exitMsg) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(exitMsg),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Location_GroceryStore$tile(
+				{ctor: '_Tuple2', _0: 0, _1: 0}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Location_GroceryStore$tile(
+					{ctor: '_Tuple2', _0: 0, _1: 32}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Location_GroceryStore$tile(
+						{ctor: '_Tuple2', _0: 32, _1: 0}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Location_GroceryStore$tile(
+							{ctor: '_Tuple2', _0: 32, _1: 32}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Location_GroceryStore$init = {};
+var _user$project$Location_GroceryStore$Model = {};
+var _user$project$Location_GroceryStore$ExitStore = {ctor: 'ExitStore'};
+var _user$project$Location_GroceryStore$PlayAudio = function (a) {
+	return {ctor: 'PlayAudio', _0: a};
+};
+var _user$project$Location_GroceryStore$groceryItem = F3(
+	function (_p2, image, audio) {
+		var _p3 = _p2;
+		return A2(
+			_elm_lang$html$Html$img,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$src(image),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'width', _1: '64px'},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'left',
+											_1: A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(_p3._0),
+												'px')
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'top',
+												_1: A2(
+													_elm_lang$core$Basics_ops['++'],
+													_elm_lang$core$Basics$toString(_p3._1),
+													'px')
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Location_GroceryStore$PlayAudio(audio)),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Location_GroceryStore$view = F3(
+	function (mapSize, translator, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _user$project$Location_GroceryStore$exit(_user$project$Location_GroceryStore$ExitStore),
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Location_GroceryStore$groceryItem,
+						{ctor: '_Tuple2', _0: 64, _1: 96},
+						'imgs/banana.png',
+						'audio/el_platano.mp3'),
+					_1: {
+						ctor: '::',
+						_0: A3(
+							_user$project$Location_GroceryStore$groceryItem,
+							{ctor: '_Tuple2', _0: 192, _1: 96},
+							'imgs/milk.png',
+							'audio/leche.mp3'),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Location_GroceryStore$NoOp = {ctor: 'NoOp'};
+var _user$project$Location_GroceryStore$Exit = {ctor: 'Exit'};
+var _user$project$Location_GroceryStore$update = F4(
+	function (window, translator, msg, model) {
+		var _p4 = msg;
+		if (_p4.ctor === 'ExitStore') {
+			return {ctor: '_Tuple3', _0: model, _1: _user$project$Location_GroceryStore$Exit, _2: _elm_lang$core$Platform_Cmd$none};
+		} else {
+			return {
+				ctor: '_Tuple3',
+				_0: model,
+				_1: _user$project$Location_GroceryStore$NoOp,
+				_2: _user$project$Audio$play(_p4._0)
+			};
+		}
+	});
+var _user$project$Location_GroceryStore$AddPoints = function (a) {
+	return {ctor: 'AddPoints', _0: a};
+};
 
 var _user$project$Location_Home$tile = function (_p0) {
 	var _p1 = _p0;
@@ -15999,11 +16236,13 @@ var _user$project$Map$Map = F3(
 var _user$project$Map$ArtStore = function (a) {
 	return {ctor: 'ArtStore', _0: a};
 };
-var _user$project$Map$GroceryStore = {ctor: 'GroceryStore'};
-var _user$project$Map$HomeTown = {ctor: 'HomeTown'};
+var _user$project$Map$GroceryStore = function (a) {
+	return {ctor: 'GroceryStore', _0: a};
+};
 var _user$project$Map$Home = function (a) {
 	return {ctor: 'Home', _0: a};
 };
+var _user$project$Map$HomeTown = {ctor: 'HomeTown'};
 var _user$project$Map$newLevel = F3(
 	function (window, route, map) {
 		var _p2 = function () {
@@ -16017,7 +16256,10 @@ var _user$project$Map$newLevel = F3(
 				case 'HomeTownRoute':
 					return A2(_user$project$Map_ops['=>'], _user$project$Map$HomeTown, map.seed);
 				case 'GroceryStoreRoute':
-					return A2(_user$project$Map_ops['=>'], _user$project$Map$GroceryStore, map.seed);
+					return A2(
+						_user$project$Map_ops['=>'],
+						_user$project$Map$GroceryStore(_user$project$Location_GroceryStore$init),
+						map.seed);
 				default:
 					var _p4 = A2(_user$project$Location_ArtStore$init, window, map.seed);
 					var store = _p4._0;
@@ -16043,8 +16285,8 @@ var _user$project$Map$Green = {ctor: 'Green'};
 var _user$project$Map$Yellow = {ctor: 'Yellow'};
 var _user$project$Map$Orange = {ctor: 'Orange'};
 var _user$project$Map$Red = {ctor: 'Red'};
-var _user$project$Map$HomeMsg = function (a) {
-	return {ctor: 'HomeMsg', _0: a};
+var _user$project$Map$GroceryStoreMsg = function (a) {
+	return {ctor: 'GroceryStoreMsg', _0: a};
 };
 var _user$project$Map$ArtStoreMsg = function (a) {
 	return {ctor: 'ArtStoreMsg', _0: a};
@@ -16075,10 +16317,13 @@ var _user$project$Map$tick = F4(
 			return {ctor: '_Tuple2', _0: map, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
+var _user$project$Map$HomeMsg = function (a) {
+	return {ctor: 'HomeMsg', _0: a};
+};
 var _user$project$Map$update = F4(
 	function (translator, window, msg, map) {
 		var _p7 = {ctor: '_Tuple2', _0: msg, _1: map.level};
-		_v3_5:
+		_v3_6:
 		do {
 			switch (_p7._0.ctor) {
 				case 'NewLevel':
@@ -16121,9 +16366,9 @@ var _user$project$Map$update = F4(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$HomeMsg, cmd)
 						};
 					} else {
-						break _v3_5;
+						break _v3_6;
 					}
-				default:
+				case 'ArtStoreMsg':
 					if (_p7._1.ctor === 'ArtStore') {
 						var _p12 = A4(_user$project$Location_ArtStore$update, window, translator, _p7._0._0, _p7._1._0);
 						var newArtStore = _p12._0;
@@ -16153,80 +16398,59 @@ var _user$project$Map$update = F4(
 							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$ArtStoreMsg, cmd)
 						};
 					} else {
-						break _v3_5;
+						break _v3_6;
 					}
+				case 'GroceryStoreMsg':
+					if (_p7._1.ctor === 'GroceryStore') {
+						var _p15 = A4(_user$project$Location_GroceryStore$update, window, translator, _p7._0._0, _p7._1._0);
+						var newGroceryStore = _p15._0;
+						var msgFromPage = _p15._1;
+						var cmd = _p15._2;
+						var points = function () {
+							var _p16 = msgFromPage;
+							if (_p16.ctor === 'AddPoints') {
+								return map.points + _p16._0;
+							} else {
+								return map.points;
+							}
+						}();
+						var level = function () {
+							var _p17 = msgFromPage;
+							if (_p17.ctor === 'Exit') {
+								return _user$project$Map$HomeTown;
+							} else {
+								return _user$project$Map$GroceryStore(newGroceryStore);
+							}
+						}();
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								map,
+								{level: level, points: points}),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Map$GroceryStoreMsg, cmd)
+						};
+					} else {
+						break _v3_6;
+					}
+				default:
+					break _v3_6;
 			}
 		} while(false);
 		return {ctor: '_Tuple2', _0: map, _1: _elm_lang$core$Platform_Cmd$none};
 	});
+var _user$project$Map$NoOp = {ctor: 'NoOp'};
 var _user$project$Map$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
 var _user$project$Map$PlayAudio = function (a) {
 	return {ctor: 'PlayAudio', _0: a};
 };
-var _user$project$Map$groceryItem = F3(
-	function (_p15, image, audio) {
-		var _p16 = _p15;
-		return A2(
-			_elm_lang$html$Html$img,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$src(image),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'width', _1: '64px'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '64px'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'left',
-											_1: A2(
-												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p16._0),
-												'px')
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'top',
-												_1: A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p16._1),
-													'px')
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Map$PlayAudio(audio)),
-						_1: {ctor: '[]'}
-					}
-				}
-			},
-			{ctor: '[]'});
-	});
 var _user$project$Map$NewLevel = function (a) {
 	return {ctor: 'NewLevel', _0: a};
 };
 var _user$project$Map$playButton = F2(
-	function (_p17, level) {
-		var _p18 = _p17;
+	function (_p18, level) {
+		var _p19 = _p18;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -16245,7 +16469,7 @@ var _user$project$Map$playButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p18._0),
+										_elm_lang$core$Basics$toString(_p19._0),
 										'px')
 								},
 								_1: {
@@ -16255,7 +16479,7 @@ var _user$project$Map$playButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p18._1),
+											_elm_lang$core$Basics$toString(_p19._1),
 											'px')
 									},
 									_1: {
@@ -16285,8 +16509,8 @@ var _user$project$Map$playButton = F2(
 			});
 	});
 var _user$project$Map$backButton = F2(
-	function (_p19, level) {
-		var _p20 = _p19;
+	function (_p20, level) {
+		var _p21 = _p20;
 		return A2(
 			_elm_lang$html$Html$button,
 			{
@@ -16305,7 +16529,7 @@ var _user$project$Map$backButton = F2(
 									_0: 'left',
 									_1: A2(
 										_elm_lang$core$Basics_ops['++'],
-										_elm_lang$core$Basics$toString(_p20._0),
+										_elm_lang$core$Basics$toString(_p21._0),
 										'px')
 								},
 								_1: {
@@ -16315,7 +16539,7 @@ var _user$project$Map$backButton = F2(
 										_0: 'top',
 										_1: A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(_p20._1),
+											_elm_lang$core$Basics$toString(_p21._1),
 											'px')
 									},
 									_1: {
@@ -16376,152 +16600,73 @@ var _user$project$Map$exit = function (level) {
 		});
 };
 var _user$project$Map$ArtStoreRoute = {ctor: 'ArtStoreRoute'};
-var _user$project$Map$artStoreBuilding = function (_p21) {
-	var _p22 = _p21;
-	var _p24 = _p22._1;
-	var _p23 = _p22._0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
-					_1: {
+var _user$project$Map$artStoreBuilding = F2(
+	function (_p22, translator) {
+		var _p23 = _p22;
+		var _p25 = _p23._1;
+		var _p24 = _p23._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Map$NewLevel(_user$project$Map$ArtStoreRoute)),
+						_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-									_1: {
+							_0: _elm_lang$html$Html_Events$onClick(
+								_user$project$Map$NewLevel(_user$project$Map$ArtStoreRoute)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$style(
+									{
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
+										_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+											_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
 											_1: {
 												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'left',
-													_1: A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p23),
-														'px')
-												},
+												_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
 												_1: {
 													ctor: '::',
 													_0: {
 														ctor: '_Tuple2',
-														_0: 'top',
+														_0: 'left',
 														_1: A2(
 															_elm_lang$core$Basics_ops['++'],
 															_elm_lang$core$Basics$toString(_p24),
 															'px')
 													},
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
 													_1: {
 														ctor: '::',
 														_0: {
 															ctor: '_Tuple2',
-															_0: 'left',
+															_0: 'top',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p23 + 7),
+																_elm_lang$core$Basics$toString(_p25),
 																'px')
 														},
-														_1: {
-															ctor: '::',
-															_0: {
-																ctor: '_Tuple2',
-																_0: 'top',
-																_1: A2(
-																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p24 + 10),
-																	'px')
-															},
-															_1: {ctor: '[]'}
-														}
+														_1: {ctor: '[]'}
 													}
 												}
 											}
 										}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
 					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('El Arte'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Map$GroceryStoreRoute = {ctor: 'GroceryStoreRoute'};
-var _user$project$Map$storeBuilding = function (_p25) {
-	var _p26 = _p25;
-	var _p28 = _p26._1;
-	var _p27 = _p26._0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
+					{ctor: '[]'}),
+				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Map$NewLevel(_user$project$Map$GroceryStoreRoute)),
-						_1: {
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$style(
 								{
@@ -16529,66 +16674,109 @@ var _user$project$Map$storeBuilding = function (_p25) {
 									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
+											_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
 											_1: {
 												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'left',
-													_1: A2(
-														_elm_lang$core$Basics_ops['++'],
-														_elm_lang$core$Basics$toString(_p27),
-														'px')
-												},
+												_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
 												_1: {
 													ctor: '::',
-													_0: {
-														ctor: '_Tuple2',
-														_0: 'top',
-														_1: A2(
-															_elm_lang$core$Basics_ops['++'],
-															_elm_lang$core$Basics$toString(_p28),
-															'px')
-													},
-													_1: {ctor: '[]'}
+													_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'left',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(_p24 + 7),
+																	'px')
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'top',
+																	_1: A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		_elm_lang$core$Basics$toString(_p25 + 10),
+																		'px')
+																},
+																_1: {ctor: '[]'}
+															}
+														}
+													}
 												}
 											}
 										}
 									}
 								}),
 							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{ctor: '[]'}),
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								translator.translate('art store')),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Map$GroceryStoreRoute = {ctor: 'GroceryStoreRoute'};
+var _user$project$Map$storeBuilding = F3(
+	function (_p26, translator, locked) {
+		var _p27 = _p26;
+		var _p30 = _p27._1;
+		var _p29 = _p27._0;
+		var _p28 = locked ? {
+			ctor: '_Tuple2',
+			_0: _elm_lang$html$Html_Events$onClick(_user$project$Map$NoOp),
 			_1: {
 				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'filter', _1: 'grayscale(100%)'},
+				_1: {ctor: '[]'}
+			}
+		} : {
+			ctor: '_Tuple2',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Map$NewLevel(_user$project$Map$GroceryStoreRoute)),
+			_1: {ctor: '[]'}
+		};
+		var click = _p28._0;
+		var extraAttrs = _p28._1;
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
+					_elm_lang$html$Html$img,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
+						_0: _elm_lang$html$Html_Attributes$src('imgs/store.png'),
+						_1: {
+							ctor: '::',
+							_0: click,
+							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
-										_1: {
+								_0: _elm_lang$html$Html_Attributes$style(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										{
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+											_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
 											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+												_0: {ctor: '_Tuple2', _0: 'height', _1: '128px'},
 												_1: {
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+													_0: {ctor: '_Tuple2', _0: 'width', _1: '128px'},
 													_1: {
 														ctor: '::',
 														_0: {
@@ -16596,7 +16784,7 @@ var _user$project$Map$storeBuilding = function (_p25) {
 															_0: 'left',
 															_1: A2(
 																_elm_lang$core$Basics_ops['++'],
-																_elm_lang$core$Basics$toString(_p27 + 7),
+																_elm_lang$core$Basics$toString(_p29),
 																'px')
 														},
 														_1: {
@@ -16606,7 +16794,7 @@ var _user$project$Map$storeBuilding = function (_p25) {
 																_0: 'top',
 																_1: A2(
 																	_elm_lang$core$Basics_ops['++'],
-																	_elm_lang$core$Basics$toString(_p28 + 10),
+																	_elm_lang$core$Basics$toString(_p30),
 																	'px')
 															},
 															_1: {ctor: '[]'}
@@ -16614,58 +16802,83 @@ var _user$project$Map$storeBuilding = function (_p25) {
 													}
 												}
 											}
-										}
-									}
-								}
-							}),
-						_1: {ctor: '[]'}
+										},
+										extraAttrs)),
+								_1: {ctor: '[]'}
+							}
+						}
 					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Los Comestibles'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Map$HomeTownRoute = {ctor: 'HomeTownRoute'};
-var _user$project$Map$groceryStore = function (mapSize) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Map$exit(_user$project$Map$HomeTownRoute),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_user$project$Map$playButton,
-					{ctor: '_Tuple2', _0: 192, _1: 10},
-					_user$project$Map$GroceryStoreRoute),
+					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: A3(
-						_user$project$Map$groceryItem,
-						{ctor: '_Tuple2', _0: 64, _1: 96},
-						'imgs/banana.png',
-						'audio/el_platano.mp3'),
-					_1: {
-						ctor: '::',
-						_0: A3(
-							_user$project$Map$groceryItem,
-							{ctor: '_Tuple2', _0: 192, _1: 96},
-							'imgs/milk.png',
-							'audio/leche.mp3'),
-						_1: {ctor: '[]'}
-					}
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'height', _1: '27px'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'width', _1: '112px'},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'border', _1: '1px solid black'},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+														_1: {
+															ctor: '::',
+															_0: {
+																ctor: '_Tuple2',
+																_0: 'left',
+																_1: A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(_p29 + 7),
+																	'px')
+															},
+															_1: {
+																ctor: '::',
+																_0: {
+																	ctor: '_Tuple2',
+																	_0: 'top',
+																	_1: A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		_elm_lang$core$Basics$toString(_p30 + 10),
+																		'px')
+																},
+																_1: {ctor: '[]'}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								translator.translate('grocery store')),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
 				}
-			}
-		});
-};
+			});
+	});
+var _user$project$Map$HomeTownRoute = {ctor: 'HomeTownRoute'};
 var _user$project$Map$HomeRoute = {ctor: 'HomeRoute'};
-var _user$project$Map$house = function (_p29) {
-	var _p30 = _p29;
+var _user$project$Map$house = function (_p31) {
+	var _p32 = _p31;
 	return A2(
 		_elm_lang$html$Html$img,
 		{
@@ -16694,7 +16907,7 @@ var _user$project$Map$house = function (_p29) {
 											_0: 'left',
 											_1: A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(_p30._0),
+												_elm_lang$core$Basics$toString(_p32._0),
 												'px')
 										},
 										_1: {
@@ -16704,7 +16917,7 @@ var _user$project$Map$house = function (_p29) {
 												_0: 'top',
 												_1: A2(
 													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(_p30._1),
+													_elm_lang$core$Basics$toString(_p32._1),
 													'px')
 											},
 											_1: {ctor: '[]'}
@@ -16719,40 +16932,54 @@ var _user$project$Map$house = function (_p29) {
 		},
 		{ctor: '[]'});
 };
-var _user$project$Map$hometown = function (mapSize) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Map$house(
-				{ctor: '_Tuple2', _0: 0, _1: 0}),
-			_1: {
+var _user$project$Map$hometown = F2(
+	function (mapSize, translator) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
 				ctor: '::',
-				_0: _user$project$Map$artStoreBuilding(
-					{ctor: '_Tuple2', _0: 320, _1: 0}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
+				_0: _user$project$Map$house(
+					{ctor: '_Tuple2', _0: 0, _1: 0}),
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Map$storeBuilding,
+						{ctor: '_Tuple2', _0: 160, _1: 0},
+						translator,
+						true),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Map$artStoreBuilding,
+							{ctor: '_Tuple2', _0: 320, _1: 0},
+							translator),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
 var _user$project$Map$view = F3(
 	function (mapSize, translator, map) {
-		var _p31 = map.level;
-		switch (_p31.ctor) {
+		var _p33 = map.level;
+		switch (_p33.ctor) {
+			case 'HomeTown':
+				return A2(_user$project$Map$hometown, mapSize, translator);
 			case 'Home':
 				return A2(
 					_elm_lang$html$Html$map,
 					_user$project$Map$HomeMsg,
 					A2(_user$project$Location_Home$view, mapSize, translator));
-			case 'HomeTown':
-				return _user$project$Map$hometown(mapSize);
 			case 'GroceryStore':
-				return _user$project$Map$groceryStore(mapSize);
+				return A2(
+					_elm_lang$html$Html$map,
+					_user$project$Map$GroceryStoreMsg,
+					A3(_user$project$Location_GroceryStore$view, mapSize, translator, _p33._0));
 			default:
 				return A2(
 					_elm_lang$html$Html$map,
 					_user$project$Map$ArtStoreMsg,
-					A2(_user$project$Location_ArtStore$view, translator, _p31._0));
+					A2(_user$project$Location_ArtStore$view, translator, _p33._0));
 		}
 	});
 

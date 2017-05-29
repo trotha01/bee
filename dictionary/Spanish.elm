@@ -14,9 +14,9 @@ type alias Audio =
 
 dictionary : Dict String Word
 dictionary =
-    Dict.union
-        family
-        colors
+    List.foldl Dict.union
+        Dict.empty
+        [ family, colors, places ]
 
 
 family : Dict String Word
@@ -38,6 +38,14 @@ colors =
         , ( "purple", "púrpura" )
         , ( "black", "negro" )
         , ( "white", "blanco" )
+        ]
+
+
+places : Dict String Word
+places =
+    Dict.fromList
+        [ ( "art store", "tienda de arte" )
+        , ( "grocery store", "el mercado" )
         ]
 
 

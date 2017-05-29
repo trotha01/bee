@@ -742,7 +742,7 @@ colorGame translator game =
             if game.finishRound || game.win then
                 [ div []
                     [ button [ onClick NextRound ] [ text "Next Round" ]
-                    , button [ onClick FinishGame ] [ text "Finish Early" ]
+                    , button [ onClick FinishGame ] [ text "Finish" ]
                     ]
                 ]
             else
